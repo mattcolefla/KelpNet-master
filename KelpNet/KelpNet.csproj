@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{750BB541-BF90-471D-A93F-54230B6FB07D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KelpNet</RootNamespace>
+    <AssemblyName>KelpNet</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MathNet.Numerics, Version=4.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.4.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="Nerdle.Ensure, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nerdle.Ensure.1.3.0\lib\Nerdle.Ensure.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Vima.Ensure.Net, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ensure.Net.2.1.0\lib\net45\Vima.Ensure.Net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Functions\CompressibleActivation.cs" />
+    <Compile Include="Common\Functions\Container\SplitFunction.cs" />
+    <Compile Include="Common\Functions\Type\DualInputFunction.cs" />
+    <Compile Include="Common\Functions\Container\FunctionDictionary.cs" />
+    <Compile Include="Common\Functions\Type\MultiInputFunction.cs" />
+    <Compile Include="Common\Functions\Type\MultiOutputFunction.cs" />
+    <Compile Include="Common\Functions\Type\SingleInputFunction.cs" />
+    <Compile Include="Common\NdArray.cs" />
+    <Compile Include="Common\Functions\CompressibleFunction.cs" />
+    <Compile Include="Common\Functions\IParallelizable.cs" />
+    <Compile Include="Common\Real.cs" />
+    <Compile Include="Common\Tools\DeepCopyHelper.cs" />
+    <Compile Include="Common\Tools\Initializer.cs" />
+    <Compile Include="Common\Tools\ModelIO.cs" />
+    <Compile Include="Common\Tools\NdArrayConverter.cs" />
+    <Compile Include="Common\Weaver.cs" />
+    <Compile Include="Common\Functions\Container\FunctionStack.cs" />
+    <Compile Include="Common\Functions\Function.cs" />
+    <Compile Include="Functions\Activations\ELU.cs" />
+    <Compile Include="Functions\Activations\LeakyReLU.cs" />
+    <Compile Include="Functions\Activations\PolynomialApproximantSteep.cs" />
+    <Compile Include="Functions\Activations\ReLU.cs" />
+    <Compile Include="Functions\Activations\ReLuTanh.cs" />
+    <Compile Include="Functions\Activations\Sigmoid.cs" />
+    <Compile Include="Functions\Activations\Softmax.cs" />
+    <Compile Include="Functions\Activations\Softplus.cs" />
+    <Compile Include="Functions\Activations\Swish.cs" />
+    <Compile Include="Functions\Activations\Tanh.cs" />
+    <Compile Include="Functions\Arrays\Broadcast.cs" />
+    <Compile Include="Functions\Arrays\Concat.cs" />
+    <Compile Include="Functions\Arrays\Reshape.cs" />
+    <Compile Include="Functions\Arrays\SplitAxis.cs" />
+    <Compile Include="Functions\Mathmetrics\AddBias.cs" />
+    <Compile Include="Functions\Mathmetrics\MultiplyScale.cs" />
+    <Compile Include="Functions\Mathmetrics\BasicMath\Div.cs" />
+    <Compile Include="Functions\Mathmetrics\BasicMath\Mul.cs" />
+    <Compile Include="Functions\Mathmetrics\BasicMath\Sub.cs" />
+    <Compile Include="Functions\Connections\Convolution2D.cs" />
+    <Compile Include="Functions\Connections\Deconvolution2D.cs" />
+    <Compile Include="Functions\Connections\EmbedID.cs" />
+    <Compile Include="Functions\Connections\Linear.cs" />
+    <Compile Include="Functions\Connections\LSTM.cs" />
+    <Compile Include="Functions\Mathmetrics\BasicMath\Add.cs" />
+    <Compile Include="Functions\Mathmetrics\Trigonometric\ArcCos.cs" />
+    <Compile Include="Functions\Mathmetrics\Trigonometric\ArcSin.cs" />
+    <Compile Include="Functions\Mathmetrics\Trigonometric\ArcTan.cs" />
+    <Compile Include="Functions\Mathmetrics\Trigonometric\Cos.cs" />
+    <Compile Include="Functions\Mathmetrics\Trigonometric\Cosh.cs" />
+    <Compile Include="Functions\Mathmetrics\Trigonometric\Sin.cs" />
+    <Compile Include="Functions\Mathmetrics\Trigonometric\Sinh.cs" />
+    <Compile Include="Functions\Mathmetrics\Trigonometric\Tan.cs" />
+    <Compile Include="Functions\Mathmetrics\Trigonometric\Tanh.cs" />
+    <Compile Include="Functions\Noise\Dropout.cs" />
+    <Compile Include="Functions\Noise\StochasticDepth.cs" />
+    <Compile Include="Functions\Normalization\BatchNormalization.cs" />
+    <Compile Include="Common\Loss\LossFunction.cs" />
+    <Compile Include="Functions\Normalization\LRN.cs" />
+    <Compile Include="Loss\MeanSquaredError.cs" />
+    <Compile Include="Loss\SoftmaxCrossEntropy.cs" />
+    <Compile Include="Functions\Poolings\AveragePooling.cs" />
+    <Compile Include="Functions\Poolings\MaxPooling.cs" />
+    <Compile Include="Common\Mother.cs" />
+    <Compile Include="Common\Optimizers\Optimizer.cs" />
+    <Compile Include="Optimizers\AdaDelta.cs" />
+    <Compile Include="Optimizers\AdaGrad.cs" />
+    <Compile Include="Optimizers\Adam.cs" />
+    <Compile Include="Optimizers\GradientClipping.cs" />
+    <Compile Include="Optimizers\MomentumSGD.cs" />
+    <Compile Include="Optimizers\RMSprop.cs" />
+    <Compile Include="Optimizers\SGD.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Common\Tools\Trainer.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenCL\Activations\Activation.cl" />
+    <None Include="OpenCL\Activations\LeakyReLU.cl" />
+    <None Include="OpenCL\Activations\leakyrelu1.cl" />
+    <None Include="OpenCL\Activations\ReLU.cl" />
+    <None Include="OpenCL\Activations\ReLuTanh.cl" />
+    <None Include="OpenCL\Activations\Sigmoid.cl" />
+    <None Include="OpenCL\Activations\Tanh.cl" />
+    <None Include="OpenCL\Connections\Deconvolution2D.cl" />
+    <None Include="OpenCL\Connections\Linear.cl" />
+    <None Include="OpenCL\Noise\Dropout.cl" />
+    <None Include="OpenCL\Poolings\MaxPooling.cl" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenCL\Connections\Convolution2D.cl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cloo\Cloo.csproj">
+      <Project>{6ec82c77-96ba-4102-9589-ad89e3f4e068}</Project>
+      <Name>Cloo</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

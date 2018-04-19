@@ -1,0 +1,106 @@
+﻿using System;
+using KelpNet.Common;
+using KelpNet.Common.Optimizers;
+
+namespace KelpNet.Optimizers
+{
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <summary>   (Serializable) an ada delta. </summary>
+    ///
+    /// <seealso cref="T:KelpNet.Common.Optimizers.Optimizer"/>
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    [Serializable]
+    public class AdaDelta : Optimizer
+    {
+        /// <summary>   The rho. </summary>
+        public Real Rho;
+        /// <summary>   The epsilon. </summary>
+        public Real Epsilon;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>   Initializes a new instance of the KelpNet.Optimizers.AdaDelta class. </summary>
+        ///
+        /// <param name="rho">      (Optional) The rho. </param>
+        /// <param name="epsilon">  (Optional) The epsilon. </param>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        public AdaDelta(double rho = 0.95, double epsilon = 1e-6)
+        {
+            Rho = rho;
+            Epsilon = epsilon;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>   Adds a function parameters. </summary>
+        ///
+        /// <param name="functionParameters">   Options for controlling the function. </param>
+        ///
+        /// <seealso cref="M:KelpNet.Common.Optimizers.Optimizer.AddFunctionParameters(NdArray[])"/>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        internal override void AddFunctionParameters(NdArray[] functionParameters)
+        {
+            foreach (NdArray functionParameter in functionParameters)
+            {
+                OptimizerParameters.Add(new AdaDeltaParameter(functionParameter, this));
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <summary>   (Serializable) an ada delta parameter. </summary>
+    ///
+    /// <seealso cref="T:KelpNet.Common.Optimizers.OptimizerParameter"/>
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    [Serializable]
+    class AdaDeltaParameter : OptimizerParameter
+    {
+        /// <summary>   The message. </summary>
+        private readonly Real[] msg;
+        /// <summary>   The msdx. </summary>
+        private readonly Real[] msdx;
+        /// <summary>   The optimizer. </summary>
+        private readonly AdaDelta optimizer;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Initializes a new instance of the KelpNet.Optimizers.AdaDeltaParameter class.
+        /// </summary>
+        ///
+        /// <param name="functionParameter">    The function parameter. </param>
+        /// <param name="optimizer">            The optimizer. </param>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        public AdaDeltaParameter(NdArray functionParameter, AdaDelta optimizer) : base(functionParameter)
+        {
+            msg = new Real[functionParameter.Data.Length];
+            msdx = new Real[functionParameter.Data.Length];
+            this.optimizer = optimizer;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>   Updates the function parameters. </summary>
+        ///
+        /// <seealso cref="M:KelpNet.Common.Optimizers.OptimizerParameter.UpdateFunctionParameters()"/>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        public override void UpdateFunctionParameters()
+        {
+            for (int i = 0; i < FunctionParameter.Data.Length; i++)
+            {
+                Real grad = FunctionParameter.Grad[i];
+                msg[i] *= optimizer.Rho;
+                msg[i] += (1 - optimizer.Rho) * grad * grad;
+
+                Real dx = Math.Sqrt((msdx[i] + optimizer.Epsilon) / (msg[i] + optimizer.Epsilon)) * grad;
+
+                msdx[i] *= optimizer.Rho;
+                msdx[i] += (1 - optimizer.Rho) * dx * dx;
+
+                FunctionParameter.Data[i] -= dx;
+            }
+        }
+    }
+}
