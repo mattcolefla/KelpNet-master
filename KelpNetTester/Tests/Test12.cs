@@ -13,8 +13,8 @@ using KelpNetTester.TestData;
 namespace KelpNetTester.Tests
 {
     //Decoupled Neural Interfaces using Synthetic GradientsによるMNIST（手書き文字）の学習
-    // 教師信号にラベル情報を混ぜ込むcDNI
-    // モデルDと表現されている全層のDecoupledを非同期で実行
+    // Incorporate label information into teacher signal cDNI
+    // Execute Decoupled of all layers expressed as Model D asynchronously
     // http://ralo23.hatenablog.com/entry/2016/10/22/233405
     class Test12
     {

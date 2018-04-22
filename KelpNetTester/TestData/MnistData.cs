@@ -4,15 +4,29 @@ using MNISTLoader;
 
 namespace KelpNetTester.TestData
 {
+    /// <summary>   A mnist data. </summary>
     class MnistData
     {
+        /// <summary>   The mnist data loader. </summary>
         readonly MnistDataLoader mnistDataLoader = new MnistDataLoader();
 
+        /// <summary>   A NdArray[] to process. </summary>
         private NdArray[] X;
+        /// <summary>   The transmit. </summary>
         private NdArray[] Tx;
 
+        /// <summary>   A NdArray[] to process. </summary>
         private NdArray[] Y;
+        /// <summary>   The ty. </summary>
         private NdArray[] Ty;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Initializes a new instance of the KelpNetTester.TestData.MnistData class.
+        /// </summary>
+        ///
+        /// <param name="xdim"> The xdim. </param>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public MnistData(int xdim)
         {
@@ -49,6 +63,15 @@ namespace KelpNetTester.TestData
             }
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>   Gets random y coordinate set. </summary>
+        ///
+        /// <param name="dataCount">    Number of data. </param>
+        /// <param name="xdim">         The xdim. </param>
+        ///
+        /// <returns>   The random y coordinate set. </returns>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
         public TestDataSet GetRandomYSet(int dataCount, int xdim)
         {
             NdArray listY = new NdArray(new[] { 1, xdim, xdim }, dataCount);
@@ -64,6 +87,16 @@ namespace KelpNetTester.TestData
 
             return new TestDataSet(listY, listTy);
         }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>   Gets random x coordinate set. </summary>
+        ///
+        /// <param name="dataCount">    Number of data. </param>
+        /// <param name="x">            The x coordinate. </param>
+        /// <param name="y">            The y coordinate. </param>
+        ///
+        /// <returns>   The random x coordinate set. </returns>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public TestDataSet GetRandomXSet(int dataCount, int x, int y)
         {

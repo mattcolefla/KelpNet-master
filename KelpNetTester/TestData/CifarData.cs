@@ -4,21 +4,33 @@ using KelpNet.Common;
 
 namespace KelpNetTester.TestData
 {
+    /// <summary>   A cifar data. </summary>
     class CifarData
     {
+        /// <summary>   The cifar data loader. </summary>
         CIFARDataLoader cifarDataLoader = new CIFARDataLoader();
 
+        /// <summary>   A NdArray[] to process. </summary>
         private NdArray[] X;
+        /// <summary>   The transmit. </summary>
         private NdArray[] Tx;
 
+        /// <summary>   A NdArray[] to process. </summary>
         private NdArray[] Y;
+        /// <summary>   The ty. </summary>
         private NdArray[] Ty;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Initializes a new instance of the KelpNetTester.TestData.CifarData class.
+        /// </summary>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public CifarData()
         {
-            //トレーニングデータ
+            // training data
             X = new NdArray[cifarDataLoader.TrainData.Length];
-            //トレーニングデータラベル
+            // training data label
             Tx = new NdArray[cifarDataLoader.TrainData.Length];
 
             for (int i = 0; i < cifarDataLoader.TrainData.Length; i++)
@@ -33,9 +45,9 @@ namespace KelpNetTester.TestData
                 Tx[i] = new NdArray(new[] { (Real)cifarDataLoader.TrainLabel[i] });
             }
 
-            //教師データ
+            // Teacher data
             Y = new NdArray[cifarDataLoader.TestData.Length];
-            //教師データラベル
+            // teacher data label
             Ty = new NdArray[cifarDataLoader.TestData.Length];
 
             for (int i = 0; i < cifarDataLoader.TestData.Length; i++)
@@ -53,6 +65,14 @@ namespace KelpNetTester.TestData
             }
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>   Gets random y coordinate set. </summary>
+        ///
+        /// <param name="dataCount">    Number of data. </param>
+        ///
+        /// <returns>   The random y coordinate set. </returns>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
         public TestDataSet GetRandomYSet(int dataCount)
         {
             NdArray listY = new NdArray(new[] { 3, 32, 32 }, dataCount);
@@ -68,6 +88,14 @@ namespace KelpNetTester.TestData
 
             return new TestDataSet(listY, listTy);
         }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>   Gets random x coordinate set. </summary>
+        ///
+        /// <param name="dataCount">    Number of data. </param>
+        ///
+        /// <returns>   The random x coordinate set. </returns>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public TestDataSet GetRandomXSet(int dataCount)
         {

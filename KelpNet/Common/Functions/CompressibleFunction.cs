@@ -32,12 +32,12 @@ namespace KelpNet.Common.Functions
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public ComputeKernel ForwardKernel;
 
-        /// <summary>   The backwardg w kernel. </summary>
+        /// <summary>   The backward gw kernel. </summary>
         [NonSerialized]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public ComputeKernel BackwardgWKernel;
 
-        /// <summary>   The backwardg x coordinate kernel. </summary>
+        /// <summary>   The backward gx coordinate kernel. </summary>
         [NonSerialized]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public ComputeKernel BackwardgXKernel;
@@ -51,17 +51,17 @@ namespace KelpNet.Common.Functions
         public string ForwardKernelName { get; }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <summary>   Gets the name of the backwardg w kernel. </summary>
+        /// <summary>   Gets the name of the backward gw kernel. </summary>
         ///
-        /// <value> The name of the backwardg w kernel. </value>
+        /// <value> The name of the backward gw kernel. </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public string BackwardgWKernelName { get; }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <summary>   Gets the name of the backwardg x coordinate kernel. </summary>
+        /// <summary>   Gets the name of the backward gx coordinate kernel. </summary>
         ///
-        /// <value> The name of the backwardg x coordinate kernel. </value>
+        /// <value> The name of the backward gx coordinate kernel. </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public string BackwardgXKernelName { get; }

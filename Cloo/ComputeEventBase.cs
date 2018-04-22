@@ -35,6 +35,7 @@ namespace Cloo
     using System.Diagnostics;
     using System.Threading;
     using Cloo.Bindings;
+    using ReflectSoftware.Insight;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   Represents the parent type to any Cloo event types. </summary>
@@ -249,7 +250,7 @@ namespace Cloo
         {
             if (Handle.IsValid)
             {
-                Trace.WriteLine("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+                RILogManager.Default?.SendTrace("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
                 CL12.ReleaseEvent(Handle);
                 Handle.Invalidate();
             }
@@ -272,9 +273,8 @@ namespace Cloo
 
         protected virtual void OnCompleted(object sender, ComputeCommandStatusArgs evArgs)
         {
-            Trace.WriteLine("Complete " + Type + " operation of " + this + ".", "Information");
-            if (completed != null)
-                completed(sender, evArgs);
+            RILogManager.Default?.SendTrace("Complete " + Type + " operation of " + this + ".", "Information");
+            completed?.Invoke(sender, evArgs);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -286,9 +286,8 @@ namespace Cloo
 
         protected virtual void OnAborted(object sender, ComputeCommandStatusArgs evArgs)
         {
-            Trace.WriteLine("Abort " + Type + " operation of " + this + ".", "Information");
-            if (aborted != null)
-                aborted(sender, evArgs);
+            RILogManager.Default?.SendTrace("Abort " + Type + " operation of " + this + ".", "Information");
+            aborted?.Invoke(sender, evArgs);
         }
 
         #endregion

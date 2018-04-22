@@ -37,6 +37,7 @@ namespace Cloo
     using System.Runtime.InteropServices;
     using System.Threading;
     using Cloo.Bindings;
+    using ReflectSoftware.Insight;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   Represents an OpenCL kernel. </summary>
@@ -136,7 +137,7 @@ namespace Cloo
             functionName = GetStringInfo<CLKernelHandle, ComputeKernelInfo>(Handle, ComputeKernelInfo.FunctionName, CL12.GetKernelInfo);
             this.program = program;
 
-            Trace.WriteLine("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,7 +160,7 @@ namespace Cloo
             this.functionName = functionName;
             this.program = program;
 
-            Trace.WriteLine("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
         }
 
         #endregion
@@ -404,7 +405,7 @@ namespace Cloo
         {
             if (Handle.IsValid)
             {
-                Trace.WriteLine("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+                RILogManager.Default?.SendTrace("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
                 CL12.ReleaseKernel(Handle);
                 Handle.Invalidate();
             }

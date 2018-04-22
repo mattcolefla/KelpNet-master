@@ -54,7 +54,7 @@ namespace KelpNetTester.Tests
                 new Linear(N_UNITS, nVocab, name: "l4 Linear")
             );
 
-            //与えられたthresholdで頭打ちではなく、全パラメータのL2Normからレートを取り補正を行う
+            // Do not cease at the given threshold, correct the rate by taking the rate from L2Norm of all parameters
             GradientClipping gradientClipping = new GradientClipping(threshold: GRAD_CLIP);
             SGD sgd = new SGD(learningRate: 1);
             model.SetOptimizer(gradientClipping, sgd);

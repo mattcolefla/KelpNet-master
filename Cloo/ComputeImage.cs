@@ -37,6 +37,7 @@ namespace Cloo
     using System.Diagnostics;
     using System.Threading;
     using Cloo.Bindings;
+    using ReflectSoftware.Insight;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   Represents an OpenCL image. </summary>
@@ -143,8 +144,7 @@ namespace Cloo
 
         protected static ICollection<ComputeImageFormat> GetSupportedFormats(ComputeContext context, ComputeMemoryFlags flags, ComputeMemoryType type)
         {
-            int formatCountRet = 0;
-            ComputeErrorCode error = CL12.GetSupportedImageFormats(context.Handle, flags, type, 0, null, out formatCountRet);
+            ComputeErrorCode error = CL12.GetSupportedImageFormats(context.Handle, flags, type, 0, null, out var formatCountRet);
             ComputeException.ThrowOnError(error);
 
             ComputeImageFormat[] formats = new ComputeImageFormat[formatCountRet];
@@ -167,7 +167,7 @@ namespace Cloo
             SlicePitch = (long)GetInfo<CLMemoryHandle, ComputeImageInfo, IntPtr>(Handle, ComputeImageInfo.SlicePitch, CL12.GetImageInfo);
             Width = (int)GetInfo<CLMemoryHandle, ComputeImageInfo, IntPtr>(Handle, ComputeImageInfo.Width, CL12.GetImageInfo);
 
-            Trace.WriteLine("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
         }
 
         #endregion

@@ -35,6 +35,7 @@ namespace Cloo
     using System.Diagnostics;
     using System.Threading;
     using Cloo.Bindings;
+    using ReflectSoftware.Insight;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   Represents an OpenCL sampler. </summary>
@@ -165,7 +166,7 @@ namespace Cloo
             this.filtering = filtering;
             this.normalizedCoords = normalizedCoords;
 
-            Trace.WriteLine("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
         }
 
         #endregion
@@ -189,7 +190,7 @@ namespace Cloo
         {
             if (Handle.IsValid)
             {
-                Trace.WriteLine("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+                RILogManager.Default?.SendTrace("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
                 CL12.ReleaseSampler(Handle);
                 Handle.Invalidate();
             }

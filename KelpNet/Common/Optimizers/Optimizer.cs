@@ -32,7 +32,7 @@ namespace KelpNet.Common.Optimizers
                 {
                     t.UpdateFunctionParameters();
 
-                    t.FunctionParameter.ClearGrad();
+                    t.FunctionParameter?.ClearGrad();
 
                     isUpdated = true;
                 }
@@ -49,7 +49,7 @@ namespace KelpNet.Common.Optimizers
         {
             foreach (var t in OptimizerParameters)
             {
-                t.FunctionParameter.ClearGrad();
+                t.FunctionParameter?.ClearGrad();
             }
 
             UpdateCount = 0;

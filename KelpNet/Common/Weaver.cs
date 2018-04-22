@@ -52,19 +52,19 @@ typedef REAL Real;
 ";
 
         /// <summary>   The context. </summary>
-        public static ComputeContext Context;
+        internal static ComputeContext Context;
         /// <summary>   The devices. </summary>
         private static ComputeDevice[] Devices;
         /// <summary>   Queue of commands. </summary>
-        public static ComputeCommandQueue CommandQueue;
+        internal static ComputeCommandQueue CommandQueue;
         /// <summary>   Zero-based index of the device. </summary>
-        public static int DeviceIndex;
+        private static int DeviceIndex;
         /// <summary>   True to enable, false to disable. </summary>
-        public static bool Enable;
+        internal static bool Enable;
         /// <summary>   The platform. </summary>
-        public static ComputePlatform Platform;
+        private static ComputePlatform Platform;
         /// <summary>   The kernel sources. </summary>
-        public static Dictionary<string, string> KernelSources = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> KernelSources = new Dictionary<string, string>();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Gets kernel source. </summary>

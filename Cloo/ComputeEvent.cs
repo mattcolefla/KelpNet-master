@@ -36,6 +36,7 @@ namespace Cloo
     using System.Runtime.InteropServices;
     using System.Threading;
     using Cloo.Bindings;
+    using ReflectSoftware.Insight;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   Represents an OpenCL event. </summary>
@@ -98,7 +99,7 @@ namespace Cloo
             if (ComputeTools.ParseVersionString(CommandQueue.Device.Platform.Version, 1) > new Version(1, 0))
                 HookNotifier();
 
-            Trace.WriteLine("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
         }
 
         #endregion

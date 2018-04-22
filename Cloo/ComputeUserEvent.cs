@@ -34,6 +34,7 @@ namespace Cloo
     using System.Diagnostics;
     using System.Threading;
     using Cloo.Bindings;
+    using ReflectSoftware.Insight;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   Represents an user created event. </summary>
@@ -68,7 +69,7 @@ namespace Cloo
             Context = context;
             HookNotifier();
 
-            Trace.WriteLine("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
         }
 
         #endregion

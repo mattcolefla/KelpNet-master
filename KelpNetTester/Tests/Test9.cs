@@ -11,20 +11,22 @@ using VocabularyMaker;
 
 namespace KelpNetTester.Tests
 {
-    //SimpleなRNNによるRNNLM
-    //『Chainerによる実践深層学習』より（ISBN 978-4-274-21934-4）
+    using System.Diagnostics.CodeAnalysis;
+
+    //RNNLM with Simple RNN
+    //From 'practical deep learning by Chainer'（ISBN 978-4-274-21934-4）
+    [SuppressMessage("ReSharper", "LocalizableElement")]
     class Test9
     {
         const int TRAINING_EPOCHS = 5;
         const int N_UNITS = 100;
-
         const string DOWNLOAD_URL = "https://raw.githubusercontent.com/wojzaremba/lstm/master/data/";
         const string TRAIN_FILE = "ptb.train.txt";
         const string TEST_FILE = "ptb.test.txt";
 
         public static void Run()
         {
-            Console.WriteLine("Build Vocabulary.");
+            Console.WriteLine("Building Vocabulary.");
 
             Vocabulary vocabulary = new Vocabulary();
             string trainPath = InternetFileDownloader.Download(DOWNLOAD_URL + TRAIN_FILE, TRAIN_FILE);
@@ -43,7 +45,7 @@ namespace KelpNetTester.Tests
                 new Linear(N_UNITS, N_UNITS, name: "l2 Linear"),
                 new Tanh("l2 Tanh"),
                 new Linear(N_UNITS, nVocab, name: "l3 Linear"),
-                new Softmax("l3 Sonftmax")
+                new Softmax("l3 Softmax")
             );
 
             model.SetOptimizer(new Adam());
@@ -57,7 +59,6 @@ namespace KelpNetTester.Tests
                 for (int pos = 0; pos < trainData.Length; pos++)
                 {
                     NdArray h = new NdArray(new Real[N_UNITS]);
-
                     int id = trainData[pos];
                     s.Add(id);
 

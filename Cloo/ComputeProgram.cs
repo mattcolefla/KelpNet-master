@@ -38,20 +38,21 @@ namespace Cloo
     using System.Runtime.InteropServices;
     using System.Threading;
     using Cloo.Bindings;
+    using Nerdle.Ensure;
+    using ReflectSoftware.Insight;
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Represents an OpenCL program. </summary>
-    ///
-    /// <remarks>
-    /// An OpenCL program consists of a set of kernels. Programs may also contain auxiliary functions
-    /// called by the kernel functions and constant data.
-    /// </remarks>
-    ///
-    /// <seealso cref="T:Cloo.ComputeResource"/>
-    /// <seealso cref="ComputeKernel"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>   Represents an OpenCL program. </summary>
+    ///  <remarks>
+    ///  An OpenCL program consists of a set of kernels. Programs may also contain auxiliary functions
+    ///  called by the kernel functions and constant data.
+    ///  </remarks>
+    ///  <seealso cref="T:Cloo.ComputeResource" />
+    ///  <seealso cref="T:Cloo.ComputeKernel" />
 
-    public class ComputeProgram : ComputeResource
+    public sealed class ComputeProgram : ComputeResource
     {
         #region Fields
 
@@ -113,15 +114,7 @@ namespace Cloo
         /// </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ReadOnlyCollection<byte[]> Binaries 
-        { 
-            get 
-            {
-                if (binaries == null)
-                    binaries = GetBinaries();
-                return binaries;
-            }
-        }
+        public ReadOnlyCollection<byte[]> Binaries => binaries ?? (binaries = GetBinaries());
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
@@ -135,7 +128,7 @@ namespace Cloo
         /// </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public string BuildOptions { get { return buildOptions; } }
+        public string BuildOptions => buildOptions;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Gets the <see cref="ComputeContext"/> of the <see cref="ComputeProgram"/>. </summary>
@@ -143,7 +136,7 @@ namespace Cloo
         /// <value> The <see cref="ComputeContext"/> of the <see cref="ComputeProgram"/>. </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ComputeContext Context { get { return context; } }
+        public ComputeContext Context => context;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
@@ -161,7 +154,7 @@ namespace Cloo
         /// </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ReadOnlyCollection<ComputeDevice> Devices { get { return devices; } }
+        public ReadOnlyCollection<ComputeDevice> Devices => devices;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
@@ -177,7 +170,7 @@ namespace Cloo
         /// </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ReadOnlyCollection<string> Source { get { return source; } }
+        public ReadOnlyCollection<string> Source => source;
 
         #endregion
 
@@ -197,8 +190,8 @@ namespace Cloo
 
         public ComputeProgram(ComputeContext context, string source)
         {
-            ComputeErrorCode error = ComputeErrorCode.Success;
-            Handle = CL12.CreateProgramWithSource(context.Handle, 1, new string[] { source }, null, out error);
+            Ensure.Argument(context).NotNull("context is null");
+            Handle = CL12.CreateProgramWithSource(context.Handle, 1, new string[] { source }, null, out var error);
             ComputeException.ThrowOnError(error);
 
             SetID(Handle.Value);
@@ -207,7 +200,7 @@ namespace Cloo
             devices = context.Devices;
             this.source = new ReadOnlyCollection<string>(new string[] { source });
 
-            Trace.WriteLine("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,20 +219,16 @@ namespace Cloo
 
         public ComputeProgram(ComputeContext context, string[] source)
         {
-            ComputeErrorCode error = ComputeErrorCode.Success;
-            Handle = CL12.CreateProgramWithSource(
-                context.Handle,
-                source.Length,
-                source,
-                null,
-                out error);
+            Ensure.Argument(context).NotNull("context is null");
+
+            Handle = CL12.CreateProgramWithSource(context.Handle, source.Length, source, null, out var error);
             ComputeException.ThrowOnError(error);
 
             this.context = context;
             devices = context.Devices;
             this.source = new ReadOnlyCollection<string>(source);
 
-            Trace.WriteLine("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -259,15 +248,14 @@ namespace Cloo
         public ComputeProgram(ComputeContext context, IList<byte[]> binaries, IList<ComputeDevice> devices)
         {
             int count;
+            Ensure.Argument(context).NotNull("context is null");
 
             CLDeviceHandle[] deviceHandles = (devices != null) ?
-                ComputeTools.ExtractHandles(devices, out count) :
-                ComputeTools.ExtractHandles(context.Devices, out count);
+                ComputeTools.ExtractHandles(devices, out count) : ComputeTools.ExtractHandles(context.Devices, out count);
 
             IntPtr[] binariesPtrs = new IntPtr[count];
             IntPtr[] binariesLengths = new IntPtr[count];
             int[] binariesStats = new int[count];
-            ComputeErrorCode error = ComputeErrorCode.Success;
             GCHandle[] binariesGCHandles = new GCHandle[count];
 
             try
@@ -279,14 +267,8 @@ namespace Cloo
                     binariesLengths[i] = new IntPtr(binaries[i].Length);
                 }
 
-                Handle = CL12.CreateProgramWithBinary(
-                    context.Handle,
-                    count,
-                    deviceHandles,
-                    binariesLengths,
-                    binariesPtrs,
-                    binariesStats,
-                    out error);
+                Handle = CL12.CreateProgramWithBinary(context.Handle, count, deviceHandles, binariesLengths, binariesPtrs,
+                    binariesStats, out var error);
                 ComputeException.ThrowOnError(error);
             }
             finally
@@ -295,13 +277,11 @@ namespace Cloo
                     binariesGCHandles[i].Free();
             }
 
-
             this.binaries = new ReadOnlyCollection<byte[]>(binaries);
             this.context = context;
-            this.devices = new ReadOnlyCollection<ComputeDevice>(
-                (devices != null) ? devices : context.Devices);
+            this.devices = new ReadOnlyCollection<ComputeDevice>((devices != null) ? devices : context.Devices);
 
-            Trace.WriteLine("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
         }
 
         #endregion
@@ -342,7 +322,7 @@ namespace Cloo
         {
             int handleCount;
             CLDeviceHandle[] deviceHandles = ComputeTools.ExtractHandles(devices, out handleCount);
-            buildOptions = (options != null) ? options : "";
+            buildOptions = options ?? "";
             buildNotify = notify;
 
             ComputeErrorCode error = CL12.BuildProgram(Handle, handleCount, deviceHandles, options, buildNotify, notifyDataPtr);
@@ -461,7 +441,7 @@ namespace Cloo
         {
             if (Handle.IsValid)
             {
-                Trace.WriteLine("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+                RILogManager.Default?.SendTrace("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
                 CL12.ReleaseProgram(Handle);
                 Handle.Invalidate();
             }

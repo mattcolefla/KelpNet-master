@@ -90,7 +90,7 @@ namespace KelpNet.Common.Functions
 
             foreach (Optimizer optimizer in optimizers)
             {
-                optimizer.AddFunctionParameters(Parameters);
+                optimizer?.AddFunctionParameters(Parameters);
             }
         }
 

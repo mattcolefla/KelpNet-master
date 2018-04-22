@@ -5,6 +5,7 @@ using KelpNet.Common.Functions.Container;
 
 namespace KelpNet.Common.Tools
 {
+    using Nerdle.Ensure;
     using Optimizers;
 
     /// <summary>   A model i/o. </summary>
@@ -19,6 +20,9 @@ namespace KelpNet.Common.Tools
 
         public static void Save(FunctionStack functionStack, string fileName)
         {
+            Ensure.Argument(fileName).NotNullOrWhiteSpace("fileName is null");
+            Ensure.Argument(functionStack).NotNull("functionStack is null");
+
             NetDataContractSerializer bf = new NetDataContractSerializer();
 
             using (Stream stream = File.OpenWrite(fileName))
@@ -37,6 +41,7 @@ namespace KelpNet.Common.Tools
 
         public static FunctionStack Load(string fileName)
         {
+            Ensure.Argument(fileName).NotNullOrWhiteSpace("fileName is null");
             NetDataContractSerializer bf = new NetDataContractSerializer();
             FunctionStack result;
 
@@ -45,18 +50,24 @@ namespace KelpNet.Common.Tools
                 result = (FunctionStack)bf.Deserialize(stream);
             }
 
-            foreach (Function function in result.Functions)
+            if (result?.Functions != null)
             {
-                function.ResetState();
-
-                foreach (var t in function.Optimizers)
+                foreach (Function function in result?.Functions)
                 {
-                    t.ResetParams();
-                }
+                    function.ResetState();
 
-                if (function is IParallelizable)
-                {
-                    ((IParallelizable)function).CreateKernel();
+                    if (function.Optimizers != null)
+                    {
+                        foreach (var t in function.Optimizers)
+                        {
+                            t.ResetParams();
+                        }
+                    }
+
+                    if (function is IParallelizable parallelizable)
+                    {
+                        parallelizable.CreateKernel();
+                    }
                 }
             }
 

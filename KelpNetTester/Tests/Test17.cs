@@ -17,7 +17,7 @@ using TestDataManager;
 
 namespace KelpNetTester.Tests
 {
-    //ResNetを読み込んで実行する
+    // Load ResNet and execute
     class Test17
     {
         private const string DOWNLOAD_URL_MEAN = "https://onedrive.live.com/download?cid=4006CBB8476FF777&resid=4006CBB8476FF777%2117894&authkey=%21AAFW2%2DFVoxeVRck";
@@ -44,7 +44,7 @@ namespace KelpNetTester.Tests
 
         public static void Run(ResnetModel modelType)
         {
-            OpenFileDialog ofd = new OpenFileDialog { Filter = "画像ファイル(*.jpg;*.png;*.gif;*.bmp)|*.jpg;*.png;*.gif;*.bmp|すべてのファイル(*.*)|*.*" };
+            OpenFileDialog ofd = new OpenFileDialog { Filter = "Image files(*.jpg;*.png;*.gif;*.bmp)|*.jpg;*.png;*.gif;*.bmp|All files(*.*)|*.*" };
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -59,7 +59,7 @@ namespace KelpNetTester.Tests
                 FunctionDictionary nn = CaffemodelDataLoader.LoadNetWork(modelFilePath);
                 string[] classList = File.ReadAllLines(CLASS_LIST_PATH);
 
-                //GPUを初期化
+                // Initialize the GPU
                 foreach (FunctionStack resNetFunctionBlock in nn.FunctionBlocks)
                 {
                     SwitchGPU(resNetFunctionBlock);
@@ -69,7 +69,7 @@ namespace KelpNetTester.Tests
 
                 do
                 {
-                    //ネットワークへ入力する前に解像度を 224px x 224px x 3ch にしておく
+                    // Set the resolution to 224px x 224px x 3ch before entering the network
                     Bitmap baseImage = new Bitmap(ofd.FileName);
                     Bitmap resultImage = new Bitmap(224, 224, PixelFormat.Format24bppRgb);
                     Graphics g = Graphics.FromImage(resultImage);
@@ -108,14 +108,14 @@ namespace KelpNetTester.Tests
                 if (function is SplitFunction)
                 {
                     SplitFunction splitFunction = (SplitFunction)function;
-                    for (int i = 0; i < splitFunction.SplitedFunctions.Length; i++)
+                    foreach (var t in splitFunction.SplitedFunctions)
                     {
-                        SwitchGPU(splitFunction.SplitedFunctions[i]);
+                        SwitchGPU(t);
                     }
                 }
             }
 
-            //ブロック単位で層の圧縮を実行
+            // Compact layer on block basis
             functionStack.Compress();
         }
     }

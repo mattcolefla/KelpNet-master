@@ -35,6 +35,7 @@ namespace Cloo.Bindings
     using System.Diagnostics;
     using System.Runtime.InteropServices;
     using System.Security;
+    using ReflectSoftware.Insight;
 
     /// <summary>
     /// Contains bindings to the OpenCL 1.1 functions.
@@ -160,7 +161,7 @@ namespace Cloo.Bindings
             [MarshalAs(UnmanagedType.Bool)] bool enable,
             out ComputeCommandQueueFlags old_properties)
         {
-            Trace.WriteLine("WARNING! clSetCommandQueueProperty has been deprecated in OpenCL 1.1.");
+            RILogManager.Default?.SendTrace("WARNING! clSetCommandQueueProperty has been deprecated in OpenCL 1.1.");
             return CL10.SetCommandQueueProperty(command_queue, properties, enable, out old_properties);
         }
 

@@ -12,7 +12,7 @@ namespace KelpNetTester
         static void Main(string[] args)
         {
             //Comment out here if you want to run all on .Net Framework
-            Weaver.Initialize(ComputeDeviceTypes.Cpu);
+            //Weaver.Initialize(ComputeDeviceTypes.Cpu);
             //Weaver.Initialize(ComputeDeviceTypes.Cpu, 1); //Subscript required if there are multiple devices
 
             //Learning XOR with MLP
@@ -25,7 +25,7 @@ namespace KelpNetTester
             //Test3.Run();
 
             //Learning of MNIST (Handwritten Characters) by MLP
-            //Test4.Run();
+            Test4.Run();
 
             //Reproduction of Excel CNN
             //Test5.Run();
@@ -76,7 +76,7 @@ namespace KelpNetTester
             //Test19.Run();
 
             // 1000 layer neural network
-            Test20.Run();
+            //Test20.Run();
 
             //benchmark
             //SingleBenchmark.Run();

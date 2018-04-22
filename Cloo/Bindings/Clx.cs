@@ -50,21 +50,24 @@ namespace Cloo.Bindings
         /// <summary> </summary>
         public ComputeErrorCode CreateSubDevicesEXT(IntPtr in_device, cl_device_partition_property_ext[] properties, Int32 num_entries, IntPtr[] out_devices, out Int32 num_devices)
         {
-            if (clCreateSubDevicesEXT == null) throw new EntryPointNotFoundException();
+            if (clCreateSubDevicesEXT == null) 
+                throw new EntryPointNotFoundException();
             return clCreateSubDevicesEXT(in_device, properties, num_entries, out_devices, out num_devices);
         }
 
         /// <summary> </summary>
         public ComputeErrorCode EnqueueMigrateMemObjectEXT(IntPtr command_queue, Int32 num_mem_objects, IntPtr[] mem_objects, cl_mem_migration_flags_ext flags, Int32 num_events_in_wait_list, IntPtr[] event_wait_list, IntPtr[] new_event)
         {
-            if (clEnqueueMigrateMemObjectEXT == null) throw new EntryPointNotFoundException();
+            if (clEnqueueMigrateMemObjectEXT == null) 
+                throw new EntryPointNotFoundException();
             return clEnqueueMigrateMemObjectEXT(command_queue, num_mem_objects, mem_objects, flags, num_events_in_wait_list, event_wait_list, new_event);
         }
 
         /// <summary> </summary>
         public ComputeErrorCode GetGLContextInfoKHR(IntPtr[] properties, ComputeGLContextInfo param_name, IntPtr param_value_size, IntPtr param_value, out IntPtr param_value_size_ret)
         {
-            if (clGetGLContextInfoKHR == null) throw new EntryPointNotFoundException();
+            if (clGetGLContextInfoKHR == null)
+                throw new EntryPointNotFoundException();
             return clGetGLContextInfoKHR(properties, param_name, param_value_size, param_value, out param_value_size_ret);
         }
 
@@ -79,14 +82,16 @@ namespace Cloo.Bindings
         /// <summary> </summary>
         public ComputeErrorCode ReleaseDeviceEXT(IntPtr device)
         {
-            if (clReleaseDeviceEXT == null) throw new EntryPointNotFoundException();
+            if (clReleaseDeviceEXT == null)
+                throw new EntryPointNotFoundException();
             return clReleaseDeviceEXT(device);
         }
 
         /// <summary> </summary>
         public ComputeErrorCode RetainDeviceEXT(IntPtr device)
         {
-            if (clRetainDeviceEXT == null) throw new EntryPointNotFoundException();
+            if (clRetainDeviceEXT == null)
+                throw new EntryPointNotFoundException();
             return clRetainDeviceEXT(device);
         }
 

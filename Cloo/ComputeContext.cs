@@ -37,6 +37,7 @@ namespace Cloo
     using System.Diagnostics;
     using System.Threading;
     using Cloo.Bindings;
+    using ReflectSoftware.Insight;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   Represents an OpenCL context. </summary>
@@ -213,7 +214,7 @@ namespace Cloo
             platform = ComputePlatform.GetByHandle(platformProperty.Value);
             this.devices = GetDevices();
 
-            Trace.WriteLine("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -258,7 +259,7 @@ namespace Cloo
             platform = ComputePlatform.GetByHandle(platformProperty.Value);
             devices = GetDevices();
 
-            Trace.WriteLine("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
         }
 
         #endregion
@@ -288,7 +289,7 @@ namespace Cloo
             // free native resources
             if (Handle.IsValid)
             {
-                Trace.WriteLine("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+                RILogManager.Default?.SendTrace("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
                 CL12.ReleaseContext(Handle);
                 Handle.Invalidate();
             }

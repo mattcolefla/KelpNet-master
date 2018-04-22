@@ -33,6 +33,7 @@ namespace Cloo
 {
     using System;
     using System.Diagnostics;
+    using ReflectSoftware.Insight;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   Represents an OpenCL resource. </summary>
@@ -89,7 +90,7 @@ namespace Cloo
         /// <summary>   Releases the associated OpenCL object. </summary>
         ~ComputeResource()
         {
-            Trace.WriteLine(ToString() + " leaked!", "Warning");
+            RILogManager.Default?.SendTrace(ToString() + " leaked!", "Warning");
             Dispose(false);
         }
 

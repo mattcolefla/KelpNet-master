@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace KelpNet.Common.Tools
 {
+    using Nerdle.Ensure;
+
     /// <summary>   A nd array converter. </summary>
     public class NdArrayConverter
     {
@@ -15,7 +17,7 @@ namespace KelpNet.Common.Tools
         /// </summary>
         ///
         /// <param name="input">        The input. </param>
-        /// <param name="isNorm">       (Optional) True if this object is normalise. </param>
+        /// <param name="isNorm">       (Optional) True if this object is normalize. </param>
         /// <param name="isToBgrArray"> (Optional) True if this object is to BGR array. </param>
         /// <param name="bias">         (Optional) The bias. </param>
         ///
@@ -24,6 +26,8 @@ namespace KelpNet.Common.Tools
 
         public static NdArray Image2NdArray(Bitmap input, bool isNorm = true, bool isToBgrArray = false, Real[] bias = null)
         {
+            Ensure.Argument(input).NotNull("input is null");
+
             int bitcount = Image.GetPixelFormatSize(input.PixelFormat) / 8;
             if (bias == null || bitcount != bias.Length)
             {
@@ -79,22 +83,16 @@ namespace KelpNet.Common.Tools
 
         public static Bitmap NdArray2Image(NdArray input, bool isNorm = true, bool isFromBgrArray = false)
         {
-            if (input.Shape.Length == 2)
-            {
-                return CreateMonoImage(input.Data, input.Shape[0], input.Shape[1], isNorm);
-            }
+            Ensure.Argument(input).NotNull("input is null");
 
-            if (input.Shape.Length == 3)
+            switch (input.Shape.Length)
             {
-                if (input.Shape[0] == 1)
-                {
+                case 2:
+                    return CreateMonoImage(input.Data, input.Shape[0], input.Shape[1], isNorm);
+                case 3 when input.Shape[0] == 1:
                     return CreateMonoImage(input.Data, input.Shape[1], input.Shape[2], isNorm);
-                }
-
-                if (input.Shape[0] == 3)
-                {
+                case 3 when input.Shape[0] == 3:
                     return CreateColorImage(input.Data, input.Shape[1], input.Shape[2], isNorm, isFromBgrArray);
-                }
             }
 
             return null;
@@ -113,6 +111,8 @@ namespace KelpNet.Common.Tools
 
         static Bitmap CreateMonoImage(Real[] data, int width, int height, bool isNorm)
         {
+            Ensure.Argument(data).NotNull("data is null");
+
             Bitmap result = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
             Real norm = isNorm ? 255 : 1;
 
@@ -155,6 +155,8 @@ namespace KelpNet.Common.Tools
 
         static Bitmap CreateColorImage(Real[] data, int width, int height, bool isNorm, bool isFromBgrArray)
         {
+            Ensure.Argument(data).NotNull("data is null");
+
             Bitmap result = new Bitmap(width, height, PixelFormat.Format24bppRgb);
             Real norm = isNorm ? 255 : 1;
             int bitcount = Image.GetPixelFormatSize(result.PixelFormat) / 8;
@@ -190,10 +192,7 @@ namespace KelpNet.Common.Tools
 
             Marshal.Copy(resultData, 0, bmpdat.Scan0, resultData.Length);
             result.UnlockBits(bmpdat);
-
             return result;
         }
-
     }
-
 }

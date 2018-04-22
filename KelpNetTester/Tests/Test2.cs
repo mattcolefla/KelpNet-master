@@ -9,12 +9,15 @@ using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
+    using System.Diagnostics.CodeAnalysis;
+
     //Learning of XOR by MLP 【Regression version】 ※ The precision is bad and it is not possible to obtain the desired result unless it is executed several times
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+    [SuppressMessage("ReSharper", "LocalizableElement")]
     class Test2
     {
         public static void Run()
         {
-            //Number of exercises
             const int learningCount = 10000;
 
             Real[][] trainData =
@@ -36,12 +39,9 @@ namespace KelpNetTester.Tests
             FunctionStack nn = new FunctionStack(
                 new Linear(2, 2, name: "l1 Linear"),
                 new ReLU(name: "l1 ReLU"),
-                new Linear(2, 1, name: "l2 Linear")
-            );
+                new Linear(2, 1, name: "l2 Linear"));
 
-            //nn.SetOptimizer(new Adam());
             nn.SetOptimizer(new AdaGrad());
-
 
             Console.WriteLine("Training...");
             for (int i = 0; i < learningCount; i++)
@@ -60,7 +60,7 @@ namespace KelpNetTester.Tests
             foreach (Real[] val in trainData)
             {
                 NdArray result = nn.Predict(val)[0];
-                Console.WriteLine(val[0] + " xor " + val[1] + " = " + (result.Data[0] > 0.5 ? 1 : 0) + " " + result);
+                Console.WriteLine($"{val[0]} xor {val[1]} = {(result.Data[0] > 0.5 ? 1 : 0)} {result}");
             }
         }
     }
