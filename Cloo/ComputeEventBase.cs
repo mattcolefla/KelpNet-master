@@ -80,12 +80,9 @@ namespace Cloo
             {
                 aborted += value;
                 if (status != null && status.Status != ComputeCommandExecutionStatus.Complete)
-                    value.Invoke(this, status);
+                    value?.Invoke(this, status);
             }
-            remove
-            {
-                aborted -= value;
-            }
+            remove => aborted -= value;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,12 +100,9 @@ namespace Cloo
             {
                 completed += value;
                 if (status != null && status.Status == ComputeCommandExecutionStatus.Complete)
-                    value.Invoke(this, status);
+                    value?.Invoke(this, status);
             }
-            remove
-            {
-                completed -= value;
-            }
+            remove => completed -= value;
         }
 
         #endregion
@@ -151,10 +145,7 @@ namespace Cloo
         /// </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public long FinishTime
-        {
-            get { return GetInfo<CLEventHandle, ComputeCommandProfilingInfo, long>(Handle, ComputeCommandProfilingInfo.Ended, CL12.GetEventProfilingInfo); }
-        }
+        public long FinishTime => GetInfo<CLEventHandle, ComputeCommandProfilingInfo, long>(Handle, ComputeCommandProfilingInfo.Ended, CL12.GetEventProfilingInfo);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
@@ -168,10 +159,7 @@ namespace Cloo
         /// </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public long EnqueueTime
-        {
-            get { return (long)GetInfo<CLEventHandle, ComputeCommandProfilingInfo, long>(Handle, ComputeCommandProfilingInfo.Queued, CL12.GetEventProfilingInfo); }
-        }
+        public long EnqueueTime => (long)GetInfo<CLEventHandle, ComputeCommandProfilingInfo, long>(Handle, ComputeCommandProfilingInfo.Queued, CL12.GetEventProfilingInfo);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Gets the execution status of the associated command. </summary>
@@ -182,10 +170,7 @@ namespace Cloo
         /// </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ComputeCommandExecutionStatus Status
-        {
-            get { return (ComputeCommandExecutionStatus)GetInfo<CLEventHandle, ComputeEventInfo, int>(Handle, ComputeEventInfo.ExecutionStatus, CL12.GetEventInfo); }
-        }
+        public ComputeCommandExecutionStatus Status => (ComputeCommandExecutionStatus)GetInfo<CLEventHandle, ComputeEventInfo, int>(Handle, ComputeEventInfo.ExecutionStatus, CL12.GetEventInfo);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
@@ -199,10 +184,7 @@ namespace Cloo
         /// </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public long StartTime
-        {
-            get { return (long)GetInfo<CLEventHandle, ComputeCommandProfilingInfo, ulong>(Handle, ComputeCommandProfilingInfo.Started, CL12.GetEventProfilingInfo); }
-        }
+        public long StartTime => (long)GetInfo<CLEventHandle, ComputeCommandProfilingInfo, ulong>(Handle, ComputeCommandProfilingInfo.Started, CL12.GetEventProfilingInfo);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
@@ -216,10 +198,7 @@ namespace Cloo
         /// </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public long SubmitTime
-        {
-            get { return (long)GetInfo<CLEventHandle, ComputeCommandProfilingInfo, ulong>(Handle, ComputeCommandProfilingInfo.Submitted, CL12.GetEventProfilingInfo); }
-        }
+        public long SubmitTime => (long)GetInfo<CLEventHandle, ComputeCommandProfilingInfo, ulong>(Handle, ComputeCommandProfilingInfo.Submitted, CL12.GetEventProfilingInfo);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Gets the <see cref="ComputeCommandType"/> associated with the event. </summary>
@@ -259,7 +238,7 @@ namespace Cloo
         /// <summary>   Hook notifier. </summary>
         protected void HookNotifier()
         {
-            statusNotify = new ComputeEventCallback(StatusNotify);
+            statusNotify = StatusNotify;
             ComputeErrorCode error = CL11.SetEventCallback(Handle, (int)ComputeCommandExecutionStatus.Complete, statusNotify, IntPtr.Zero);
             ComputeException.ThrowOnError(error);
         }
@@ -307,8 +286,11 @@ namespace Cloo
             status = new ComputeCommandStatusArgs(this, (ComputeCommandExecutionStatus)cmdExecStatusOrErr);
             switch (cmdExecStatusOrErr)
             {
-                case (int)ComputeCommandExecutionStatus.Complete: OnCompleted(this, status); break;
-                default: OnAborted(this, status); break;
+                case (int)ComputeCommandExecutionStatus.Complete: 
+                    OnCompleted(this, status); 
+                    break;
+                default: OnAborted(this, status); 
+                    break;
             }
         }
 
@@ -321,7 +303,7 @@ namespace Cloo
     /// <seealso cref="T:System.EventArgs"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class ComputeCommandStatusArgs : EventArgs
+    public sealed class ComputeCommandStatusArgs : EventArgs
     {
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Gets the event associated with the command that had its status changed. </summary>

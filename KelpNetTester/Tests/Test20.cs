@@ -33,7 +33,7 @@ namespace KelpNetTester.Tests
         public static void Run()
         {
             int neuronCount = 28;
-            Console.WriteLine("MNIST Data Loading...");
+            RILogManager.Default?.SendDebug("MNIST Data Loading...");
             MnistData mnistData = new MnistData(neuronCount);
             RILogManager.Default.SendInformation("Training Start, creating function stack.");
 
@@ -74,7 +74,7 @@ namespace KelpNetTester.Tests
 
             for (int epoch = 0; epoch < 3; epoch++)
             {
-                Console.WriteLine("epoch " + (epoch + 1));
+                RILogManager.Default?.SendDebug("epoch " + (epoch + 1));
                 RILogManager.Default.SendInformation("epoch " + (epoch + 1));
                 RILogManager.Default.ViewerSendWatch("epoch", (epoch + 1));
                 Application.DoEvents();
@@ -108,10 +108,10 @@ namespace KelpNetTester.Tests
 
                     if (i % 20 == 0)
                     {
-                        Console.WriteLine("\nbatch count " + i + "/" + TRAIN_DATA_COUNT + ", epoch " + epoch+1);
-                        Console.WriteLine("Total/Mean loss " + stats.Mean);
-                        Console.WriteLine("local loss " + sumLoss);
-                        Console.WriteLine("");
+                        RILogManager.Default?.SendDebug("\nbatch count " + i + "/" + TRAIN_DATA_COUNT + ", epoch " + epoch+1);
+                        RILogManager.Default?.SendDebug("Total/Mean loss " + stats.Mean);
+                        RILogManager.Default?.SendDebug("local loss " + sumLoss);
+                        RILogManager.Default?.SendDebug("");
 
                         RILogManager.Default.ViewerSendWatch("Batch Count ", i);
                         RILogManager.Default.ViewerSendWatch("Total/Mean loss", stats.Mean);
@@ -122,7 +122,7 @@ namespace KelpNetTester.Tests
                         Application.DoEvents();
 
 
-                        Console.WriteLine("Testing...");
+                        RILogManager.Default?.SendDebug("Testing...");
                         RILogManager.Default.SendInformation("Testing");
 
                         TestDataSet datasetY = mnistData.GetRandomYSet(TEST_DATA_COUNT, 28);
@@ -130,7 +130,7 @@ namespace KelpNetTester.Tests
                         if (accuracy > highestAccuracy)
                             highestAccuracy = accuracy;
 
-                        Console.WriteLine("Accuracy: " + accuracy);
+                        RILogManager.Default?.SendDebug("Accuracy: " + accuracy);
 
                         RILogManager.Default.ViewerSendWatch("Best Accuracy: ", highestAccuracy);
                         RILogManager.Default.ViewerSendWatch("Best Total Loss ", bestTotalLoss);
@@ -149,9 +149,9 @@ namespace KelpNetTester.Tests
             }
 
             ModelIO.Save(nn, Application.StartupPath + "\\test20.nn");
-            Console.WriteLine("Best Accuracy: " + highestAccuracy);
-            Console.WriteLine("Best Total Loss " + bestTotalLoss);
-            Console.WriteLine("Best Local Loss " + bestLocalLoss);
+            RILogManager.Default?.SendDebug("Best Accuracy: " + highestAccuracy);
+            RILogManager.Default?.SendDebug("Best Total Loss " + bestTotalLoss);
+            RILogManager.Default?.SendDebug("Best Local Loss " + bestLocalLoss);
             RILogManager.Default.ViewerSendWatch("Best Accuracy: ", highestAccuracy);
             RILogManager.Default.ViewerSendWatch("Best Total Loss ", bestTotalLoss);
             RILogManager.Default.ViewerSendWatch("Best Local Loss ", bestLocalLoss);

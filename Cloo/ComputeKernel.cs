@@ -150,8 +150,7 @@ namespace Cloo
 
         internal ComputeKernel(string functionName, ComputeProgram program)
         {
-            ComputeErrorCode error = ComputeErrorCode.Success;
-            Handle = CL12.CreateKernel(program.Handle, functionName, out error);
+            Handle = CL12.CreateKernel(program.Handle, functionName, out var error);
             ComputeException.ThrowOnError(error);
 
             SetID(Handle.Value);
@@ -373,10 +372,7 @@ namespace Cloo
             GCHandle gcHandle = GCHandle.Alloc(data, GCHandleType.Pinned);
             try
             {
-                SetArgument(
-                    index,
-                    new IntPtr(Marshal.SizeOf(typeof(T))),
-                    gcHandle.AddrOfPinnedObject());
+                SetArgument(index, new IntPtr(Marshal.SizeOf(typeof(T))), gcHandle.AddrOfPinnedObject());
             }
             finally
             {

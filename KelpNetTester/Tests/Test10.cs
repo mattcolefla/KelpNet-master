@@ -11,6 +11,8 @@ using VocabularyMaker;
 
 namespace KelpNetTester.Tests
 {
+    using ReflectSoftware.Insight;
+
     //ChainerのRNNサンプルを再現
     //https://github.com/pfnet/chainer/tree/master/examples/ptb
     class Test10
@@ -29,7 +31,7 @@ namespace KelpNetTester.Tests
 
         public static void Run()
         {
-            Console.WriteLine("Build Vocabulary.");
+            RILogManager.Default?.SendDebug("Build Vocabulary.");
 
             Vocabulary vocabulary = new Vocabulary();
 
@@ -43,7 +45,7 @@ namespace KelpNetTester.Tests
 
             int nVocab = vocabulary.Length;
 
-            Console.WriteLine("Network Initilizing.");
+            RILogManager.Default?.SendDebug("Network Initilizing.");
             FunctionStack model = new FunctionStack(
                 new EmbedID(nVocab, N_UNITS, name: "l1 EmbedID"),
                 new Dropout(),
@@ -65,7 +67,7 @@ namespace KelpNetTester.Tests
 
             Stack<NdArray[]> backNdArrays = new Stack<NdArray[]>();
 
-            Console.WriteLine("Train Start.");
+            RILogManager.Default?.SendDebug("Train Start.");
 
             for (int i = 0; i < jump * N_EPOCH; i++)
             {
@@ -81,14 +83,14 @@ namespace KelpNetTester.Tests
                 NdArray[] result = model.Forward(x);
                 Real sumLoss = new SoftmaxCrossEntropy().Evaluate(result, t);
                 backNdArrays.Push(result);
-                Console.WriteLine("[{0}/{1}] Loss: {2}", i + 1, jump, sumLoss);
+                RILogManager.Default?.SendDebug("[{0}/{1}] Loss: {2}", i + 1, jump, sumLoss);
 
                 //Run truncated BPTT
                 if ((i + 1) % BPROP_LEN == 0)
                 {
                     for (int j = 0; backNdArrays.Count > 0; j++)
                     {
-                        Console.WriteLine("backward" + backNdArrays.Count);
+                        RILogManager.Default?.SendDebug("backward" + backNdArrays.Count);
                         model.Backward(backNdArrays.Pop());
                     }
 
@@ -99,19 +101,19 @@ namespace KelpNetTester.Tests
                 if ((i + 1) % jump == 0)
                 {
                     epoch++;
-                    Console.WriteLine("evaluate");
-                    Console.WriteLine("validation perplexity: {0}", Evaluate(model, validData));
+                    RILogManager.Default?.SendDebug("evaluate");
+                    RILogManager.Default?.SendDebug("validation perplexity: {0}", Evaluate(model, validData));
 
                     if (epoch >= 6)
                     {
                         sgd.LearningRate /= 1.2;
-                        Console.WriteLine("learning rate =" + sgd.LearningRate);
+                        RILogManager.Default?.SendDebug("learning rate =" + sgd.LearningRate);
                     }
                 }
             }
 
-            Console.WriteLine("test start");
-            Console.WriteLine("test perplexity:" + Evaluate(model, testData));
+            RILogManager.Default?.SendDebug("test start");
+            RILogManager.Default?.SendDebug("test perplexity:" + Evaluate(model, testData));
         }
 
         static double Evaluate(FunctionStack model, int[] dataset)

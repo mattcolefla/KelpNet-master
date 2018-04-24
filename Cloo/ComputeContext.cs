@@ -200,11 +200,10 @@ namespace Cloo
         {
             int handleCount;
             CLDeviceHandle[] deviceHandles = ComputeTools.ExtractHandles(devices, out handleCount);
-            IntPtr[] propertyArray = (properties != null) ? properties.ToIntPtrArray() : null;
+            IntPtr[] propertyArray = properties?.ToIntPtrArray();
             callback = notify;
 
-            ComputeErrorCode error = ComputeErrorCode.Success;
-            Handle = CL12.CreateContext(propertyArray, handleCount, deviceHandles, notify, notifyDataPtr, out error);
+            Handle = CL12.CreateContext(propertyArray, handleCount, deviceHandles, notify, notifyDataPtr, out var error);
             ComputeException.ThrowOnError(error);
             
             SetID(Handle.Value);
@@ -245,11 +244,10 @@ namespace Cloo
 
         public ComputeContext(ComputeDeviceTypes deviceType, ComputeContextPropertyList properties, ComputeContextNotifier notify, IntPtr userDataPtr)
         {
-            IntPtr[] propertyArray = (properties != null) ? properties.ToIntPtrArray() : null;
+            IntPtr[] propertyArray = properties?.ToIntPtrArray();
             callback = notify;
 
-            ComputeErrorCode error = ComputeErrorCode.Success;
-            Handle = CL12.CreateContextFromType(propertyArray, deviceType, notify, userDataPtr, out error);
+            Handle = CL12.CreateContextFromType(propertyArray, deviceType, notify, userDataPtr, out var error);
             ComputeException.ThrowOnError(error);
 
             SetID(Handle.Value);

@@ -34,15 +34,17 @@ namespace KelpNet.Common
     {
         /// <summary>   The use double header string. </summary>
         public const string USE_DOUBLE_HEADER_STRING =
-@"
-#if __OPENCL__VERSION__ <= __CL_VERSION_1_1
-#if defined(cl_khr_fp64)
-#pragma OPENCL EXTENSION cl_khr_fp64 : enable
-#elif defined(cl_amd_fp64)
-#pragma OPENCL EXTENSION cl_amd_fp64 : enable
-#endif
-#endif
-";
+@"#pragma OPENCL EXTENSION cl_khr_fp64 : enable";
+
+//        @"
+////#if __OPENCL__VERSION__ <= __CL_VERSION_1_1
+//#if defined(cl_khr_fp64)
+//#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+//#elif defined(cl_amd_fp64)
+//#pragma OPENCL EXTENSION cl_amd_fp64 : enable
+//#endif
+////#endif
+//";
 
         /// <summary>   The real header string. </summary>
         public const string REAL_HEADER_STRING =
@@ -81,7 +83,8 @@ typedef REAL Real;
             if (!KernelSources.ContainsKey(functionName))
             {
                 byte[] binary = (byte[])Resources.ResourceManager.GetObject(functionName);
-                if (binary == null) throw new Exception("Resource file acquisition failed \n Resource name:" + functionName);
+                if (binary == null) 
+                    throw new Exception("Resource file acquisition failed \n Resource name:" + functionName);
 
                 using (StreamReader reader = new StreamReader(new MemoryStream(binary)))
                 {
@@ -129,7 +132,8 @@ typedef REAL Real;
 
         public static ComputeProgram CreateProgram(string source)
         {
-            string realType = Real.Size == sizeof(double) ? "double" : "float";
+            //string realType = Real.Size == sizeof(double) ? "double" : "float";
+            string realType = "float";
 
             //For setting precision of floating point
             source = REAL_HEADER_STRING + source;
@@ -153,5 +157,6 @@ typedef REAL Real;
 
             return program;
         }
+
     }
 }

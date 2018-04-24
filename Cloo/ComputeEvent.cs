@@ -116,8 +116,8 @@ namespace Cloo
         {
             gcHandle = handle;
 
-            Completed += new ComputeCommandStatusChanged(Cleanup);
-            Aborted += new ComputeCommandStatusChanged(Cleanup);
+            Completed += Cleanup;
+            Aborted += Cleanup;
         }
 
         #endregion
@@ -156,7 +156,7 @@ namespace Cloo
 
         private void Cleanup(object sender, ComputeCommandStatusArgs e)
         {
-            lock (CommandQueue.Events)
+            lock (CommandQueue?.Events)
             {
                 if (CommandQueue.Events.Contains(this))
                 {

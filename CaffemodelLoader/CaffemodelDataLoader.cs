@@ -16,6 +16,8 @@ using ProtoBuf;
 
 namespace CaffemodelLoader
 {
+    using ReflectSoftware.Insight;
+
     /// <summary>   A caffemodel data loader. </summary>
     public class CaffemodelDataLoader
     {
@@ -194,7 +196,7 @@ namespace CaffemodelLoader
                     return null;
             }
 
-            Console.WriteLine("Skip the layer \"{0}\", since CaffemodelLoader does not support {0} layer", layer.Type);
+            RILogManager.Default?.SendDebug("Skip the layer \"{0}\", since CaffemodelLoader does not support {0} layer", layer.Type);
 
             return null;
         }
@@ -248,7 +250,7 @@ namespace CaffemodelLoader
                     return null;
             }
 
-            Console.WriteLine("Skip the layer \"{0}\", since CaffemodelLoader does not support {0} layer", layer.Type);
+            RILogManager.Default?.SendDebug("Skip the layer \"{0}\", since CaffemodelLoader does not support {0} layer", layer.Type);
 
             return null;
         }

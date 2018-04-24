@@ -126,7 +126,7 @@ namespace KelpNet.Common
             // Absorb type mismatch here
             if (arrayType != typeof(RealType) && arrayType != typeof(Real))
             {
-                //Prepare one-dimensional length arra
+                //Prepare one-dimensional length array
                 Array array = Array.CreateInstance(arrayType, data.Length);
                 //Make it one-dimensional
                 Buffer.BlockCopy(data, 0, array, 0, Marshal.SizeOf(arrayType) * resultData.Length);

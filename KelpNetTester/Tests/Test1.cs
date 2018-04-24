@@ -11,6 +11,7 @@ using KelpNet.Optimizers;
 namespace KelpNetTester.Tests
 {
     using System.Diagnostics.CodeAnalysis;
+    using ReflectSoftware.Insight;
 
     //Learning XOR
     [SuppressMessage("ReSharper", "LocalizableElement")]
@@ -45,7 +46,7 @@ namespace KelpNetTester.Tests
 
             nn.SetOptimizer(new MomentumSGD());
 
-            Console.WriteLine("Training...");
+            RILogManager.Default?.SendDebug("Training...");
             for (int i = 0; i < learningCount; i++)
             {
                 for (int j = 0; j < trainData.Length; j++)
@@ -54,24 +55,24 @@ namespace KelpNetTester.Tests
                 }
             }
 
-            Console.WriteLine("Test Start...");
+            RILogManager.Default?.SendDebug("Test Start...");
 
             foreach (Real[] input in trainData)
             {
                 NdArray result = nn.Predict(input)?[0];
                 int resultIndex = Array.IndexOf(result?.Data, result.Data.Max());
-                Console.WriteLine($"{input[0]} xor {input[1]} = {resultIndex} {result}");
+                RILogManager.Default?.SendDebug($"{input[0]} xor {input[1]} = {resultIndex} {result}");
             }
 
             ModelIO.Save(nn, "test.nn");
 
             FunctionStack testnn = ModelIO.Load("test.nn");
-            Console.WriteLine("Test Start...");
+            RILogManager.Default?.SendDebug("Test Start...");
             foreach (Real[] input in trainData)
             {
                 NdArray result = testnn?.Predict(input)?[0];
                 int resultIndex = Array.IndexOf(result?.Data, result?.Data.Max());
-                Console.WriteLine($"{input[0]} xor {input[1]} = {resultIndex} {result}");
+                RILogManager.Default?.SendDebug($"{input[0]} xor {input[1]} = {resultIndex} {result}");
             }
         }
     }

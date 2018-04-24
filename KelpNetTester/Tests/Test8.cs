@@ -8,8 +8,10 @@ using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
-    //LSTMによるSin関数の学習（t の値から t+1 の値を予測する）
-    //参考： http://seiya-kumada.blogspot.jp/2016/07/lstm-chainer.html
+    using ReflectSoftware.Insight;
+
+    // Learning of Sin function by LSTM(predict t + 1 value from t value
+    //http://seiya-kumada.blogspot.jp/2016/07/lstm-chainer.html
     class Test8
     {
         const int STEPS_PER_CYCLE = 50;
@@ -27,18 +29,15 @@ namespace KelpNetTester.Tests
             DataMaker dataMaker = new DataMaker(STEPS_PER_CYCLE, NUMBER_OF_CYCLES);
             NdArray trainData = dataMaker.Make();
 
-            //ネットワークの構成は FunctionStack に書き連ねる
             FunctionStack model = new FunctionStack(
                 new Linear(1, 5, name: "Linear l1"),
                 new LSTM(5, 5, name: "LSTM l2"),
                 new Linear(5, 1, name: "Linear l3")
             );
 
-            //optimizerを宣言
             model.SetOptimizer(new Adam());
 
-            //訓練ループ
-            Console.WriteLine("Training...");
+            RILogManager.Default?.SendDebug("Training...");
             for (int epoch = 0; epoch < TRAINING_EPOCHS; epoch++)
             {
                 NdArray[] sequences = dataMaker.MakeMiniBatch(trainData, MINI_BATCH_SIZE, LENGTH_OF_SEQUENCE);
@@ -51,11 +50,11 @@ namespace KelpNetTester.Tests
 
                 if (epoch != 0 && epoch % DISPLAY_EPOCH == 0)
                 {
-                    Console.WriteLine("[{0}]training loss:\t{1}", epoch, loss);
+                    RILogManager.Default?.SendDebug("[{0}]training loss:\t{1}", epoch, loss);
                 }
             }
 
-            Console.WriteLine("Testing...");
+            RILogManager.Default?.SendDebug("Testing...");
             NdArray[] testSequences = dataMaker.MakeMiniBatch(trainData, MINI_BATCH_SIZE, LENGTH_OF_SEQUENCE);
 
             int sample_index = 45;
@@ -64,7 +63,7 @@ namespace KelpNetTester.Tests
 
         static Real ComputeLoss(FunctionStack model, NdArray[] sequences)
         {
-            //全体での誤差を集計
+            // Total error in the whole
             Real totalLoss = 0;
             NdArray x = new NdArray(new[] { 1 }, MINI_BATCH_SIZE);
             NdArray t = new NdArray(new[] { 1 }, MINI_BATCH_SIZE);
@@ -115,12 +114,12 @@ namespace KelpNetTester.Tests
                 output_seq.Add(future);
             }
 
-            for (int i = 0; i < output_seq.Count; i++)
+            foreach (var t in output_seq)
             {
-                Console.WriteLine(output_seq[i]);
+                RILogManager.Default?.SendDebug(t.ToString());
             }
 
-            Console.WriteLine(seq);
+            RILogManager.Default?.SendDebug(seq.ToString());
         }
 
         static Real predict_sequence(FunctionStack model, List<Real> input_seq)

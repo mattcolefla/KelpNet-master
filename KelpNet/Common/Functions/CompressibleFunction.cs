@@ -171,7 +171,7 @@ namespace KelpNet.Common.Functions
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <summary>   後からActivationを追加する用. </summary>
+        /// <summary>   For later adding Activation </summary>
         ///
         /// <param name="activation">   The activation. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -184,7 +184,7 @@ namespace KelpNet.Common.Functions
             {
                 foreach (var activationParameterer in _activationParameters)
                 {
-                    KernelString = KernelString.Replace(activationParameterer.Key, activationParameterer.Value);
+                    KernelString = KernelString?.Replace(activationParameterer.Key, activationParameterer.Value);
                 }
             }
 
@@ -210,9 +210,9 @@ namespace KelpNet.Common.Functions
                 }
 
                 ComputeProgram program = Weaver.CreateProgram(kernelSource);
-                ForwardKernel = program.CreateKernel(ForwardKernelName);
-                BackwardgWKernel = program.CreateKernel(BackwardgWKernelName);
-                BackwardgXKernel = program.CreateKernel(BackwardgXKernelName);
+                ForwardKernel = program?.CreateKernel(ForwardKernelName);
+                BackwardgWKernel = program?.CreateKernel(BackwardgWKernelName);
+                BackwardgXKernel = program?.CreateKernel(BackwardgXKernelName);
             }
         }
     }

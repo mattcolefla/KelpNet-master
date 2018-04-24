@@ -17,6 +17,8 @@ using TestDataManager;
 
 namespace KelpNetTester.Tests
 {
+    using ReflectSoftware.Insight;
+
     //CaffeモデルのVGG16を読み込んで画像分類をさせるテスト
     class Test15
     {
@@ -30,7 +32,7 @@ namespace KelpNetTester.Tests
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                Console.WriteLine("Model Loading.");
+                RILogManager.Default?.SendDebug("Model Loading.");
                 string modelFilePath = InternetFileDownloader.Download(DOWNLOAD_URL, MODEL_FILE);
                 List<Function> vgg16Net = CaffemodelDataLoader.ModelLoad(modelFilePath);
                 string[] classList = File.ReadAllLines(CLASS_LIST_PATH);
@@ -49,7 +51,7 @@ namespace KelpNetTester.Tests
                 //層を圧縮
                 nn.Compress();
 
-                Console.WriteLine("Model Loading done.");
+                RILogManager.Default?.SendDebug("Model Loading done.");
 
                 do
                 {
@@ -63,17 +65,17 @@ namespace KelpNetTester.Tests
                     Real[] bias = {-123.68, -116.779, -103.939}; //補正値のチャンネル順は入力画像に従う
                     NdArray imageArray = NdArrayConverter.Image2NdArray(resultImage, false, true, bias);
 
-                    Console.WriteLine("Start predict.");
+                    RILogManager.Default?.SendDebug("Start predict.");
                     Stopwatch sw = Stopwatch.StartNew();
                     NdArray result = nn.Predict(imageArray)[0];
                     sw.Stop();
 
-                    Console.WriteLine("Result Time : " +
+                    RILogManager.Default?.SendDebug("Result Time : " +
                                       (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") +
                                       "μｓ");
 
                     int maxIndex = Array.IndexOf(result.Data, result.Data.Max());
-                    Console.WriteLine("[" + result.Data[maxIndex] + "] : " + classList[maxIndex]);
+                    RILogManager.Default?.SendDebug("[" + result.Data[maxIndex] + "] : " + classList[maxIndex]);
                 } while (ofd.ShowDialog() == DialogResult.OK);
             }
         }

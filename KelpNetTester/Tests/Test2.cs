@@ -10,6 +10,7 @@ using KelpNet.Optimizers;
 namespace KelpNetTester.Tests
 {
     using System.Diagnostics.CodeAnalysis;
+    using ReflectSoftware.Insight;
 
     //Learning of XOR by MLP 【Regression version】 ※ The precision is bad and it is not possible to obtain the desired result unless it is executed several times
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
@@ -43,7 +44,7 @@ namespace KelpNetTester.Tests
 
             nn.SetOptimizer(new AdaGrad());
 
-            Console.WriteLine("Training...");
+            RILogManager.Default?.SendDebug("Training...");
             for (int i = 0; i < learningCount; i++)
             {
                 //use MeanSquaredError for loss function
@@ -56,11 +57,11 @@ namespace KelpNetTester.Tests
                 nn.Update();
             }
 
-            Console.WriteLine("Test Start...");
+            RILogManager.Default?.SendDebug("Test Start...");
             foreach (Real[] val in trainData)
             {
                 NdArray result = nn.Predict(val)[0];
-                Console.WriteLine($"{val[0]} xor {val[1]} = {(result.Data[0] > 0.5 ? 1 : 0)} {result}");
+                RILogManager.Default?.SendDebug($"{val[0]} xor {val[1]} = {(result.Data[0] > 0.5 ? 1 : 0)} {result}");
             }
         }
     }

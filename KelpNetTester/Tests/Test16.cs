@@ -11,6 +11,8 @@ using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
+    using ReflectSoftware.Insight;
+
     class Test16
     {
         private const string MODEL_FILE_PATH = "Data/ChainerModel.npz";
@@ -59,7 +61,6 @@ namespace KelpNetTester.Tests
             //あとは通常通り使用する
             nn.SetOptimizer(new SGD());
 
-            //入力データ
             NdArray x = new NdArray(new Real[,,]{{
                 { 0.0, 0.0, 0.0, 0.0, 0.0, 0.2, 0.9, 0.2, 0.0, 0.0, 0.0, 0.0},
                 { 0.0, 0.0, 0.0, 0.0, 0.2, 0.8, 0.9, 0.1, 0.0, 0.0, 0.0, 0.0},
@@ -75,31 +76,27 @@ namespace KelpNetTester.Tests
                 { 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
             }});
 
-            //教師信号
             Real[] t = { 0.0, 1.0 };
 
-            //訓練を実施
             Trainer.Train(nn, x, t, new MeanSquaredError(), false);
 
-            //結果表示用に退避
             Convolution2D l2 = (Convolution2D)nn.Functions[0];
 
 
-            //Updateを実行するとgradが消費されてしまうため値を先に出力
-            Console.WriteLine("gw1");
-            Console.WriteLine(l2.Weight.ToString("Grad"));
+            RILogManager.Default?.SendDebug("gw1");
+            RILogManager.Default?.SendDebug(l2.Weight.ToString("Grad"));
+            RILogManager.Default?.SendDebug("gb1");
+            RILogManager.Default?.SendDebug(l2.Bias.ToString("Grad"));
 
-            Console.WriteLine("gb1");
-            Console.WriteLine(l2.Bias.ToString("Grad"));
 
-            //更新
+            // If Update is executed, grad is consumed, so output the value first
             nn.Update();
 
-            Console.WriteLine("w1");
-            Console.WriteLine(l2.Weight);
+            RILogManager.Default?.SendDebug("w1");
+            RILogManager.Default?.SendDebug(l2.Weight.ToString());
 
-            Console.WriteLine("b1");
-            Console.WriteLine(l2.Bias);
+            RILogManager.Default?.SendDebug("b1");
+            RILogManager.Default?.SendDebug(l2.Bias.ToString());
         }
     }
 }

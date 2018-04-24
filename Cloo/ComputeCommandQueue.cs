@@ -157,8 +157,7 @@ namespace Cloo
 
         public ComputeCommandQueue(ComputeContext context, ComputeDevice device, ComputeCommandQueueFlags properties)
         {
-            ComputeErrorCode error = ComputeErrorCode.Success;
-            Handle = CL12.CreateCommandQueue(context.Handle, device.Handle, properties, out error);
+            Handle = CL12.CreateCommandQueue(context.Handle, device.Handle, properties, out var error);
             ComputeException.ThrowOnError(error);
             
             SetID(Handle.Value);
@@ -199,7 +198,7 @@ namespace Cloo
 
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = ComputeErrorCode.Success;
@@ -263,7 +262,7 @@ namespace Cloo
 
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL12.EnqueueCopyBuffer(Handle, source.Handle, destination.Handle, new IntPtr(sourceOffset * sizeofT), new IntPtr(destinationOffset * sizeofT), new IntPtr(region * sizeofT), eventWaitListSize, eventHandles, newEventHandle);
@@ -318,7 +317,7 @@ namespace Cloo
             
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL11.EnqueueCopyBufferRect(Handle, source.Handle, destination.Handle, ref sourceOffset, ref destinationOffset, ref region, new IntPtr(sourceRowPitch), new IntPtr(sourceSlicePitch), new IntPtr(destinationRowPitch), new IntPtr(destinationSlicePitch), eventWaitListSize, eventHandles, newEventHandle);
@@ -352,7 +351,7 @@ namespace Cloo
 
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL12.EnqueueCopyBufferToImage(Handle, source.Handle, destination.Handle, new IntPtr(sourceOffset * sizeofT), ref destinationOffset, ref region, eventWaitListSize, eventHandles, newEventHandle);
@@ -386,7 +385,7 @@ namespace Cloo
 
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL12.EnqueueCopyImageToBuffer(Handle, source.Handle, destination.Handle, ref sourceOffset, ref region, new IntPtr(destinationOffset * sizeofT), eventWaitListSize, eventHandles, newEventHandle);
@@ -417,7 +416,7 @@ namespace Cloo
         {
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL12.EnqueueCopyImage(Handle, source.Handle, destination.Handle, ref sourceOffset, ref destinationOffset, ref region, eventWaitListSize, eventHandles, newEventHandle);
@@ -481,7 +480,7 @@ namespace Cloo
         {
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL12.EnqueueNDRangeKernel(Handle, kernel.Handle, globalWorkSize.Length, ComputeTools.ConvertArray(globalWorkOffset), ComputeTools.ConvertArray(globalWorkSize), ComputeTools.ConvertArray(localWorkSize), eventWaitListSize, eventHandles, newEventHandle);
@@ -550,13 +549,10 @@ namespace Cloo
 
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
-            IntPtr mappedPtr = IntPtr.Zero;
-
-            ComputeErrorCode error = ComputeErrorCode.Success;
-            mappedPtr = CL12.EnqueueMapBuffer(Handle, buffer.Handle, blocking, flags, new IntPtr(offset * sizeofT), new IntPtr(region * sizeofT), eventWaitListSize, eventHandles, newEventHandle, out error);
+            var mappedPtr = CL12.EnqueueMapBuffer(Handle, buffer.Handle, blocking, flags, new IntPtr(offset * sizeofT), new IntPtr(region * sizeofT), eventWaitListSize, eventHandles, newEventHandle, out var error);
             ComputeException.ThrowOnError(error);
 
             if (eventsWritable)
@@ -594,7 +590,7 @@ namespace Cloo
         {
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             IntPtr mappedPtr, rowPitch, slicePitch;
@@ -639,7 +635,7 @@ namespace Cloo
 
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL12.EnqueueReadBuffer(Handle, source.Handle, blocking, new IntPtr(offset * sizeofT), new IntPtr(region * sizeofT), destination, eventWaitListSize, eventHandles, newEventHandle);
@@ -696,7 +692,7 @@ namespace Cloo
 
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL11.EnqueueReadBufferRect(Handle, source.Handle, blocking, ref sourceOffset, ref destinationOffset, ref region, new IntPtr(sourceRowPitch), new IntPtr(sourceSlicePitch), new IntPtr(destinationRowPitch), new IntPtr(destinationSlicePitch), destination, eventWaitListSize, eventHandles, newEventHandle);
@@ -737,7 +733,7 @@ namespace Cloo
         {
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL12.EnqueueReadImage(Handle, source.Handle, blocking, ref offset, ref region, new IntPtr(rowPitch), new IntPtr(slicePitch), destination, eventWaitListSize, eventHandles, newEventHandle);
@@ -768,7 +764,7 @@ namespace Cloo
 
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL12.EnqueueReleaseGLObjects(Handle, memObjCount, memObjHandles, eventWaitListSize, eventHandles, newEventHandle);
@@ -799,7 +795,7 @@ namespace Cloo
         {
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL12.EnqueueUnmapMemObject(Handle, memory.Handle, mappedPtr, eventWaitListSize, eventHandles, newEventHandle);
@@ -822,8 +818,7 @@ namespace Cloo
 
         public void Wait(ICollection<ComputeEventBase> events)
         {
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
 
             ComputeErrorCode error = CL12.EnqueueWaitForEvents(Handle, eventWaitListSize, eventHandles);
             ComputeException.ThrowOnError(error);
@@ -858,9 +853,8 @@ namespace Cloo
         {
             int sizeofT = Marshal.SizeOf(typeof(T));
 
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL12.EnqueueWriteBuffer(Handle, destination.Handle, blocking, new IntPtr(destinationOffset * sizeofT), new IntPtr(region * sizeofT), source, eventWaitListSize, eventHandles, newEventHandle);
@@ -916,7 +910,7 @@ namespace Cloo
 
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL11.EnqueueWriteBufferRect(Handle, destination.Handle, blocking, ref destinationOffset, ref sourceOffset, ref region, new IntPtr(destinationRowPitch), new IntPtr(destinationSlicePitch), new IntPtr(sourceRowPitch), new IntPtr(sourceSlicePitch), source, eventWaitListSize, eventHandles, newEventHandle);
@@ -958,7 +952,7 @@ namespace Cloo
         {
             int eventWaitListSize;
             CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
-            bool eventsWritable = (events != null && !events.IsReadOnly);
+            bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
             ComputeErrorCode error = CL12.EnqueueWriteImage(Handle, destination.Handle, blocking, ref destinationOffset, ref region, new IntPtr(rowPitch), new IntPtr(slicePitch), source, eventWaitListSize, eventHandles, newEventHandle);

@@ -6,6 +6,8 @@ using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
+    using ReflectSoftware.Insight;
+
     //ある学習済みフィルタで出力された画像を元に、そのフィルタと同等のフィルタを獲得する
     //コンソール版
     //移植元 : http://qiita.com/samacoba/items/958c02f455ca5f3a475d
@@ -42,7 +44,7 @@ namespace KelpNetTester.Tests
                 model.Backward(img_y);
                 model.Update();
 
-                Console.WriteLine("epoch" + i + " : " + loss);
+                RILogManager.Default?.SendDebug("epoch" + i + " : " + loss);
             }
         }
 

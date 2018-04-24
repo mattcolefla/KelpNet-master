@@ -12,6 +12,7 @@ using VocabularyMaker;
 namespace KelpNetTester.Tests
 {
     using System.Diagnostics.CodeAnalysis;
+    using ReflectSoftware.Insight;
 
     //RNNLM with Simple RNN
     //From 'practical deep learning by Chainer'（ISBN 978-4-274-21934-4）
@@ -26,7 +27,7 @@ namespace KelpNetTester.Tests
 
         public static void Run()
         {
-            Console.WriteLine("Building Vocabulary.");
+            RILogManager.Default?.SendDebug("Building Vocabulary.");
 
             Vocabulary vocabulary = new Vocabulary();
             string trainPath = InternetFileDownloader.Download(DOWNLOAD_URL + TRAIN_FILE, TRAIN_FILE);
@@ -37,9 +38,9 @@ namespace KelpNetTester.Tests
 
             int nVocab = vocabulary.Length;
 
-            Console.WriteLine("Done.");
+            RILogManager.Default?.SendDebug("Done.");
 
-            Console.WriteLine("Network Initializing.");
+            RILogManager.Default?.SendDebug("Network Initializing.");
             FunctionStack model = new FunctionStack(
                 new EmbedID(nVocab, N_UNITS, name: "l1 EmbedID"),
                 new Linear(N_UNITS, N_UNITS, name: "l2 Linear"),
@@ -52,7 +53,7 @@ namespace KelpNetTester.Tests
 
             List<int> s = new List<int>();
 
-            Console.WriteLine("Train Start.");
+            RILogManager.Default?.SendDebug("Train Start.");
             SoftmaxCrossEntropy softmaxCrossEntropy = new SoftmaxCrossEntropy();
             for (int epoch = 0; epoch < TRAINING_EPOCHS; epoch++)
             {
@@ -91,7 +92,7 @@ namespace KelpNetTester.Tests
                             accumloss += loss;
                         }
 
-                        Console.WriteLine(accumloss);
+                        RILogManager.Default?.SendDebug(accumloss.ToString());
 
                         for (int i = 0; i < s.Count; i++)
                         {
@@ -104,12 +105,12 @@ namespace KelpNetTester.Tests
 
                     if (pos % 100 == 0)
                     {
-                        Console.WriteLine(pos + "/" + trainData.Length + " finished");
+                        RILogManager.Default?.SendDebug(pos + "/" + trainData.Length + " finished");
                     }
                 }
             }
 
-            Console.WriteLine("Test Start.");
+            RILogManager.Default?.SendDebug("Test Start.");
 
             Real sum = 0;
             int wnum = 0;
@@ -130,10 +131,10 @@ namespace KelpNetTester.Tests
                 {
                     if (!unkWord)
                     {
-                        Console.WriteLine("pos" + pos);
-                        Console.WriteLine("tsLen" + ts.Count);
-                        Console.WriteLine("sum" + sum);
-                        Console.WriteLine("wnum" + wnum);
+                        RILogManager.Default?.SendDebug("pos" + pos);
+                        RILogManager.Default?.SendDebug("tsLen" + ts.Count);
+                        RILogManager.Default?.SendDebug("sum" + sum);
+                        RILogManager.Default?.SendDebug("wnum" + wnum);
 
                         sum += CalPs(model, ts);
                         wnum += ts.Count - 1;
@@ -147,7 +148,7 @@ namespace KelpNetTester.Tests
                 }
             }
 
-            Console.WriteLine(Math.Pow(2.0, sum / wnum));
+            RILogManager.Default?.SendDebug(Math.Pow(2.0, sum / wnum).ToString());
         }
 
         static Real CalPs(FunctionStack model, List<int> s)

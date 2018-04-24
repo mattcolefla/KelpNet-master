@@ -72,8 +72,10 @@ namespace Cloo
 
         public new static bool Equals(object objA, object objB)
         {
-            if (objA == objB) return true;
-            if (objA == null || objB == null) return false;
+            if (objA == objB) 
+                return true;
+            if (objA == null || objB == null) 
+                return false;
             return objA.Equals(objB);
         }
 
@@ -96,9 +98,11 @@ namespace Cloo
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            if (!(obj is ComputeObject)) return false;
-            return Equals(obj as ComputeObject);
+            if (obj == null) 
+                return false;
+            if (!(obj is ComputeObject)) 
+                return false;
+            return Equals((ComputeObject) obj);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,8 +123,10 @@ namespace Cloo
 
         public bool Equals(ComputeObject obj)
         {
-            if (obj == null) return false;
-            if (!handle.Equals(obj.handle)) return false;
+            if (obj == null)
+                return false;
+            if (!handle.Equals(obj.handle))
+                return false;
             return true;
         }
 
@@ -158,7 +164,7 @@ namespace Cloo
         /// <summary>   Gets array information. </summary>
         ///
         /// <typeparam name="HandleType">   . </typeparam>
-        /// <typeparam name="foType">       . </typeparam>
+        /// <typeparam name="InfoType">       . </typeparam>
         /// <typeparam name="QueriedType">  . </typeparam>
         /// <param name="handle">           . </param>
         /// <param name="paramName">        . </param>
@@ -170,12 +176,9 @@ namespace Cloo
         protected QueriedType[] GetArrayInfo<HandleType, InfoType, QueriedType>
             (HandleType handle, InfoType paramName, GetInfoDelegate<HandleType, InfoType> getInfoDelegate)
         {
-            ComputeErrorCode error;
-            QueriedType[] buffer;
-            IntPtr bufferSizeRet;
-            error = getInfoDelegate(handle, paramName, IntPtr.Zero, IntPtr.Zero, out bufferSizeRet);
+            var error = getInfoDelegate(handle, paramName, IntPtr.Zero, IntPtr.Zero, out var bufferSizeRet);
             ComputeException.ThrowOnError(error);
-            buffer = new QueriedType[bufferSizeRet.ToInt64() / Marshal.SizeOf(typeof(QueriedType))];
+            var buffer = new QueriedType[bufferSizeRet.ToInt64() / Marshal.SizeOf(typeof(QueriedType))];
             GCHandle gcHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
             try
             {
@@ -194,7 +197,7 @@ namespace Cloo
         ///
         /// <typeparam name="MainHandleType">   . </typeparam>
         /// <typeparam name="SecondHandleType"> . </typeparam>
-        /// <typeparam name="foType">           . </typeparam>
+        /// <typeparam name="InfoType">           . </typeparam>
         /// <typeparam name="QueriedType">      . </typeparam>
         /// <param name="mainHandle">       . </param>
         /// <param name="secondHandle">     . </param>
@@ -207,12 +210,9 @@ namespace Cloo
         protected QueriedType[] GetArrayInfo<MainHandleType, SecondHandleType, InfoType, QueriedType>
             (MainHandleType mainHandle, SecondHandleType secondHandle, InfoType paramName, GetInfoDelegateEx<MainHandleType, SecondHandleType, InfoType> getInfoDelegate)
         {
-            ComputeErrorCode error;
-            QueriedType[] buffer;
-            IntPtr bufferSizeRet;
-            error = getInfoDelegate(mainHandle, secondHandle, paramName, IntPtr.Zero, IntPtr.Zero, out bufferSizeRet);
+            var error = getInfoDelegate(mainHandle, secondHandle, paramName, IntPtr.Zero, IntPtr.Zero, out var bufferSizeRet);
             ComputeException.ThrowOnError(error);
-            buffer = new QueriedType[bufferSizeRet.ToInt64() / Marshal.SizeOf(typeof(QueriedType))];
+            var buffer = new QueriedType[bufferSizeRet.ToInt64() / Marshal.SizeOf(typeof(QueriedType))];
             GCHandle gcHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
             try
             {
@@ -230,7 +230,7 @@ namespace Cloo
         /// <summary>   Gets bool information. </summary>
         ///
         /// <typeparam name="HandleType">   . </typeparam>
-        /// <typeparam name="foType">       . </typeparam>
+        /// <typeparam name="InfoType">       . </typeparam>
         /// <param name="handle">           . </param>
         /// <param name="paramName">        . </param>
         /// <param name="getInfoDelegate">  . </param>
@@ -249,7 +249,7 @@ namespace Cloo
         /// <summary>   Gets an information. </summary>
         ///
         /// <typeparam name="HandleType">   . </typeparam>
-        /// <typeparam name="foType">       . </typeparam>
+        /// <typeparam name="InfoType">       . </typeparam>
         /// <typeparam name="QueriedType">  . </typeparam>
         /// <param name="handle">           . </param>
         /// <param name="paramName">        . </param>
@@ -283,7 +283,7 @@ namespace Cloo
         ///
         /// <typeparam name="MainHandleType">   . </typeparam>
         /// <typeparam name="SecondHandleType"> . </typeparam>
-        /// <typeparam name="foType">           . </typeparam>
+        /// <typeparam name="InfoType">           . </typeparam>
         /// <typeparam name="QueriedType">      . </typeparam>
         /// <param name="mainHandle">       . </param>
         /// <param name="secondHandle">     . </param>
@@ -318,7 +318,7 @@ namespace Cloo
         /// <summary>   Gets string information. </summary>
         ///
         /// <typeparam name="HandleType">   . </typeparam>
-        /// <typeparam name="foType">       . </typeparam>
+        /// <typeparam name="InfoType">       . </typeparam>
         /// <param name="handle">           . </param>
         /// <param name="paramName">        . </param>
         /// <param name="getInfoDelegate">  . </param>
@@ -339,7 +339,7 @@ namespace Cloo
         ///
         /// <typeparam name="MainHandleType">   . </typeparam>
         /// <typeparam name="SecondHandleType"> . </typeparam>
-        /// <typeparam name="foType">           . </typeparam>
+        /// <typeparam name="InfoType">           . </typeparam>
         /// <param name="mainHandle">       . </param>
         /// <param name="secondHandle">     . </param>
         /// <param name="paramName">        . </param>
@@ -375,7 +375,7 @@ namespace Cloo
         /// <summary>   Gets information delegate. </summary>
         ///
         /// <typeparam name="HandleType">   . </typeparam>
-        /// <typeparam name="foType">       . </typeparam>
+        /// <typeparam name="InfoType">       . </typeparam>
         /// <param name="objectHandle">         . </param>
         /// <param name="paramName">            . </param>
         /// <param name="paramValueSize">       . </param>
@@ -385,7 +385,7 @@ namespace Cloo
         /// <returns>   A ComputeErrorCode. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected delegate ComputeErrorCode GetInfoDelegate<HandleType, InfoType>
+        protected delegate ComputeErrorCode GetInfoDelegate<in HandleType, in InfoType>
             (
                 HandleType objectHandle,
                 InfoType paramName,
@@ -399,7 +399,7 @@ namespace Cloo
         ///
         /// <typeparam name="MainHandleType">   . </typeparam>
         /// <typeparam name="SecondHandleType"> . </typeparam>
-        /// <typeparam name="foType">           . </typeparam>
+        /// <typeparam name="InfoType">           . </typeparam>
         /// <param name="mainObjectHandle">         . </param>
         /// <param name="secondaryObjectHandle">    . </param>
         /// <param name="paramName">                . </param>
@@ -410,7 +410,7 @@ namespace Cloo
         /// <returns>   A ComputeErrorCode. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected delegate ComputeErrorCode GetInfoDelegateEx<MainHandleType, SecondHandleType, InfoType>
+        protected delegate ComputeErrorCode GetInfoDelegateEx<in MainHandleType, in SecondHandleType, in InfoType>
             (
                 MainHandleType mainObjectHandle,
                 SecondHandleType secondaryObjectHandle,

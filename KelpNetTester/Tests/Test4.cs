@@ -10,6 +10,8 @@ using KelpNetTester.TestData;
 
 namespace KelpNetTester.Tests
 {
+    using ReflectSoftware.Insight;
+
     //Learning of MNIST (Handwritten Characters) by MLP
     class Test4
     {
@@ -20,10 +22,11 @@ namespace KelpNetTester.Tests
 
         public static void Run()
         {
-            Console.WriteLine("MNIST Data Loading...");
+            RILogManager.Default?.SendDebug("MNIST Data Loading...");
+            RILogManager.Default?.SendDebug("MNIST Data Loading...");
             MnistData mnistData = new MnistData(28);
 
-            Console.WriteLine("Training Start...");
+            RILogManager.Default?.SendDebug("Training Start...");
 
             FunctionStack nn = new FunctionStack(
                 new Linear(28 * 28, 1024, name: "l1 Linear"),
@@ -35,7 +38,7 @@ namespace KelpNetTester.Tests
 
             for (int epoch = 0; epoch < 3; epoch++)
             {
-                Console.WriteLine("epoch " + (epoch + 1));
+                RILogManager.Default?.SendDebug("epoch " + (epoch + 1));
 
                 Real totalLoss = 0;
                 long totalLossCount = 0;
@@ -51,17 +54,17 @@ namespace KelpNetTester.Tests
 
                     if (i % 20 == 0)
                     {
-                        Console.WriteLine("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
-                        Console.WriteLine("total loss " + totalLoss / totalLossCount);
-                        Console.WriteLine("local loss " + sumLoss);
+                        RILogManager.Default?.SendDebug("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
+                        RILogManager.Default?.SendDebug("total loss " + totalLoss / totalLossCount);
+                        RILogManager.Default?.SendDebug("local loss " + sumLoss);
 
-                        Console.WriteLine("\nTesting...");
+                        RILogManager.Default?.SendDebug("\nTesting...");
 
                         //Get data randomly from test data
                         TestDataSet datasetY = mnistData.GetRandomYSet(TEST_DATA_COUNT, 28);
 
                         Real accuracy = Trainer.Accuracy(nn, datasetY.Data, datasetY.Label);
-                        Console.WriteLine("accuracy " + accuracy);
+                        RILogManager.Default?.SendDebug("accuracy " + accuracy);
                     }
                 }
             }

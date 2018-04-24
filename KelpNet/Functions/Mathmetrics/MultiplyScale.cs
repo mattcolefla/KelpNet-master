@@ -8,13 +8,12 @@ using KelpNet.Functions.Arrays;
 namespace KelpNet.Functions.Mathmetrics
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   (Serializable) a multiply scale. </summary>
-    ///
-    /// <seealso cref="T:KelpNet.Common.Functions.Type.SingleInputFunction"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>   (Serializable) a multiply scale. </summary>
+    ///  <seealso cref="T:KelpNet.Common.Functions.Type.SingleInputFunction" />
 
     [Serializable]
-    public class MultiplyScale : SingleInputFunction
+    public sealed class MultiplyScale : SingleInputFunction
     {
         /// <summary>   Name of the function. </summary>
         const string FUNCTION_NAME = "MultiplyScale";
@@ -91,8 +90,7 @@ namespace KelpNet.Functions.Mathmetrics
         ///
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        protected NdArray ForwardCpu(NdArray x)
+        private NdArray ForwardCpu(NdArray x)
         {
             int[] inputShape = x.Shape;
             int[] outputShape = Weight.Shape;
@@ -133,8 +131,7 @@ namespace KelpNet.Functions.Mathmetrics
         /// <param name="y">    A NdArray to process. </param>
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        protected void BackwardCpu(NdArray y, NdArray x)
+        private void BackwardCpu(NdArray y, NdArray x)
         {
         }
     }

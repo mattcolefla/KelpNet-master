@@ -10,12 +10,14 @@ using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
-    //エクセルCNNの再現
+    using ReflectSoftware.Insight;
+
+    // Reproduction of Excel CNN
     class Test5
     {
         public static void Run()
         {
-            //各初期値を記述
+            // Describe each initial value
             Real[,,,] initial_W1 =
                 {
                     {{{1.0,  0.5, 0.0}, { 0.5, 0.0, -0.5}, {0.0, -0.5, -1.0}}},
@@ -41,7 +43,7 @@ namespace KelpNetTester.Tests
             Real[] initial_b4 = { 0.02, 0.01 };
 
 
-            //入力データ
+            //Input data
             NdArray x = new NdArray(new Real[, ,]{{
                     { 0.0, 0.0, 0.0, 0.0, 0.0, 0.2, 0.9, 0.2, 0.0, 0.0, 0.0, 0.0},
                     { 0.0, 0.0, 0.0, 0.0, 0.2, 0.8, 0.9, 0.1, 0.0, 0.0, 0.0, 0.0},
@@ -57,14 +59,14 @@ namespace KelpNetTester.Tests
                     { 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
                 }});
 
-            //教師信号
+            //teacher signal
             Real[] t = { 0.0, 1.0 };
 
 
-            //層の中身をチェックしたい場合は、層単体でインスタンスを持つ
+            // If you want to check the contents of a layer, have an instance as a single layer
             Convolution2D l2 = new Convolution2D(1, 2, 3, initialW: initial_W1, initialb: initial_b1, name: "l2 Conv2D");
 
-            //ネットワークの構成を FunctionStack に書き連ねる
+            // Write the network configuration in FunctionStack
             FunctionStack nn = new FunctionStack(
                 l2, //new Convolution2D(1, 2, 3, initialW: initial_W1, initialb: initial_b1),
                 new ReLU(name: "l2 ReLU"),
@@ -79,27 +81,25 @@ namespace KelpNetTester.Tests
                 new Linear(2, 2, initialW: initial_W4, initialb: initial_b4, name: "l5 Linear")
             );
 
-            //optimizerの宣言を省略するとデフォルトのSGD(0.1)が使用される
-            nn.SetOptimizer(new SGD());
+            // If you omit the optimizer declaration, the default SGD(0.1) will be used nn.SetOptimizer(new SGD());
 
-            //訓練を実施
-            Trainer.Train(nn, x, t, new MeanSquaredError(), false);
+            // Training conducted            Trainer.Train(nn, x, t, new MeanSquaredError(), false);
 
-            //Updateを実行するとgradが消費されてしまうため値を先に出力
-            Console.WriteLine("gw1");
-            Console.WriteLine(l2.Weight.ToString("Grad"));
+            // If Update is executed, grad is consumed, so output the value first
+            RILogManager.Default?.SendDebug("gw1");
+            RILogManager.Default?.SendDebug(l2.Weight.ToString("Grad"));
 
-            Console.WriteLine("gb1");
-            Console.WriteLine(l2.Bias.ToString("Grad"));
+            RILogManager.Default?.SendDebug("gb1");
+            RILogManager.Default?.SendDebug(l2.Bias.ToString("Grad"));
 
-            //更新
+            //update
             nn.Update();
 
-            Console.WriteLine("w1");
-            Console.WriteLine(l2.Weight);
+            RILogManager.Default?.SendDebug("w1");
+            RILogManager.Default?.SendDebug(l2.Weight.ToString());
 
-            Console.WriteLine("b1");
-            Console.WriteLine(l2.Bias);
+            RILogManager.Default?.SendDebug("b1");
+            RILogManager.Default?.SendDebug(l2.Bias.ToString());
         }
     }
 }

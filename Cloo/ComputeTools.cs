@@ -100,7 +100,8 @@ namespace Cloo
 
         internal static IntPtr[] ConvertArray(long[] array)
         {
-            if (array == null) return null;
+            if (array == null)
+                return null;
 
             NumberFormatInfo nfi = new NumberFormatInfo();
 
@@ -120,7 +121,8 @@ namespace Cloo
 
         internal static long[] ConvertArray(IntPtr[] array)
         {
-            if (array == null) return null;
+            if (array == null)
+                return null;
 
             NumberFormatInfo nfi = new NumberFormatInfo();
 

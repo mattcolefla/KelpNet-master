@@ -17,6 +17,8 @@ using TestDataManager;
 
 namespace KelpNetTester.Tests
 {
+    using ReflectSoftware.Insight;
+
     // Load ResNet and execute
     class Test17
     {
@@ -50,11 +52,11 @@ namespace KelpNetTester.Tests
             {
                 int resnetId = (int)modelType;
 
-                Console.WriteLine("Mean Loading.");
+                RILogManager.Default?.SendDebug("Mean Loading.");
                 string meanFilePath = InternetFileDownloader.Download(DOWNLOAD_URL_MEAN, MODEL_FILE_MEAN);
                 NdArray mean = CaffemodelDataLoader.ReadBinary(meanFilePath);
 
-                Console.WriteLine("Model Loading.");
+                RILogManager.Default?.SendDebug("Model Loading.");
                 string modelFilePath = InternetFileDownloader.Download(Urls[resnetId], FileNames[resnetId]);
                 FunctionDictionary nn = CaffemodelDataLoader.LoadNetWork(modelFilePath);
                 string[] classList = File.ReadAllLines(CLASS_LIST_PATH);
@@ -65,7 +67,7 @@ namespace KelpNetTester.Tests
                     SwitchGPU(resNetFunctionBlock);
                 }
 
-                Console.WriteLine("Model Loading done.");
+                RILogManager.Default?.SendDebug("Model Loading done.");
 
                 do
                 {
@@ -81,17 +83,17 @@ namespace KelpNetTester.Tests
                     imageArray -= mean;
                     imageArray.ParentFunc = null;
 
-                    Console.WriteLine("Start predict.");
+                    RILogManager.Default?.SendDebug("Start predict.");
                     Stopwatch sw = Stopwatch.StartNew();
                     NdArray result = nn.Predict(imageArray)[0];
                     sw.Stop();
 
-                    Console.WriteLine("Result Time : " +
+                    RILogManager.Default?.SendDebug("Result Time : " +
                                       (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") +
                                       "μｓ");
 
                     int maxIndex = Array.IndexOf(result.Data, result.Data.Max());
-                    Console.WriteLine("[" + result.Data[maxIndex] + "] : " + classList[maxIndex]);
+                    RILogManager.Default?.SendDebug("[" + result.Data[maxIndex] + "] : " + classList[maxIndex]);
                 } while (ofd.ShowDialog() == DialogResult.OK);
             }
         }

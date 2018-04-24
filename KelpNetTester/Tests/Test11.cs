@@ -12,6 +12,8 @@ using KelpNetTester.TestData;
 
 namespace KelpNetTester.Tests
 {
+    using ReflectSoftware.Insight;
+
     //Decoupled Neural Interfaces using Synthetic GradientsによるMNIST（手書き文字）の学習
     // http://ralo23.hatenablog.com/entry/2016/10/22/233405
     class Test11
@@ -27,11 +29,11 @@ namespace KelpNetTester.Tests
         public static void Run()
         {
             // Prepare MNIST data
-            Console.WriteLine("MNIST Data Loading...");
+            RILogManager.Default?.SendDebug("MNIST Data Loading...");
             MnistData mnistData = new MnistData(28);
 
 
-            Console.WriteLine("Training Start...");
+            RILogManager.Default?.SendDebug("Training Start...");
 
             // Write the network configuration in FunctionStack
             FunctionStack Layer1 = new FunctionStack(
@@ -108,7 +110,7 @@ namespace KelpNetTester.Tests
             // Three generations learning
             for (int epoch = 0; epoch < 20; epoch++)
             {
-                Console.WriteLine("epoch " + (epoch + 1));
+                RILogManager.Default?.SendDebug("epoch " + (epoch + 1));
 
                 Real totalLoss = 0;
                 Real DNI1totalLoss = 0;
@@ -212,29 +214,29 @@ namespace KelpNetTester.Tests
                     DNI3totalLoss += DNI3loss;
                     DNI3totalLossCount++;
 
-                    Console.WriteLine("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
-                    Console.WriteLine("total loss " + totalLoss / totalLossCount);
-                    Console.WriteLine("local loss " + sumLoss);
+                    RILogManager.Default?.SendDebug("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
+                    RILogManager.Default?.SendDebug("total loss " + totalLoss / totalLossCount);
+                    RILogManager.Default?.SendDebug("local loss " + sumLoss);
 
-                    Console.WriteLine("\nDNI1 total loss " + DNI1totalLoss / DNI1totalLossCount);
-                    Console.WriteLine("DNI2 total loss " + DNI2totalLoss / DNI2totalLossCount);
-                    Console.WriteLine("DNI3 total loss " + DNI3totalLoss / DNI3totalLossCount);
+                    RILogManager.Default?.SendDebug("\nDNI1 total loss " + DNI1totalLoss / DNI1totalLossCount);
+                    RILogManager.Default?.SendDebug("DNI2 total loss " + DNI2totalLoss / DNI2totalLossCount);
+                    RILogManager.Default?.SendDebug("DNI3 total loss " + DNI3totalLoss / DNI3totalLossCount);
 
-                    Console.WriteLine("\nDNI1 local loss " + DNI1loss);
-                    Console.WriteLine("DNI2 local loss " + DNI2loss);
-                    Console.WriteLine("DNI3 local loss " + DNI3loss);
+                    RILogManager.Default?.SendDebug("\nDNI1 local loss " + DNI1loss);
+                    RILogManager.Default?.SendDebug("DNI2 local loss " + DNI2loss);
+                    RILogManager.Default?.SendDebug("DNI3 local loss " + DNI3loss);
 
                     // Test the accuracy if you move the batch 20 times
                     if (i % 20 == 0)
                     {
-                        Console.WriteLine("\nTesting...");
+                        RILogManager.Default?.SendDebug("\nTesting...");
 
                         // Get data randomly from test data
                         TestDataSet datasetY = mnistData.GetRandomYSet(TEST_DATA_COUNT, 28);
 
                         // Run test
                         Real accuracy = Trainer.Accuracy(nn, datasetY.Data, datasetY.Label);
-                        Console.WriteLine("accuracy " + accuracy);
+                        RILogManager.Default?.SendDebug("accuracy " + accuracy);
                     }
                 }
             }

@@ -5,6 +5,8 @@ using KelpNetTester.Tests;
 
 namespace KelpNetTester
 {
+    using ReflectSoftware.Insight;
+
     //Please uncomment the test you want to run
     class Program
     {
@@ -12,7 +14,7 @@ namespace KelpNetTester
         static void Main(string[] args)
         {
             //Comment out here if you want to run all on .Net Framework
-            //Weaver.Initialize(ComputeDeviceTypes.Cpu);
+            Weaver.Initialize(ComputeDeviceTypes.Gpu);
             //Weaver.Initialize(ComputeDeviceTypes.Cpu, 1); //Subscript required if there are multiple devices
 
             //Learning XOR with MLP
@@ -25,7 +27,7 @@ namespace KelpNetTester
             //Test3.Run();
 
             //Learning of MNIST (Handwritten Characters) by MLP
-            Test4.Run();
+            //Test4.Run();
 
             //Reproduction of Excel CNN
             //Test5.Run();
@@ -79,9 +81,9 @@ namespace KelpNetTester
             //Test20.Run();
 
             //benchmark
-            //SingleBenchmark.Run();
+            SingleBenchmark.Run();
 
-            Console.WriteLine("Test Done...");
+            RILogManager.Default?.SendDebug("Test Done...");
             Console.Read();
         }
     }

@@ -4,6 +4,8 @@ using System.Net;
 
 namespace TestDataManager
 {
+    using ReflectSoftware.Insight;
+
     public class InternetFileDownloader
     {
         private const string TMP_DATA_PATH = "KelpNet/TestData/";
@@ -23,7 +25,7 @@ namespace TestDataManager
             // Check and download files
             if (!File.Exists(savedPath))
             {
-                Console.WriteLine(fileName + "downloaded");
+                RILogManager.Default?.SendDebug(fileName + "downloaded");
 
                 if (!Directory.Exists(TmpFolderPath))
                 {

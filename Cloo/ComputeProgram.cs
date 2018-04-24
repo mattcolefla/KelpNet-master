@@ -191,6 +191,7 @@ namespace Cloo
         public ComputeProgram(ComputeContext context, string source)
         {
             Ensure.Argument(context).NotNull("context is null");
+
             Handle = CL12.CreateProgramWithSource(context.Handle, 1, new string[] { source }, null, out var error);
             ComputeException.ThrowOnError(error);
 
@@ -320,8 +321,9 @@ namespace Cloo
 
         public void Build(ICollection<ComputeDevice> devices, string options, ComputeProgramBuildNotifier notify, IntPtr notifyDataPtr)
         {
-            int handleCount;
-            CLDeviceHandle[] deviceHandles = ComputeTools.ExtractHandles(devices, out handleCount);
+            Ensure.Argument(devices).NotNull("devices is null");
+
+            CLDeviceHandle[] deviceHandles = ComputeTools.ExtractHandles(devices, out var handleCount);
             buildOptions = options ?? "";
             buildNotify = notify;
 
@@ -348,10 +350,9 @@ namespace Cloo
         public ICollection<ComputeKernel> CreateAllKernels()
         {
             ICollection<ComputeKernel> kernels = new Collection<ComputeKernel>();
-            int kernelsCount = 0;
             CLKernelHandle[] kernelHandles;
 
-            ComputeErrorCode error = CL12.CreateKernelsInProgram(Handle, 0, null, out kernelsCount);
+            ComputeErrorCode error = CL12.CreateKernelsInProgram(Handle, 0, null, out var kernelsCount);
             ComputeException.ThrowOnError(error);
 
             kernelHandles = new CLKernelHandle[kernelsCount];
@@ -396,7 +397,7 @@ namespace Cloo
 
         public string GetBuildLog(ComputeDevice device)
         {
-            return GetStringInfo<CLProgramHandle, CLDeviceHandle, ComputeProgramBuildInfo>(Handle, device.Handle, ComputeProgramBuildInfo.BuildLog, CL12.GetProgramBuildInfo);
+            return GetStringInfo(Handle, device.Handle, ComputeProgramBuildInfo.BuildLog, CL12.GetProgramBuildInfo);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////

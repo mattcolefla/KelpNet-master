@@ -11,6 +11,8 @@ using KelpNetTester.TestData;
 
 namespace KelpNetTester.Tests
 {
+    using ReflectSoftware.Insight;
+
     //Learning of MNIST (handwritten character) by 15-layer MLP using batch normalization
     //reference： http://takatakamanbou.hatenablog.com/entry/2015/12/20/233232
     class Test7
@@ -29,10 +31,10 @@ namespace KelpNetTester.Tests
 
         public static void Run()
         {
-            Console.WriteLine("MNIST Data Loading...");
+            RILogManager.Default?.SendDebug("MNIST Data Loading...");
             MnistData mnistData = new MnistData(28);
 
-            Console.WriteLine("Training Start...");
+            RILogManager.Default?.SendDebug("Training Start...");
 
             //Writing the network configuration in FunctionStack
             FunctionStack nn = new FunctionStack(
@@ -86,7 +88,7 @@ namespace KelpNetTester.Tests
 
             for (int epoch = 0; epoch < 3; epoch++)
             {
-                Console.WriteLine("epoch " + (epoch + 1));
+                RILogManager.Default?.SendDebug("epoch " + (epoch + 1));
 
                 //List<Real> totalLoss = new List<Real>();
                 Real totalLoss = 0;
@@ -106,18 +108,18 @@ namespace KelpNetTester.Tests
                     if (i % 20 == 0)
                     {
 
-                        Console.WriteLine("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
-                        Console.WriteLine("total loss " + totalLoss / totalLossCounter);
-                        Console.WriteLine("local loss " + sumLoss);
-                        Console.WriteLine("");
-                        Console.WriteLine("Testing...");
+                        RILogManager.Default?.SendDebug("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
+                        RILogManager.Default?.SendDebug("total loss " + totalLoss / totalLossCounter);
+                        RILogManager.Default?.SendDebug("local loss " + sumLoss);
+                        RILogManager.Default?.SendDebug("");
+                        RILogManager.Default?.SendDebug("Testing...");
 
                         //Get data randomly from test data
                         TestDataSet datasetY = mnistData.GetRandomYSet(TEST_DATA_COUNT, 28);
 
                         //Run the test
                         Real accuracy = Trainer.Accuracy(nn, datasetY.Data, datasetY.Label);
-                        Console.WriteLine("accuracy " + accuracy);
+                        RILogManager.Default?.SendDebug("accuracy " + accuracy);
                     }
                 }
             }

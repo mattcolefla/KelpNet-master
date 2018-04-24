@@ -63,7 +63,7 @@ namespace Cloo
         /// <value> The compute error code. </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ComputeErrorCode ComputeErrorCode { get { return code; } }
+        public ComputeErrorCode ComputeErrorCode => code;
 
         #endregion
 
@@ -407,469 +407,459 @@ namespace Cloo
     #pragma warning disable 1591
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling device not found compute errors. </summary>
-    ///
-    /// <seealso cref="T:Cloo.ComputeException"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>   Exception for signaling device not found compute errors. </summary>
+    ///  <seealso cref="T:Cloo.ComputeException" />
 
-    public class DeviceNotFoundComputeException : ComputeException
+    public sealed class DeviceNotFoundComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public DeviceNotFoundComputeException() : base(ComputeErrorCode.DeviceNotFound) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling device not available compute errors. </summary>
+    /// <summary>   Exception for signaling device not available compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class DeviceNotAvailableComputeException : ComputeException
+    public sealed class DeviceNotAvailableComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public DeviceNotAvailableComputeException() : base(ComputeErrorCode.DeviceNotAvailable) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling compiler not available compute errors. </summary>
+    /// <summary>   Exception for signaling compiler not available compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class CompilerNotAvailableComputeException : ComputeException
+    public sealed class CompilerNotAvailableComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public CompilerNotAvailableComputeException() : base(ComputeErrorCode.CompilerNotAvailable) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>
-    /// Exception for signalling memory object allocation failure compute errors.
-    /// </summary>
-    ///
-    /// <seealso cref="T:Cloo.ComputeException"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>
+    ///  Exception for signaling memory object allocation failure compute errors.
+    ///  </summary>
+    ///  <seealso cref="T:Cloo.ComputeException" />
 
-    public class MemoryObjectAllocationFailureComputeException : ComputeException
+    public sealed class MemoryObjectAllocationFailureComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public MemoryObjectAllocationFailureComputeException() : base(ComputeErrorCode.MemoryObjectAllocationFailure) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling out of resources compute errors. </summary>
-    ///
-    /// <seealso cref="T:Cloo.ComputeException"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>   Exception for signalling out of resources compute errors. </summary>
+    ///  <seealso cref="T:Cloo.ComputeException" />
 
-    public class OutOfResourcesComputeException : ComputeException
+    public sealed class OutOfResourcesComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public OutOfResourcesComputeException() : base(ComputeErrorCode.OutOfResources) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling out of host memory compute errors. </summary>
-    ///
-    /// <seealso cref="T:Cloo.ComputeException"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>   Exception for signaling out of host memory compute errors. </summary>
+    ///  <seealso cref="T:Cloo.ComputeException" />
 
-    public class OutOfHostMemoryComputeException : ComputeException
+    public sealed class OutOfHostMemoryComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public OutOfHostMemoryComputeException() : base(ComputeErrorCode.OutOfHostMemory) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>
-    /// Exception for signalling profiling information not available compute errors.
-    /// </summary>
-    ///
-    /// <seealso cref="T:Cloo.ComputeException"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>
+    ///  Exception for signaling profiling information not available compute errors.
+    ///  </summary>
+    ///  <seealso cref="T:Cloo.ComputeException" />
 
-    public class ProfilingInfoNotAvailableComputeException : ComputeException
+    public sealed class ProfilingInfoNotAvailableComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public ProfilingInfoNotAvailableComputeException() : base(ComputeErrorCode.ProfilingInfoNotAvailable) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling memory copy overlap compute errors. </summary>
-    ///
-    /// <seealso cref="T:Cloo.ComputeException"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>   Exception for signaling memory copy overlap compute errors. </summary>
+    ///  <seealso cref="T:Cloo.ComputeException" />
 
-    public class MemoryCopyOverlapComputeException : ComputeException
+    public sealed class MemoryCopyOverlapComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public MemoryCopyOverlapComputeException() : base(ComputeErrorCode.MemoryCopyOverlap) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling image format mismatch compute errors. </summary>
-    ///
-    /// <seealso cref="T:Cloo.ComputeException"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>   Exception for signalling image format mismatch compute errors. </summary>
+    ///  <seealso cref="T:Cloo.ComputeException" />
 
-    public class ImageFormatMismatchComputeException : ComputeException
+    public sealed class ImageFormatMismatchComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public ImageFormatMismatchComputeException() : base(ComputeErrorCode.ImageFormatMismatch) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling image format not supported compute errors. </summary>
-    ///
-    /// <seealso cref="T:Cloo.ComputeException"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>   Exception for signaling image format not supported compute errors. </summary>
+    ///  <seealso cref="T:Cloo.ComputeException" />
 
-    public class ImageFormatNotSupportedComputeException : ComputeException
+    public sealed class ImageFormatNotSupportedComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public ImageFormatNotSupportedComputeException() : base(ComputeErrorCode.ImageFormatNotSupported) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling build program failure compute errors. </summary>
-    ///
-    /// <seealso cref="T:Cloo.ComputeException"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>   Exception for signaling build program failure compute errors. </summary>
+    ///  <seealso cref="T:Cloo.ComputeException" />
 
-    public class BuildProgramFailureComputeException : ComputeException
+    public sealed class BuildProgramFailureComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public BuildProgramFailureComputeException() : base(ComputeErrorCode.BuildProgramFailure) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling map failure compute errors. </summary>
-    ///
-    /// <seealso cref="T:Cloo.ComputeException"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>   Exception for signaling map failure compute errors. </summary>
+    ///  <seealso cref="T:Cloo.ComputeException" />
 
-    public class MapFailureComputeException : ComputeException
+    public sealed class MapFailureComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public MapFailureComputeException() : base(ComputeErrorCode.MapFailure) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid value compute errors. </summary>
+    /// <summary>   Exception for signaling invalid value compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidValueComputeException : ComputeException
+    public sealed class InvalidValueComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidValueComputeException() : base(ComputeErrorCode.InvalidValue) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid device type compute errors. </summary>
+    /// <summary>   Exception for signaling invalid device type compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidDeviceTypeComputeException : ComputeException
+    public sealed class InvalidDeviceTypeComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidDeviceTypeComputeException() : base(ComputeErrorCode.InvalidDeviceType) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid platform compute errors. </summary>
+    /// <summary>   Exception for signallng invalid platform compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidPlatformComputeException : ComputeException
+    public sealed class InvalidPlatformComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidPlatformComputeException() : base(ComputeErrorCode.InvalidPlatform) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid device compute errors. </summary>
+    /// <summary>   Exception for signaling invalid device compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidDeviceComputeException : ComputeException
+    public sealed class InvalidDeviceComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidDeviceComputeException() : base(ComputeErrorCode.InvalidDevice) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid context compute errors. </summary>
+    /// <summary>   Exception for signaling invalid context compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidContextComputeException : ComputeException
+    public sealed class InvalidContextComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidContextComputeException() : base(ComputeErrorCode.InvalidContext) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid command queue flags compute errors. </summary>
+    /// <summary>   Exception for signaling invalid command queue flags compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidCommandQueueFlagsComputeException : ComputeException
+    public sealed class InvalidCommandQueueFlagsComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidCommandQueueFlagsComputeException() : base(ComputeErrorCode.InvalidCommandQueueFlags) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid command queue compute errors. </summary>
+    /// <summary>   Exception for signaling invalid command queue compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidCommandQueueComputeException : ComputeException
+    public sealed class InvalidCommandQueueComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidCommandQueueComputeException() : base(ComputeErrorCode.InvalidCommandQueue) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid host pointer compute errors. </summary>
+    /// <summary>   Exception for signaling invalid host pointer compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidHostPointerComputeException : ComputeException
+    public sealed class InvalidHostPointerComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidHostPointerComputeException() : base(ComputeErrorCode.InvalidHostPointer) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid memory object compute errors. </summary>
+    /// <summary>   Exception for signaling invalid memory object compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidMemoryObjectComputeException : ComputeException
+    public sealed class InvalidMemoryObjectComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidMemoryObjectComputeException() : base(ComputeErrorCode.InvalidMemoryObject) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>
-    /// Exception for signalling invalid image format descriptor compute errors.
+    /// Exception for signaling invalid image format descriptor compute errors.
     /// </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidImageFormatDescriptorComputeException : ComputeException
+    public sealed class InvalidImageFormatDescriptorComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidImageFormatDescriptorComputeException() : base(ComputeErrorCode.InvalidImageFormatDescriptor) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid image size compute errors. </summary>
+    /// <summary>   Exception for signaling invalid image size compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidImageSizeComputeException : ComputeException
+    public sealed class InvalidImageSizeComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidImageSizeComputeException() : base(ComputeErrorCode.InvalidImageSize) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid sampler compute errors. </summary>
+    /// <summary>   Exception for signaling invalid sampler compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidSamplerComputeException : ComputeException
+    public sealed class InvalidSamplerComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidSamplerComputeException() : base(ComputeErrorCode.InvalidSampler) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid binary compute errors. </summary>
+    /// <summary>   Exception for signaling invalid binary compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidBinaryComputeException : ComputeException
+    public sealed class InvalidBinaryComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidBinaryComputeException() : base(ComputeErrorCode.InvalidBinary) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid build options compute errors. </summary>
+    /// <summary>   Exception for signaling invalid build options compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidBuildOptionsComputeException : ComputeException
+    public sealed class InvalidBuildOptionsComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidBuildOptionsComputeException() : base(ComputeErrorCode.InvalidBuildOptions) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid program compute errors. </summary>
+    /// <summary>   Exception for signaling invalid program compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidProgramComputeException : ComputeException
+    public sealed class InvalidProgramComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidProgramComputeException() : base(ComputeErrorCode.InvalidProgram) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid program executable compute errors. </summary>
+    /// <summary>   Exception for signaling invalid program executable compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidProgramExecutableComputeException : ComputeException
+    public sealed class InvalidProgramExecutableComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidProgramExecutableComputeException() : base(ComputeErrorCode.InvalidProgramExecutable) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid kernel name compute errors. </summary>
+    /// <summary>   Exception for signaling invalid kernel name compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidKernelNameComputeException : ComputeException
+    public sealed class InvalidKernelNameComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidKernelNameComputeException() : base(ComputeErrorCode.InvalidKernelName) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid kernel definition compute errors. </summary>
+    /// <summary>   Exception for signaling invalid kernel definition compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidKernelDefinitionComputeException : ComputeException
+    public sealed class InvalidKernelDefinitionComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidKernelDefinitionComputeException() : base(ComputeErrorCode.InvalidKernelDefinition) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid kernel compute errors. </summary>
+    /// <summary>   Exception for signaling invalid kernel compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidKernelComputeException : ComputeException
+    public sealed class InvalidKernelComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidKernelComputeException() : base(ComputeErrorCode.InvalidKernel) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid argument index compute errors. </summary>
+    /// <summary>   Exception for signaling invalid argument index compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidArgumentIndexComputeException : ComputeException
+    public sealed class InvalidArgumentIndexComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidArgumentIndexComputeException() : base(ComputeErrorCode.InvalidArgumentIndex) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid argument value compute errors. </summary>
+    /// <summary>   Exception for signaling invalid argument value compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidArgumentValueComputeException : ComputeException
+    public sealed class InvalidArgumentValueComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidArgumentValueComputeException() : base(ComputeErrorCode.InvalidArgumentValue) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid argument size compute errors. </summary>
+    /// <summary>   Exception for signaling invalid argument size compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidArgumentSizeComputeException : ComputeException
+    public sealed class InvalidArgumentSizeComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidArgumentSizeComputeException() : base(ComputeErrorCode.InvalidArgumentSize) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid kernel arguments compute errors. </summary>
+    /// <summary>   Exception for signaling invalid kernel arguments compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidKernelArgumentsComputeException : ComputeException
+    public sealed class InvalidKernelArgumentsComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidKernelArgumentsComputeException() : base(ComputeErrorCode.InvalidKernelArguments) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid work dimensions compute errors. </summary>
+    /// <summary>   Exception for signaling invalid work dimensions compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidWorkDimensionsComputeException : ComputeException
+    public sealed class InvalidWorkDimensionsComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidWorkDimensionsComputeException() : base(ComputeErrorCode.InvalidWorkDimension) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid work group size compute errors. </summary>
+    /// <summary>   Exception for signaling invalid work group size compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidWorkGroupSizeComputeException : ComputeException
+    public sealed class InvalidWorkGroupSizeComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidWorkGroupSizeComputeException() : base(ComputeErrorCode.InvalidWorkGroupSize) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid work item size compute errors. </summary>
+    /// <summary>   Exception for signaling invalid work item size compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidWorkItemSizeComputeException : ComputeException
+    public sealed class InvalidWorkItemSizeComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidWorkItemSizeComputeException() : base(ComputeErrorCode.InvalidWorkItemSize) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid global offset compute errors. </summary>
+    /// <summary>   Exception for signaling invalid global offset compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidGlobalOffsetComputeException : ComputeException
+    public sealed class InvalidGlobalOffsetComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidGlobalOffsetComputeException() : base(ComputeErrorCode.InvalidGlobalOffset) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid event wait list compute errors. </summary>
+    /// <summary>   Exception for signaling invalid event wait list compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidEventWaitListComputeException : ComputeException
+    public sealed class InvalidEventWaitListComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidEventWaitListComputeException() : base(ComputeErrorCode.InvalidEventWaitList) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid event compute errors. </summary>
+    /// <summary>   Exception for signaling invalid event compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidEventComputeException : ComputeException
+    public sealed class InvalidEventComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidEventComputeException() : base(ComputeErrorCode.InvalidEvent) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid operation compute errors. </summary>
+    /// <summary>   Exception for signaling invalid operation compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidOperationComputeException : ComputeException
+    public sealed class InvalidOperationComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidOperationComputeException() : base(ComputeErrorCode.InvalidOperation) { } }
@@ -886,23 +876,23 @@ namespace Cloo
     { public InvalidGLObjectComputeException() : base(ComputeErrorCode.InvalidGLObject) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid buffer size compute errors. </summary>
+    /// <summary>   Exception for signaling invalid buffer size compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidBufferSizeComputeException : ComputeException
+    public sealed class InvalidBufferSizeComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidBufferSizeComputeException() : base(ComputeErrorCode.InvalidBufferSize) { } }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Exception for signalling invalid mip level compute errors. </summary>
+    /// <summary>   Exception for signaling invalid mip level compute errors. </summary>
     ///
     /// <seealso cref="T:Cloo.ComputeException"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class InvalidMipLevelComputeException : ComputeException
+    public sealed class InvalidMipLevelComputeException : ComputeException
 
     /// <summary>   . </summary>
     { public InvalidMipLevelComputeException() : base(ComputeErrorCode.InvalidMipLevel) { } }

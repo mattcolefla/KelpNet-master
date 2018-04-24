@@ -73,8 +73,7 @@ namespace Cloo
             : base(buffer.Context, flags)
         {
             SysIntX2 region = new SysIntX2(offset * Marshal.SizeOf(typeof(T)), count * Marshal.SizeOf(typeof(T)));
-            ComputeErrorCode error;
-            Handle = CL11.CreateSubBuffer(buffer.Handle, flags, ComputeBufferCreateType.Region, ref region, out error);
+            Handle = CL11.CreateSubBuffer(buffer.Handle, flags, ComputeBufferCreateType.Region, ref region, out var error);
             ComputeException.ThrowOnError(error);
 
             Init();

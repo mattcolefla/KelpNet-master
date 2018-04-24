@@ -9,6 +9,8 @@ using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
+    using ReflectSoftware.Insight;
+
     //Learning of Sin function by MLP
 
     //Increasing the period of the learning object or increasing the sampling number (N) will degrade the score,
@@ -52,15 +54,15 @@ namespace KelpNetTester.Tests
 
                 if (i % (EPOCH / 10) == 0)
                 {
-                    Console.WriteLine("loss:" + loss / N);
-                    Console.WriteLine("");
+                    RILogManager.Default?.SendDebug("loss:" + loss / N);
+                    RILogManager.Default?.SendDebug("");
                 }
             }
 
-            Console.WriteLine("Test Start...");
+            RILogManager.Default?.SendDebug("Test Start...");
             foreach (Real[] val in trainData)
             {
-                Console.WriteLine(val[0] + ":" + nn.Predict(val)[0].Data[0]);
+                RILogManager.Default?.SendDebug(val[0] + ":" + nn.Predict(val)[0].Data[0]);
             }
         }
     }

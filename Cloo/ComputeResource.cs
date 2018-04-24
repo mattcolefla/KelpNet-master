@@ -90,7 +90,7 @@ namespace Cloo
         /// <summary>   Releases the associated OpenCL object. </summary>
         ~ComputeResource()
         {
-            RILogManager.Default?.SendTrace(ToString() + " leaked!", "Warning");
+            RILogManager.Default?.SendWarning(ToString() + " leaked!", "Warning");
             Dispose(false);
         }
 

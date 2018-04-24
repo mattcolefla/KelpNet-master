@@ -5,6 +5,8 @@ using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
+    using ReflectSoftware.Insight;
+
     //Linear split test
     class TestX
     {
@@ -78,27 +80,26 @@ namespace KelpNetTester.Tests
             NdArray testInputValuesA = new NdArray(testValue);
             NdArray testInputValuesB = new NdArray(testValue);
 
-            Console.WriteLine("l0 for");
+            RILogManager.Default?.SendDebug("l0 for");
             NdArray[] l0Result = l0.Forward(testInputValuesA);
-            Console.WriteLine(l0Result);
+            RILogManager.Default?.SendDebug(l0Result.ToString());
 
-            Console.WriteLine("\nl1 for");
+            RILogManager.Default?.SendDebug("\nl1 for");
             NdArray[] l1Result = l1.Forward(testInputValuesB);
-            Console.WriteLine(l1Result);
+            RILogManager.Default?.SendDebug(l1Result.ToString());
 
-            Console.WriteLine("\nl2 for");
+            RILogManager.Default?.SendDebug("\nl2 for");
             NdArray[] l2Result = l2.Forward(testInputValuesB);
-            Console.WriteLine(l2Result);
+            RILogManager.Default?.SendDebug(l2Result.ToString());
 
-            Console.WriteLine("\nl3 for");
+            RILogManager.Default?.SendDebug("\nl3 for");
             NdArray[] l3Result = l3.Forward(testInputValuesB);
-            Console.WriteLine(l3Result);
+            RILogManager.Default?.SendDebug(l3Result.ToString());
 
-            Console.WriteLine("\nl4 for");
+            RILogManager.Default?.SendDebug("\nl4 for");
             NdArray[] l4Result = l4.Forward(testInputValuesB);
-            Console.WriteLine(l4Result);
+            RILogManager.Default?.SendDebug(l4Result.ToString());
 
-            Console.WriteLine();
 
             //Create an appropriate Grad value
             l0Result[0].Grad = new Real[]
@@ -123,26 +124,26 @@ namespace KelpNetTester.Tests
             l3.Backward(l3Result);
             l4.Backward(l4Result);
 
-            Console.WriteLine("\nl0 back");
-            Console.WriteLine(testInputValuesA.ToString("Grad"));
+            RILogManager.Default?.SendDebug("\nl0 back");
+            RILogManager.Default?.SendDebug(testInputValuesA.ToString("Grad"));
 
-            Console.WriteLine("\nl1-l4 sum back");
-            Console.WriteLine(testInputValuesB.ToString("Grad"));
+            RILogManager.Default?.SendDebug("\nl1-l4 sum back");
+            RILogManager.Default?.SendDebug(testInputValuesB.ToString("Grad"));
 
             l0.Update();  //Although the format is irregular, since 10 contains SGD
             sgd.Update(); // Use stochastic gradient descent as the optimizer
 
-            Console.WriteLine("\nl0 Weight");
-            Console.WriteLine(l0.Weight);
+            RILogManager.Default?.SendDebug("\nl0 Weight");
+            RILogManager.Default?.SendDebug(l0.Weight.ToString());
 
-            Console.WriteLine("\nl1 Weight");
-            Console.WriteLine(l1.Weight);
+            RILogManager.Default?.SendDebug("\nl1 Weight");
+            RILogManager.Default?.SendDebug(l1.Weight.ToString());
 
-            Console.WriteLine("\nl0 Bias");
-            Console.WriteLine(l0.Bias);
+            RILogManager.Default?.SendDebug("\nl0 Bias");
+            RILogManager.Default?.SendDebug(l0.Bias.ToString());
 
-            Console.WriteLine("\nl1 Bias");
-            Console.WriteLine(l1.Bias);
+            RILogManager.Default?.SendDebug("\nl1 Bias");
+            RILogManager.Default?.SendDebug(l1.Bias.ToString());
         }
     }
 }

@@ -81,7 +81,7 @@ namespace Cloo
         /// <value> The <see cref="ComputeContext"/> of the <see cref="ComputeMemory"/>. </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ComputeContext Context { get { return context; } }
+        public ComputeContext Context => context;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
@@ -91,7 +91,7 @@ namespace Cloo
         /// <value> The <see cref="ComputeMemoryFlags"/> of the <see cref="ComputeMemory"/>. </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ComputeMemoryFlags Flags { get { return flags; } }
+        public ComputeMemoryFlags Flags => flags;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Gets (protected) the size in bytes of the <see cref="ComputeMemory"/>. </summary>

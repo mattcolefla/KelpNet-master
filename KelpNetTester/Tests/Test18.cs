@@ -13,6 +13,8 @@ using KelpNetTester.TestData;
 
 namespace KelpNetTester.Tests
 {
+    using ReflectSoftware.Insight;
+
     class Test18
     {
         //ミニバッチの数
@@ -29,7 +31,7 @@ namespace KelpNetTester.Tests
             Stopwatch sw = new Stopwatch();
 
             //MNISTのデータを用意する
-            Console.WriteLine("CIFAR Data Loading...");
+            RILogManager.Default?.SendDebug("CIFAR Data Loading...");
             CifarData cifarData = new CifarData();
 
             //ネットワークの構成を FunctionStack に書き連ねる
@@ -51,12 +53,12 @@ namespace KelpNetTester.Tests
             //optimizerを宣言
             nn.SetOptimizer(new Adam());
 
-            Console.WriteLine("Training Start...");
+            RILogManager.Default?.SendDebug("Training Start...");
 
             //三世代学習
             for (int epoch = 1; epoch < 3; epoch++)
             {
-                Console.WriteLine("epoch " + epoch);
+                RILogManager.Default?.SendDebug("epoch " + epoch);
 
                 //全体での誤差を集計
                 Real totalLoss = 0;
@@ -67,7 +69,7 @@ namespace KelpNetTester.Tests
                 {
                     sw.Restart();
 
-                    Console.WriteLine("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
+                    RILogManager.Default?.SendDebug("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
 
                     //訓練データからランダムにデータを取得
                     TestData.TestDataSet datasetX = cifarData.GetRandomXSet(BATCH_DATA_COUNT);
@@ -78,23 +80,23 @@ namespace KelpNetTester.Tests
                     totalLossCount++;
 
                     //結果出力
-                    Console.WriteLine("total loss " + totalLoss / totalLossCount);
-                    Console.WriteLine("local loss " + sumLoss);
+                    RILogManager.Default?.SendDebug("total loss " + totalLoss / totalLossCount);
+                    RILogManager.Default?.SendDebug("local loss " + sumLoss);
 
                     sw.Stop();
-                    Console.WriteLine("time" + sw.Elapsed.TotalMilliseconds);
+                    RILogManager.Default?.SendDebug("time" + sw.Elapsed.TotalMilliseconds);
 
                     //20回バッチを動かしたら精度をテストする
                     if (i % 20 == 0)
                     {
-                        Console.WriteLine("\nTesting...");
+                        RILogManager.Default?.SendDebug("\nTesting...");
 
                         //テストデータからランダムにデータを取得
                         TestData.TestDataSet datasetY = cifarData.GetRandomYSet(TEACH_DATA_COUNT);
 
                         //テストを実行
                         Real accuracy = Trainer.Accuracy(nn, datasetY.Data, datasetY.Label);
-                        Console.WriteLine("accuracy " + accuracy);
+                        RILogManager.Default?.SendDebug("accuracy " + accuracy);
                     }
                 }
             }

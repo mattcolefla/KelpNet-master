@@ -12,6 +12,8 @@ using KelpNetTester.TestData;
 
 namespace KelpNetTester.Tests
 {
+    using ReflectSoftware.Insight;
+
     //Decoupled Neural Interfaces using Synthetic GradientsによるMNIST（手書き文字）の学習
     // Incorporate label information into teacher signal cDNI
     // Execute Decoupled of all layers expressed as Model D asynchronously
@@ -55,10 +57,10 @@ namespace KelpNetTester.Tests
         public static void Run()
         {
             //MNISTのデータを用意する
-            Console.WriteLine("MNIST Data Loading...");
+            RILogManager.Default?.SendDebug("MNIST Data Loading...");
             MnistData mnistData = new MnistData(28);
 
-            Console.WriteLine("Training Start...");
+            RILogManager.Default?.SendDebug("Training Start...");
 
             //ネットワークの構成を FunctionStack に書き連ねる
             FunctionStack Layer1 = new FunctionStack(
@@ -125,7 +127,7 @@ namespace KelpNetTester.Tests
 
             for (int epoch = 0; epoch < 10; epoch++)
             {
-                Console.WriteLine("epoch " + (epoch + 1));
+                RILogManager.Default?.SendDebug("epoch " + (epoch + 1));
 
                 //全体での誤差を集計
                 Real totalLoss = 0;
@@ -235,30 +237,30 @@ namespace KelpNetTester.Tests
                     cDNI3totalLoss += cDNI3loss;
                     cDNI3totalLossCount++;
 
-                    Console.WriteLine("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
+                    RILogManager.Default?.SendDebug("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
                     //結果出力
-                    Console.WriteLine("total loss " + totalLoss / totalLossCount);
-                    Console.WriteLine("local loss " + sumLoss);
+                    RILogManager.Default?.SendDebug("total loss " + totalLoss / totalLossCount);
+                    RILogManager.Default?.SendDebug("local loss " + sumLoss);
 
-                    Console.WriteLine("\ncDNI1 total loss " + cDNI1totalLoss / cDNI1totalLossCount);
-                    Console.WriteLine("cDNI2 total loss " + cDNI2totalLoss / cDNI2totalLossCount);
-                    Console.WriteLine("cDNI3 total loss " + cDNI3totalLoss / cDNI3totalLossCount);
+                    RILogManager.Default?.SendDebug("\ncDNI1 total loss " + cDNI1totalLoss / cDNI1totalLossCount);
+                    RILogManager.Default?.SendDebug("cDNI2 total loss " + cDNI2totalLoss / cDNI2totalLossCount);
+                    RILogManager.Default?.SendDebug("cDNI3 total loss " + cDNI3totalLoss / cDNI3totalLossCount);
 
-                    Console.WriteLine("\ncDNI1 local loss " + cDNI1loss);
-                    Console.WriteLine("cDNI2 local loss " + cDNI2loss);
-                    Console.WriteLine("cDNI3 local loss " + cDNI3loss);
+                    RILogManager.Default?.SendDebug("\ncDNI1 local loss " + cDNI1loss);
+                    RILogManager.Default?.SendDebug("cDNI2 local loss " + cDNI2loss);
+                    RILogManager.Default?.SendDebug("cDNI3 local loss " + cDNI3loss);
 
                     //20回バッチを動かしたら精度をテストする
                     if (i % 20 == 0)
                     {
-                        Console.WriteLine("\nTesting...");
+                        RILogManager.Default?.SendDebug("\nTesting...");
 
                         //テストデータからランダムにデータを取得
                         TestDataSet datasetY = mnistData.GetRandomYSet(TEST_DATA_COUNT, 28);
 
                         //テストを実行
                         Real accuracy = Trainer.Accuracy(nn, datasetY.Data, datasetY.Label);
-                        Console.WriteLine("accuracy " + accuracy);
+                        RILogManager.Default?.SendDebug("accuracy " + accuracy);
                     }
                 }
             }
