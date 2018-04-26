@@ -1,51 +1,41 @@
-﻿    using System;
-using KelpNet.Common;
-using KelpNet.Common.Functions.Type;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace KelpNet.Functions.Activations
 {
-    using System.Collections.Generic;
+    using Common;
     using Common.Functions;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   (Serializable) a re lu hyperbolic tangent. </summary>
-    ///
-    /// <seealso cref="T:KelpNet.Common.Functions.CompressibleActivation"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
     [Serializable]
-    public class ReLuTanh : CompressibleActivation
+    public class SReLUShifted : CompressibleActivation
     {
         /// <summary>   Name of the function. </summary>
-        const string FUNCTION_NAME = "ReLuTanh";
-        /// <summary>   Name of the parameter. </summary>
-        private const string PARAM_NAME = "/*slope*/";
-        /// <summary>   The slope. </summary>
-        private readonly Real _slope = 0.2;
+        const string FUNCTION_NAME = "SReLUShifted";
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
-        /// Initializes a new instance of the KelpNet.Functions.Activations.ReLuTanh class.
+        /// Initializes a new instance of the KelpNet.Functions.Activations.SReLUShifted class.
         /// </summary>
         ///
-        /// <param name="slope">        (Optional) The slope. </param>
         /// <param name="name">         (Optional) The name. </param>
         /// <param name="inputNames">   (Optional) List of names of the inputs. </param>
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         /// <param name="gpuEnable">    (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ReLuTanh(double slope = 0.2, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false)
-            : base(FUNCTION_NAME, new[] { new KeyValuePair<string, string>(PARAM_NAME, slope.ToString()) }, name, inputNames, outputNames, gpuEnable)
-
+        public SReLUShifted(string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, null, name, inputNames, outputNames, gpuEnable)
         {
-            _slope = slope;
         }
+
 
         internal override Real ForwardActivate(Real x, Real[] args)
         {
             return x;
         }
+
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Activate virtual function used in / / .Net. </summary>
@@ -59,8 +49,26 @@ namespace KelpNet.Functions.Activations
 
         internal override Real ForwardActivate(Real x)
         {
-            //return x < 0 ? (Real)(x * _slope) * Math.Tanh(x) : x * Math.Tanh(x);
-            return x < 0 ? (Real)(x * _slope) * MathNet.Numerics.SpecialFunctions.Logistic(x) : x * MathNet.Numerics.SpecialFunctions.Logistic(x);
+            const double tl = 0.001; // threshold (left).
+            const double tr = 0.999; // threshold (right).
+            const double a = 0.00001;
+            const double offset = 0.5;
+
+            double y;
+            if (x + offset > tl && x + offset < tr)
+            {
+                y = x + offset;
+            }
+            else if (x + offset <= tl)
+            {
+                y = tl + ((x + offset) - tl) * a;
+            }
+            else
+            {
+                y = tr + ((x + offset) - tr) * a;
+            }
+
+            return y;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +84,8 @@ namespace KelpNet.Functions.Activations
 
         internal override Real BackwardActivate(Real gy, Real y)
         {
-            return y <= 0 ? (Real)(y * _slope) * MathNet.Numerics.SpecialFunctions.Logistic(y) : gy * MathNet.Numerics.SpecialFunctions.Logistic(y);
+            return gy * (1 - y * y);
         }
+
     }
 }

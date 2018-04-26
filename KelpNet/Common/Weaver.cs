@@ -82,7 +82,7 @@ typedef REAL Real;
         {
             if (!KernelSources.ContainsKey(functionName))
             {
-                byte[] binary = (byte[])Resources.ResourceManager.GetObject(functionName);
+                byte[] binary = (byte[])Resources.ResourceManager?.GetObject(functionName);
                 if (binary == null) 
                     throw new Exception("Resource file acquisition failed \n Resource name:" + functionName);
 
@@ -105,10 +105,9 @@ typedef REAL Real;
 
         public static void Initialize(ComputeDeviceTypes selectedComputeDeviceTypes, int platformId = 0, int deviceIndex = 0)
         {
-            Platform = ComputePlatform.Platforms[platformId];
+            Platform = ComputePlatform.Platforms?[platformId];
 
-            Devices = Platform
-                .Devices
+            Devices = Platform?.Devices
                 .Where(d => (long)d.Type == (long)selectedComputeDeviceTypes)
                 .ToArray();
 

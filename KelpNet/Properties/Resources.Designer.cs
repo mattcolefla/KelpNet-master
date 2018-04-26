@@ -73,6 +73,16 @@ namespace KelpNet.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] ArcSinH {
+            get {
+                object obj = ResourceManager.GetObject("ArcSinH", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Convolution2D {
             get {
                 object obj = ResourceManager.GetObject("Convolution2D", resourceCulture);
@@ -113,9 +123,39 @@ namespace KelpNet.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] LeakyReLUShifted {
+            get {
+                object obj = ResourceManager.GetObject("LeakyReLUShifted", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Linear {
             get {
                 object obj = ResourceManager.GetObject("Linear", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] LogisticFunction {
+            get {
+                object obj = ResourceManager.GetObject("LogisticFunction", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MaxMinusOne {
+            get {
+                object obj = ResourceManager.GetObject("MaxMinusOne", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -163,9 +203,29 @@ namespace KelpNet.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] ScaledELU {
+            get {
+                object obj = ResourceManager.GetObject("ScaledELU", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Sigmoid {
             get {
                 object obj = ResourceManager.GetObject("Sigmoid", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Sine {
+            get {
+                object obj = ResourceManager.GetObject("Sine", resourceCulture);
                 return ((byte[])(obj));
             }
         }

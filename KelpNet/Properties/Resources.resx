@@ -121,6 +121,9 @@
   <data name="Activation" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\opencl\activations\activation.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="ArcSinH" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\OpenCL\Activations\ArcSinH.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="Convolution2D" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\opencl\connections\convolution2d.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -133,8 +136,17 @@
   <data name="LeakyReLU" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\opencl\activations\leakyrelu.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="LeakyReLUShifted" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\OpenCL\Activations\LeakyReLUShifted.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="Linear" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\opencl\connections\linear.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LogisticFunction" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\OpenCL\Activations\LogisticFunction.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MaxMinusOne" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\OpenCL\Activations\MaxMinusOne.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="MaxPooling" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\opencl\poolings\maxpooling.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -148,8 +160,14 @@
   <data name="ReLuTanh" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\OpenCL\Activations\relutanh.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="ScaledELU" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\OpenCL\Activations\ScaledELU.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="Sigmoid" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\opencl\activations\sigmoid.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Sine" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\OpenCL\Activations\Sine.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Tanh" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\opencl\activations\tanh.cl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

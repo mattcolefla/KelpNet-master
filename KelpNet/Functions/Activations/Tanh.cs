@@ -31,6 +31,12 @@ namespace KelpNet.Functions.Activations
         {
         }
 
+        internal override Real ForwardActivate(Real x, Real[] args)
+        {
+            return x;
+        }
+
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Activate virtual function used in / / .Net. </summary>
         ///
