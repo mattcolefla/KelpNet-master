@@ -6,6 +6,8 @@ using KelpNet.Common.Tools;
 
 namespace KelpNet.Common.Functions
 {
+    using JetBrains.Annotations;
+
     /// <summary>   Base class of Function stacked in FunctionStack. </summary>
     [Serializable]
     public abstract class Function
@@ -46,7 +48,7 @@ namespace KelpNet.Common.Functions
         /// <param name="ys">   A variable-length parameters list containing ys. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public virtual void Backward(params NdArray[] ys){}
+        public virtual void Backward([CanBeNull] params NdArray[] ys){}
 
         /// <summary>   List of names of the inputs. </summary>
         public string[] InputNames;
@@ -63,7 +65,7 @@ namespace KelpNet.Common.Functions
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected Function(string name, string[] inputNames = null, string[] outputNames = null)
+        protected Function([CanBeNull] string name, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null)
         {
             Name = name;
 
@@ -84,7 +86,7 @@ namespace KelpNet.Common.Functions
         /// <param name="optimizers">   A variable-length parameters list containing optimizers. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public virtual void SetOptimizer(params Optimizer[] optimizers)
+        public virtual void SetOptimizer([NotNull] params Optimizer[] optimizers)
         {
             Optimizers = optimizers;
 
@@ -111,7 +113,8 @@ namespace KelpNet.Common.Functions
         /// <returns>   A NdArray[]. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public virtual NdArray[] Predict(params NdArray[] input)
+        [CanBeNull]
+        public virtual NdArray[] Predict([CanBeNull] params NdArray[] input)
         {
             return Forward(input);
         }
@@ -150,6 +153,7 @@ namespace KelpNet.Common.Functions
         /// <returns>   A copy of this object. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        [CanBeNull]
         public Function Clone()
         {
             return DeepCopyHelper.DeepCopy(this);

@@ -6,6 +6,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Common.Functions
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a compressible function. </summary>
     ///
@@ -124,12 +126,12 @@ namespace KelpNet.Common.Functions
         /// <param name="gpuEnable">            (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected CompressibleFunction(string functionName, CompressibleActivation activation = null, KeyValuePair<string, string>[] activationParameters = null, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
+        protected CompressibleFunction([NotNull] string functionName, [CanBeNull] CompressibleActivation activation = null, [CanBeNull] KeyValuePair<string, string>[] activationParameters = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
         {
-            string kernelNameBase = functionName.Replace(" ", "");
-            ForwardKernelName = kernelNameBase + "Forward";
-            BackwardgWKernelName = kernelNameBase + "gWBackward";
-            BackwardgXKernelName = kernelNameBase + "gXBackward";
+            string kernelNameBase = functionName.Replace(" ", string.Empty);
+            ForwardKernelName = kernelNameBase + string.Intern("Forward");
+            BackwardgWKernelName = kernelNameBase + string.Intern("gWBackward");
+            BackwardgXKernelName = kernelNameBase + string.Intern("gXBackward");
 
             KernelString = Weaver.GetKernelSource(functionName);
 
@@ -176,7 +178,7 @@ namespace KelpNet.Common.Functions
         /// <param name="activation">   The activation. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public void SetActivation(CompressibleActivation activation)
+        public void SetActivation([CanBeNull] CompressibleActivation activation)
         {
             Activator = activation;
 

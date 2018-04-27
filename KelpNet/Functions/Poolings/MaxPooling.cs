@@ -9,6 +9,9 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Poolings
 {
+    using JetBrains.Annotations;
+    using Nerdle.Ensure;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a maximum pooling. </summary>
     ///
@@ -57,7 +60,7 @@ namespace KelpNet.Functions.Poolings
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public MaxPooling(int ksize, int stride = 1, int pad = 0, bool gpuEnable = false, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public MaxPooling(int ksize, int stride = 1, int pad = 0, bool gpuEnable = false, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             _kHeight = ksize;
             _kWidth = ksize;
@@ -113,7 +116,7 @@ namespace KelpNet.Functions.Poolings
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public MaxPooling(Size ksize, Size stride = new Size(), Size pad = new Size(), bool gpuEnable = false, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public MaxPooling(Size ksize, Size stride = new Size(), Size pad = new Size(), bool gpuEnable = false, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             if (pad == Size.Empty)
                 pad = new Size(0, 0);
@@ -161,7 +164,8 @@ namespace KelpNet.Functions.Poolings
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private NdArray ForwardCpu(NdArray input)
+        [CanBeNull]
+        private NdArray ForwardCpu([NotNull] NdArray input)
         {
             int outputHeight = (int)Math.Floor((input.Shape[1] - _kHeight + _padY * 2.0) / _strideY) + 1;
             int outputWidth = (int)Math.Floor((input.Shape[2] - _kWidth + _padX * 2.0) / _strideX) + 1;
@@ -220,7 +224,8 @@ namespace KelpNet.Functions.Poolings
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private NdArray ForwardGpu(NdArray input)
+        [CanBeNull]
+        private NdArray ForwardGpu([NotNull] NdArray input)
         {
             int outputHeight = (int)Math.Floor((input.Shape[1] - _kHeight + _padY * 2.0) / _strideY) + 1;
             int outputWidth = (int)Math.Floor((input.Shape[2] - _kWidth + _padX * 2.0) / _strideX) + 1;
@@ -230,24 +235,24 @@ namespace KelpNet.Functions.Poolings
             {
                 using (ComputeBuffer<int> gpuYIndex = new ComputeBuffer<int>(Weaver.Context, ComputeMemoryFlags.WriteOnly | ComputeMemoryFlags.AllocateHostPointer, outputIndices.Length))
                 {
-                    ForwardKernel.SetMemoryArgument(0, gpuX);
-                    ForwardKernel.SetMemoryArgument(1, gpuYIndex);
-                    ForwardKernel.SetValueArgument(2, outputHeight);
-                    ForwardKernel.SetValueArgument(3, outputWidth);
-                    ForwardKernel.SetValueArgument(4, input.Shape[0]);
-                    ForwardKernel.SetValueArgument(5, input.Shape[1]);
-                    ForwardKernel.SetValueArgument(6, input.Shape[2]);
-                    ForwardKernel.SetValueArgument(7, _kHeight);
-                    ForwardKernel.SetValueArgument(8, _kWidth);
-                    ForwardKernel.SetValueArgument(9, _strideX);
-                    ForwardKernel.SetValueArgument(10, _strideY);
-                    ForwardKernel.SetValueArgument(11, _padY);
-                    ForwardKernel.SetValueArgument(12, _padX);
+                    ForwardKernel?.SetMemoryArgument(0, gpuX);
+                    ForwardKernel?.SetMemoryArgument(1, gpuYIndex);
+                    ForwardKernel?.SetValueArgument(2, outputHeight);
+                    ForwardKernel?.SetValueArgument(3, outputWidth);
+                    ForwardKernel?.SetValueArgument(4, input.Shape[0]);
+                    ForwardKernel?.SetValueArgument(5, input.Shape[1]);
+                    ForwardKernel?.SetValueArgument(6, input.Shape[2]);
+                    ForwardKernel?.SetValueArgument(7, _kHeight);
+                    ForwardKernel?.SetValueArgument(8, _kWidth);
+                    ForwardKernel?.SetValueArgument(9, _strideX);
+                    ForwardKernel?.SetValueArgument(10, _strideY);
+                    ForwardKernel?.SetValueArgument(11, _padY);
+                    ForwardKernel?.SetValueArgument(12, _padX);
 
-                    Weaver.CommandQueue.Execute(ForwardKernel, null, new long[] { input.BatchCount * input.Shape[0], outputHeight, outputWidth },
+                    Weaver.CommandQueue?.Execute(ForwardKernel, null, new long[] { input.BatchCount * input.Shape[0], outputHeight, outputWidth },
                         null, null);
-                    Weaver.CommandQueue.Finish();
-                    Weaver.CommandQueue.ReadFromBuffer(gpuYIndex, ref outputIndices, true, null);
+                    Weaver.CommandQueue?.Finish();
+                    Weaver.CommandQueue?.ReadFromBuffer(gpuYIndex, ref outputIndices, true, null);
                 }
             }
 
@@ -265,7 +270,8 @@ namespace KelpNet.Functions.Poolings
         /// <returns>   The forward result. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        NdArray GetForwardResult(NdArray input, int[] outputIndices, int outputWidth, int outputHeight)
+        [NotNull]
+        NdArray GetForwardResult([NotNull] NdArray input, [NotNull] int[] outputIndices, int outputWidth, int outputHeight)
         {
             Real[] result = new Real[outputIndices.Length];
 
@@ -274,7 +280,7 @@ namespace KelpNet.Functions.Poolings
                 result[i] = input.Data[outputIndices[i]];
             }
 
-            _outputIndicesList.Add(outputIndices);
+            _outputIndicesList?.Add(outputIndices);
 
             return NdArray.Convert(result, new[] { input.Shape[0], outputHeight, outputWidth }, input.BatchCount, this);
         }
@@ -286,8 +292,11 @@ namespace KelpNet.Functions.Poolings
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private void BackwardCpu(NdArray y, NdArray x)
+        private void BackwardCpu([NotNull] NdArray y, [CanBeNull] NdArray x)
         {
+            Ensure.Argument(y).NotNull();
+            Ensure.Argument(x).NotNull();
+
             int[] outputIndices = _outputIndicesList[_outputIndicesList.Count - 1];
             _outputIndicesList.RemoveAt(_outputIndicesList.Count - 1);
 

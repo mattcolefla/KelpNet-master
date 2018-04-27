@@ -14,7 +14,7 @@ namespace KelpNetTester.Tests
 {
     using ReflectSoftware.Insight;
 
-    //Decoupled Neural Interfaces using Synthetic GradientsによるMNIST（手書き文字）の学習
+    //Decoupled Neural Interfaces using Synthetic Gradients Learning MNIST (Handwritten Characters) by Gradients
     // http://ralo23.hatenablog.com/entry/2016/10/22/233405
     class Test11
     {

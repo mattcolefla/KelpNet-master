@@ -4,6 +4,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Activations
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   A softplus. </summary>
     ///
@@ -31,7 +33,7 @@ namespace KelpNet.Functions.Activations
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Softplus(double beta = 1, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public Softplus(double beta = 1, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             _beta = beta;
             _betaInv = 1 / _beta;
@@ -48,7 +50,8 @@ namespace KelpNet.Functions.Activations
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected NdArray NeedPreviousForwardCpu(NdArray x)
+        [NotNull]
+        protected NdArray NeedPreviousForwardCpu([NotNull] NdArray x)
         {
             Real[] y = new Real[x.Data.Length];
 
@@ -85,7 +88,7 @@ namespace KelpNet.Functions.Activations
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected void NeedPreviousBackwardCpu(NdArray y, NdArray x)
+        protected void NeedPreviousBackwardCpu([CanBeNull] NdArray y, [NotNull] NdArray x)
         {
             for (int i = 0; i < x.Grad.Length; i++)
             {

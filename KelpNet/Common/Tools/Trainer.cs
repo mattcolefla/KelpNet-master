@@ -4,6 +4,8 @@ using KelpNet.Common.Loss;
 
 namespace KelpNet.Common.Tools
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>
     /// Class to perform network training Mainly responsible for type conversion of Array-> NdArray.
@@ -24,7 +26,7 @@ namespace KelpNet.Common.Tools
         /// <returns>   A Real. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static Real Train(FunctionStack functionStack, Array[] input, Array[] teach, LossFunction lossFunction, bool isUpdate = true)
+        public static Real Train([CanBeNull] FunctionStack functionStack, [NotNull] Array[] input, [NotNull] Array[] teach, [CanBeNull] LossFunction lossFunction, bool isUpdate = true)
         {
             return Train(functionStack, NdArray.FromArrays(input), NdArray.FromArrays(teach), lossFunction, isUpdate);
         }
@@ -41,7 +43,7 @@ namespace KelpNet.Common.Tools
         /// <returns>   A Real. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static Real Train(FunctionStack functionStack, NdArray input, NdArray teach, LossFunction lossFunction, bool isUpdate = true)
+        public static Real Train([NotNull] FunctionStack functionStack, [CanBeNull] NdArray input, [CanBeNull] NdArray teach, [NotNull] LossFunction lossFunction, bool isUpdate = true)
         {
             // for preserving the error of the result
             NdArray[] result = functionStack.Forward(input);
@@ -68,7 +70,7 @@ namespace KelpNet.Common.Tools
         /// <returns>   A double. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static double Accuracy(FunctionStack functionStack, Array[] x, Array[] y)
+        public static double Accuracy([CanBeNull] FunctionStack functionStack, [NotNull] Array[] x, [NotNull] Array[] y)
         {
             return Accuracy(functionStack, NdArray.FromArrays(x), NdArray.FromArrays(y));
         }
@@ -83,7 +85,7 @@ namespace KelpNet.Common.Tools
         /// <returns>   A double. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static double Accuracy(FunctionStack functionStack, NdArray x, NdArray y)
+        public static double Accuracy([NotNull] FunctionStack functionStack, [NotNull] NdArray x, [CanBeNull] NdArray y)
         {
             double matchCount = 0;
 

@@ -3,6 +3,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Mathmetrics.BasicMath
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   A div. </summary>
     ///
@@ -24,7 +26,7 @@ namespace KelpNet.Functions.Mathmetrics.BasicMath
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Div(string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public Div([CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             DualInputForward = ForwardCpu;
             DualOutputBackward = BackwardCpu;
@@ -39,7 +41,8 @@ namespace KelpNet.Functions.Mathmetrics.BasicMath
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected NdArray ForwardCpu(NdArray a, NdArray b)
+        [NotNull]
+        protected NdArray ForwardCpu([NotNull] NdArray a, [CanBeNull] NdArray b)
         {
             Real[] resultData = new Real[a.Data.Length];
 
@@ -59,7 +62,7 @@ namespace KelpNet.Functions.Mathmetrics.BasicMath
         /// <param name="b">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected void BackwardCpu(NdArray y, NdArray a, NdArray b)
+        protected void BackwardCpu([NotNull] NdArray y, [CanBeNull] NdArray a, [CanBeNull] NdArray b)
         {
             for (int i = 0; i < y.Grad.Length; i++)
             {
@@ -89,7 +92,7 @@ namespace KelpNet.Functions.Mathmetrics.BasicMath
         /// <param name="name"> (Optional) The name. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public DivConst(string name = FUNCTION_NAME) : base(name)
+        public DivConst([CanBeNull] string name = FUNCTION_NAME) : base(name)
         {
             DualInputForward = ForwardCpu;
             DualOutputBackward = BackwardCpu;
@@ -104,7 +107,8 @@ namespace KelpNet.Functions.Mathmetrics.BasicMath
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected NdArray ForwardCpu(NdArray a, NdArray b)
+        [NotNull]
+        protected NdArray ForwardCpu([NotNull] NdArray a, [NotNull] NdArray b)
         {
             Real[] resultData = new Real[a.Data.Length];
             Real val = b.Data[0];
@@ -125,7 +129,7 @@ namespace KelpNet.Functions.Mathmetrics.BasicMath
         /// <param name="b">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected void BackwardCpu(NdArray y, NdArray a, NdArray b)
+        protected void BackwardCpu([NotNull] NdArray y, [CanBeNull] NdArray a, [NotNull] NdArray b)
         {
             Real val = b.Data[0];
 
@@ -155,7 +159,7 @@ namespace KelpNet.Functions.Mathmetrics.BasicMath
         /// <param name="name"> (Optional) The name. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ConstDiv(string name = FUNCTION_NAME) : base(name)
+        public ConstDiv([CanBeNull] string name = FUNCTION_NAME) : base(name)
         {
             DualInputForward = ForwardCpu;
             DualOutputBackward = BackwardCpu;
@@ -170,7 +174,8 @@ namespace KelpNet.Functions.Mathmetrics.BasicMath
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected NdArray ForwardCpu(NdArray a, NdArray b)
+        [NotNull]
+        protected NdArray ForwardCpu([NotNull] NdArray a, [NotNull] NdArray b)
         {
             Real[] resultData = new Real[a.Data.Length];
             Real val = a.Data[0];
@@ -191,7 +196,7 @@ namespace KelpNet.Functions.Mathmetrics.BasicMath
         /// <param name="b">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected void BackwardCpu(NdArray y, NdArray a, NdArray b)
+        protected void BackwardCpu([NotNull] NdArray y, [NotNull] NdArray a, [CanBeNull] NdArray b)
         {
             Real val = a.Data[0];
 

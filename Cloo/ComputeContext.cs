@@ -198,8 +198,7 @@ namespace Cloo
 
         public ComputeContext(ICollection<ComputeDevice> devices, ComputeContextPropertyList properties, ComputeContextNotifier notify, IntPtr notifyDataPtr)
         {
-            int handleCount;
-            CLDeviceHandle[] deviceHandles = ComputeTools.ExtractHandles(devices, out handleCount);
+            CLDeviceHandle[] deviceHandles = ComputeTools.ExtractHandles(devices, out var handleCount);
             IntPtr[] propertyArray = properties?.ToIntPtrArray();
             callback = notify;
 
@@ -287,9 +286,16 @@ namespace Cloo
             // free native resources
             if (Handle.IsValid)
             {
-                RILogManager.Default?.SendTrace("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
                 CL12.ReleaseContext(Handle);
                 Handle.Invalidate();
+
+                try
+                {
+                    RILogManager.Default?.SendTrace("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 

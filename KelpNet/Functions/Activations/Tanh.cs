@@ -4,6 +4,8 @@ using KelpNet.Common.Functions;
 
 namespace KelpNet.Functions.Activations
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a hyperbolic tangent. </summary>
     ///
@@ -27,11 +29,11 @@ namespace KelpNet.Functions.Activations
         /// <param name="gpuEnable">    (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Tanh(string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, null, name, inputNames, outputNames, gpuEnable)
+        public Tanh([CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, null, name, inputNames, outputNames, gpuEnable)
         {
         }
 
-        internal override Real ForwardActivate(Real x, Real[] args)
+        internal override Real ForwardActivate(Real x, [CanBeNull] Real[] args)
         {
             return x;
         }

@@ -13,7 +13,6 @@ namespace KelpNetTester.Tests
 {
     using ReflectSoftware.Insight;
 
-    //ChainerのRNNサンプルを再現
     //https://github.com/pfnet/chainer/tree/master/examples/ptb
     class Test10
     {

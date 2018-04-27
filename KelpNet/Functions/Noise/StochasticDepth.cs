@@ -5,6 +5,8 @@ using KelpNet.Common.Functions;
 
 namespace KelpNet.Functions.Noise
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a stochastic depth. </summary>
     ///
@@ -53,7 +55,7 @@ namespace KelpNet.Functions.Noise
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public StochasticDepth(Function function, Function resBlock = null, double pl = 0.5, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public StochasticDepth([CanBeNull] Function function, [CanBeNull] Function resBlock = null, double pl = 0.5, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             _function = function;
             _resBlock = resBlock;
@@ -71,7 +73,8 @@ namespace KelpNet.Functions.Noise
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Forward(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override NdArray[] Forward(params NdArray[] xs)
+        [NotNull]
+        public override NdArray[] Forward([CanBeNull] params NdArray[] xs)
         {
             List<NdArray> resultArray = new List<NdArray>();
             NdArray[] resResult = xs;

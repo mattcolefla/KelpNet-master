@@ -8,19 +8,18 @@ using KelpNet.Optimizers;
 
 namespace KelpNetTester.Tests
 {
+    using Nerdle.Ensure;
     using ReflectSoftware.Insight;
 
-    // Learning of Sin function by LSTM(predict t + 1 value from t value
+    // Learning of Sin function by LSTM(predict t + 1 value from t value)
     //http://seiya-kumada.blogspot.jp/2016/07/lstm-chainer.html
     class Test8
     {
         const int STEPS_PER_CYCLE = 50;
         const int NUMBER_OF_CYCLES = 100;
-
         const int TRAINING_EPOCHS = 1000;
         const int MINI_BATCH_SIZE = 100;
         const int LENGTH_OF_SEQUENCE = 100;
-
         const int DISPLAY_EPOCH = 1;
         const int PREDICTION_LENGTH = 75;
 
@@ -41,11 +40,9 @@ namespace KelpNetTester.Tests
             for (int epoch = 0; epoch < TRAINING_EPOCHS; epoch++)
             {
                 NdArray[] sequences = dataMaker.MakeMiniBatch(trainData, MINI_BATCH_SIZE, LENGTH_OF_SEQUENCE);
-
                 Real loss = ComputeLoss(model, sequences);
 
                 model.Update();
-
                 model.ResetState();
 
                 if (epoch != 0 && epoch % DISPLAY_EPOCH == 0)
@@ -63,6 +60,9 @@ namespace KelpNetTester.Tests
 
         static Real ComputeLoss(FunctionStack model, NdArray[] sequences)
         {
+            Ensure.Argument(model).NotNull();
+            Ensure.Argument(sequences).NotNull();
+
             // Total error in the whole
             Real totalLoss = 0;
             NdArray x = new NdArray(new[] { 1 }, MINI_BATCH_SIZE);
@@ -93,6 +93,11 @@ namespace KelpNetTester.Tests
 
         static void predict(NdArray seq, FunctionStack model, int pre_length)
         {
+            Ensure.Argument(model).NotNull();
+            Ensure.Argument(seq).NotNull();
+            Ensure.Argument(pre_length).GreaterThanOrEqualTo(0);
+
+
             Real[] pre_input_seq = new Real[seq.Data.Length / 4];
             if (pre_input_seq.Length < 1)
             {
@@ -103,8 +108,7 @@ namespace KelpNetTester.Tests
             List<Real> input_seq = new List<Real>();
             input_seq.AddRange(pre_input_seq);
 
-            List<Real> output_seq = new List<Real>();
-            output_seq.Add(input_seq[input_seq.Count - 1]);
+            List<Real> output_seq = new List<Real> {input_seq[input_seq.Count - 1]};
 
             for (int i = 0; i < pre_length; i++)
             {
@@ -124,19 +128,23 @@ namespace KelpNetTester.Tests
 
         static Real predict_sequence(FunctionStack model, List<Real> input_seq)
         {
+            Ensure.Argument(model).NotNull();
+            Ensure.Argument(input_seq).NotNull();
+
             model.ResetState();
 
             NdArray result = 0;
 
-            for (int i = 0; i < input_seq.Count; i++)
+            Ensure.Argument(model).NotNull();
+            Ensure.Argument(input_seq).NotNull(); foreach (var t in input_seq)
             {
-                result = model.Predict(input_seq[i])[0];
+                result = model.Predict(t)[0];
             }
 
             return result.Data[0];
         }
 
-        class DataMaker
+        sealed class DataMaker
         {
             private readonly int stepsPerCycle;
             private readonly int numberOfCycles;
@@ -164,6 +172,10 @@ namespace KelpNetTester.Tests
 
             public NdArray[] MakeMiniBatch(NdArray baseFreq, int miniBatchSize, int lengthOfSequence)
             {
+                Ensure.Argument(baseFreq).NotNull();
+                Ensure.Argument(miniBatchSize).GreaterThanOrEqualTo(0);
+                Ensure.Argument(lengthOfSequence).GreaterThanOrEqualTo(0);
+
                 NdArray[] result = new NdArray[miniBatchSize];
 
                 for (int i = 0; i < result.Length; i++)

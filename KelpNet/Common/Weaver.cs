@@ -9,6 +9,8 @@ using KelpNet.Properties;
 
 namespace KelpNet.Common
 {
+    using JetBrains.Annotations;
+
     /// <summary>   The types of devices. </summary>
     [Flags]
     public enum ComputeDeviceTypes : long
@@ -78,13 +80,14 @@ typedef REAL Real;
         /// <returns>   The kernel source. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static string GetKernelSource(string functionName)
+        [CanBeNull]
+        public static string GetKernelSource([NotNull] string functionName)
         {
             if (!KernelSources.ContainsKey(functionName))
             {
                 byte[] binary = (byte[])Resources.ResourceManager?.GetObject(functionName);
                 if (binary == null) 
-                    throw new Exception("Resource file acquisition failed \n Resource name:" + functionName);
+                    throw new Exception(string.Intern("Resource file acquisition failed \n Resource name:") + functionName);
 
                 using (StreamReader reader = new StreamReader(new MemoryStream(binary)))
                 {
@@ -129,6 +132,7 @@ typedef REAL Real;
         /// <returns>   The new program. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        [NotNull]
         public static ComputeProgram CreateProgram(string source)
         {
             //string realType = Real.Size == sizeof(double) ? "double" : "float";

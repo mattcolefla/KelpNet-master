@@ -6,14 +6,15 @@ using KelpNet.Common.Optimizers;
 
 namespace KelpNet.Common.Functions.Container
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   (Serializable) dictionary of functions. </summary>
-    ///
-    /// <seealso cref="T:KelpNet.Common.Functions.Function"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>   (Serializable) dictionary of functions. </summary>
+    ///  <seealso cref="T:KelpNet.Common.Functions.Function" />
 
     [Serializable]
-    public class FunctionDictionary : Function
+    public sealed class FunctionDictionary : Function
     {
         /// <summary>   Name of the function. </summary>
         const string FUNCTION_NAME = "FunctionDictionary";
@@ -42,7 +43,7 @@ namespace KelpNet.Common.Functions.Container
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public FunctionDictionary(bool compress = false, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public FunctionDictionary(bool compress = false, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             _compress = compress;
         }
@@ -53,7 +54,7 @@ namespace KelpNet.Common.Functions.Container
         /// <param name="function"> The function to add. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public void Add(Function function)
+        public void Add([NotNull] Function function)
         {
             if (_compress && // Do you want to summarize each branch
                 (function is SingleInputFunction || function is MultiOutputFunction)) // Only one function with input is gathered
@@ -137,7 +138,8 @@ namespace KelpNet.Common.Functions.Container
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Forward(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override NdArray[] Forward(params NdArray[] xs)
+        [CanBeNull]
+        public override NdArray[] Forward([CanBeNull] params NdArray[] xs)
         {
             NdArray[] result = xs;
 
@@ -177,7 +179,7 @@ namespace KelpNet.Common.Functions.Container
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Backward(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override void Backward(params NdArray[] ys)
+        public override void Backward([NotNull] params NdArray[] ys)
         {
             NdArray.Backward(ys[0]);
         }
@@ -222,7 +224,8 @@ namespace KelpNet.Common.Functions.Container
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Predict(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override NdArray[] Predict(params NdArray[] xs)
+        [CanBeNull]
+        public override NdArray[] Predict([CanBeNull] params NdArray[] xs)
         {
             NdArray[] result = xs;
 
@@ -262,7 +265,7 @@ namespace KelpNet.Common.Functions.Container
         /// <seealso cref="M:KelpNet.Common.Functions.Function.SetOptimizer(params Optimizer[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override void SetOptimizer(params Optimizer[] optimizers)
+        public override void SetOptimizer([CanBeNull] params Optimizer[] optimizers)
         {
             foreach (var functionBlock in FunctionBlocks)
             {

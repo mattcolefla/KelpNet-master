@@ -35,21 +35,20 @@ namespace Cloo
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Represents a list of <see cref="ComputeContextProperty"/>s. </summary>
-    ///
-    /// <remarks>
-    /// A <see cref="ComputeContextPropertyList"/> is used to specify the properties of a
-    /// <see cref="ComputeContext"/>.
-    /// </remarks>
-    ///
-    /// <seealso cref="T:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}"/>
-    /// <seealso cref="ComputeContext"/>
-    /// <seealso cref="ComputeContextProperty"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>   Represents a list of <see cref="T:Cloo.ComputeContextProperty" />s. </summary>
+    ///  <remarks>
+    ///  A <see cref="T:Cloo.ComputeContextPropertyList" /> is used to specify the properties of a
+    ///  <see cref="T:Cloo.ComputeContext" />.
+    ///  </remarks>
+    ///  <seealso cref="T:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}" />
+    ///  <seealso cref="T:Cloo.ComputeContext" />
+    ///  <seealso cref="T:Cloo.ComputeContextProperty" />
 
-    public class ComputeContextPropertyList: ICollection<ComputeContextProperty>
+    public sealed class ComputeContextPropertyList: ICollection<ComputeContextProperty>
     {
         #region Fields
 
@@ -72,8 +71,10 @@ namespace Cloo
 
         public ComputeContextPropertyList(ComputePlatform platform)
         {
-            properties = new List<ComputeContextProperty>();
-            properties.Add(new ComputeContextProperty(ComputeContextPropertyName.Platform, platform.Handle.Value));
+            properties = new List<ComputeContextProperty>
+            {
+                new ComputeContextProperty(ComputeContextPropertyName.Platform, platform.Handle.Value)
+            };
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,11 +111,7 @@ namespace Cloo
 
         public ComputeContextProperty GetByName(ComputeContextPropertyName name)
         {
-            foreach (ComputeContextProperty property in properties)
-                if (property.Name == name)
-                    return property;
-
-            return null;
+            return properties.FirstOrDefault(property => property.Name == name);
         }
 
         #endregion
@@ -144,12 +141,10 @@ namespace Cloo
         #region ICollection<ComputeContextProperty> Members
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <summary>   Adds item. </summary>
-        ///
-        /// <param name="item"> . </param>
-        ///
-        /// <seealso cref="M:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.Add(ComputeContextProperty)"/>
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <inheritdoc />
+        ///  <summary>   Adds item. </summary>
+        ///  <param name="item"> . </param>
+        ///  <seealso cref="M:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.Add(ComputeContextProperty)" />
 
         public void Add(ComputeContextProperty item)
         {
@@ -157,10 +152,9 @@ namespace Cloo
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <summary>   Clears this object to its blank/initial state. </summary>
-        ///
-        /// <seealso cref="M:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.Clear()"/>
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <inheritdoc />
+        ///  <summary>   Clears this object to its blank/initial state. </summary>
+        ///  <seealso cref="M:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.Clear()" />
 
         public void Clear()
         {
@@ -168,14 +162,11 @@ namespace Cloo
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <summary>   Query if this object contains the given item. </summary>
-        ///
-        /// <param name="item"> . </param>
-        ///
-        /// <returns>   True if the object is in this collection, false if not. </returns>
-        ///
-        /// <seealso cref="M:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.Contains(ComputeContextProperty)"/>
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <inheritdoc />
+        ///  <summary>   Query if this object contains the given item. </summary>
+        ///  <param name="item"> . </param>
+        ///  <returns>   True if the object is in this collection, false if not. </returns>
+        ///  <seealso cref="M:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.Contains(ComputeContextProperty)" />
 
         public bool Contains(ComputeContextProperty item)
         {
@@ -183,13 +174,11 @@ namespace Cloo
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <summary>   Copies to. </summary>
-        ///
-        /// <param name="array">        . </param>
-        /// <param name="arrayIndex">   . </param>
-        ///
-        /// <seealso cref="M:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.CopyTo(ComputeContextProperty[],int)"/>
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <inheritdoc />
+        ///  <summary>   Copies to. </summary>
+        ///  <param name="array">        . </param>
+        ///  <param name="arrayIndex">   . </param>
+        ///  <seealso cref="M:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.CopyTo(ComputeContextProperty[],int)" />
 
         public void CopyTo(ComputeContextProperty[] array, int arrayIndex)
         {
@@ -197,40 +186,27 @@ namespace Cloo
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <summary>   Gets the number of.  </summary>
-        ///
-        /// <value> The count. </value>
-        ///
-        /// <seealso cref="P:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.Count"/>
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <inheritdoc />
+        ///  <summary>   Gets the number of.  </summary>
+        ///  <value> The count. </value>
+        ///  <seealso cref="P:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.Count" />
 
-        public int Count
-        {
-            get { return properties.Count; }
-        }
+        public int Count => properties.Count;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <summary>   Gets a value indicating whether this object is read only. </summary>
-        ///
-        /// <value> True if this object is read only, false if not. </value>
-        ///
-        /// <seealso cref="P:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.IsReadOnly"/>
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <inheritdoc />
+        ///  <summary>   Gets a value indicating whether this object is read only. </summary>
+        ///  <value> True if this object is read only, false if not. </value>
+        ///  <seealso cref="P:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.IsReadOnly" />
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <summary>   Removes the given item. </summary>
-        ///
-        /// <param name="item"> . </param>
-        ///
-        /// <returns>   True if it succeeds, false if it fails. </returns>
-        ///
-        /// <seealso cref="M:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.Remove(ComputeContextProperty)"/>
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <inheritdoc />
+        ///  <summary>   Removes the given item. </summary>
+        ///  <param name="item"> . </param>
+        ///  <returns>   True if it succeeds, false if it fails. </returns>
+        ///  <seealso cref="M:System.Collections.Generic.ICollection{Cloo.ComputeContextProperty}.Remove(ComputeContextProperty)" />
 
         public bool Remove(ComputeContextProperty item)
         {
@@ -249,7 +225,7 @@ namespace Cloo
 
         public IEnumerator<ComputeContextProperty> GetEnumerator()
         {
-            return ((IEnumerable<ComputeContextProperty>)properties).GetEnumerator();
+            return properties.GetEnumerator();
         }
 
         #endregion

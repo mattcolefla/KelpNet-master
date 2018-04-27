@@ -7,6 +7,7 @@ using KelpNet.Common.Functions.Type;
 namespace KelpNet.Common.Functions
 {
     using System.Runtime.Remoting.Proxies;
+    using JetBrains.Annotations;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a compressible activation. </summary>
@@ -98,11 +99,11 @@ namespace KelpNet.Common.Functions
         /// <param name="gpuEnable">    (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected CompressibleActivation(string functionName, KeyValuePair<string, string>[] parameters, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
+        protected CompressibleActivation([NotNull] string functionName, [CanBeNull] KeyValuePair<string, string>[] parameters, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
         {
-            string kernelNameBase = functionName?.Replace(" ", "");
-            ForwardKernelName = kernelNameBase + "Forward";
-            BackwardKernelName = kernelNameBase + "Backward";
+            string kernelNameBase = functionName?.Replace(" ", string.Empty);
+            ForwardKernelName = kernelNameBase + string.Intern("Forward");
+            BackwardKernelName = kernelNameBase + string.Intern("Backward");
 
             ActivateKernelString = Weaver.GetKernelSource(FUNCTION_NAME)?.Replace("/*kernelNameBase*/", kernelNameBase);
             ActivateFunctionString = Weaver.GetKernelSource(functionName);
@@ -174,7 +175,8 @@ namespace KelpNet.Common.Functions
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private NdArray NeedPreviousForwardCpu(NdArray x)
+        [NotNull]
+        private NdArray NeedPreviousForwardCpu([NotNull] NdArray x)
         {
             Real[] y = new Real[x.Data.Length];
 
@@ -194,7 +196,8 @@ namespace KelpNet.Common.Functions
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private NdArray NeedPreviousForwardGpu(NdArray x)
+        [NotNull]
+        private NdArray NeedPreviousForwardGpu([NotNull] NdArray x)
         {
             Real[] y = new Real[x.Data.Length];
 
@@ -221,7 +224,7 @@ namespace KelpNet.Common.Functions
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private void NeedPreviousBackwardCpu(NdArray y, NdArray x)
+        private void NeedPreviousBackwardCpu([CanBeNull] NdArray y, [NotNull] NdArray x)
         {
             for (int i = 0; i < x.Grad.Length; i++)
             {
@@ -236,7 +239,7 @@ namespace KelpNet.Common.Functions
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private void NeedPreviousBackwardGpu(NdArray y, NdArray x)
+        private void NeedPreviousBackwardGpu([NotNull] NdArray y, [NotNull] NdArray x)
         {
             Real[] gx = new Real[y.Grad.Length];
 

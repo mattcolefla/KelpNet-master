@@ -8,6 +8,8 @@ using KelpNet.Common.Tools;
 
 namespace KelpNet.Functions.Connections
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a convolution 2d. </summary>
     ///
@@ -70,7 +72,7 @@ namespace KelpNet.Functions.Connections
         /// <param name="gpuEnable">        (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Convolution2D(int inputChannels, int outputChannels, int kSize, int stride = 1, int pad = 0, bool noBias = false, Array initialW = null, Array initialb = null, CompressibleActivation activation = null, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, activation, new[] { new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE) }, name, inputNames, outputNames, gpuEnable)
+        public Convolution2D(int inputChannels, int outputChannels, int kSize, int stride = 1, int pad = 0, bool noBias = false, [CanBeNull] Array initialW = null, [CanBeNull] Array initialb = null, [CanBeNull] CompressibleActivation activation = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, activation, new[] { new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE) }, name, inputNames, outputNames, gpuEnable)
         {
             _kWidth = kSize;
             _kHeight = kSize;
@@ -108,7 +110,7 @@ namespace KelpNet.Functions.Connections
         /// <param name="gpuEnable">        (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Convolution2D(int inputChannels, int outputChannels, Size kSize, Size stride = new Size(), Size pad = new Size(), bool noBias = false, Array initialW = null, Array initialb = null, CompressibleActivation activation = null, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, activation, new[] { new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE) }, name, inputNames, outputNames, gpuEnable)
+        public Convolution2D(int inputChannels, int outputChannels, Size kSize, Size stride = new Size(), Size pad = new Size(), bool noBias = false, [CanBeNull] Array initialW = null, [CanBeNull] Array initialb = null, [CanBeNull] CompressibleActivation activation = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, activation, new[] { new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE) }, name, inputNames, outputNames, gpuEnable)
         {
             if (pad == Size.Empty)
                 pad = new Size(0, 0);
@@ -140,7 +142,7 @@ namespace KelpNet.Functions.Connections
         /// <param name="linear">   The linear. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Convolution2D(Linear linear) : base(FUNCTION_NAME, linear.Activator, new[] { new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE) }, linear.Name, linear.InputNames, linear.OutputNames, linear.GpuEnable)
+        public Convolution2D([NotNull] Linear linear) : base(FUNCTION_NAME, linear.Activator, new[] { new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE) }, linear.Name, linear.InputNames, linear.OutputNames, linear.GpuEnable)
         {
             _kWidth = 1;
             _kHeight = 1;
@@ -164,7 +166,7 @@ namespace KelpNet.Functions.Connections
         /// <param name="initialb"> (Optional) The initialb. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        void Initialize(Array initialW = null, Array initialb = null)
+        void Initialize([CanBeNull] Array initialW = null, [CanBeNull] Array initialb = null)
         {
             Weight = new NdArray(OutputCount, InputCount, _kHeight, _kWidth);
             Weight.Name = Name + " Weight";
@@ -204,7 +206,8 @@ namespace KelpNet.Functions.Connections
         /// <seealso cref="M:KelpNet.Common.Functions.CompressibleFunction.NeedPreviousForwardCpu(NdArray)"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected override NdArray NeedPreviousForwardCpu(NdArray input)
+        [NotNull]
+        protected override NdArray NeedPreviousForwardCpu([NotNull] NdArray input)
         {
             int outputHeight = (int)Math.Floor((input.Shape[1] - _kHeight + _padY * 2.0) / _strideY) + 1;
             int outputWidth = (int)Math.Floor((input.Shape[2] - _kWidth + _padX * 2.0) / _strideX) + 1;
@@ -320,7 +323,8 @@ namespace KelpNet.Functions.Connections
         /// <seealso cref="M:KelpNet.Common.Functions.CompressibleFunction.NeedPreviousForwardGpu(NdArray)"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected override NdArray NeedPreviousForwardGpu(NdArray input)
+        [NotNull]
+        protected override NdArray NeedPreviousForwardGpu([NotNull] NdArray input)
         {
             int outputHeight = (int)Math.Floor((input.Shape[1] - _kHeight + _padY * 2.0) / _strideY) + 1;
             int outputWidth = (int)Math.Floor((input.Shape[2] - _kWidth + _padX * 2.0) / _strideX) + 1;
@@ -373,7 +377,8 @@ namespace KelpNet.Functions.Connections
         /// <returns>   An array of real. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        Real[] GetActivatedgy(NdArray y)
+        [NotNull]
+        Real[] GetActivatedgy([NotNull] NdArray y)
         {
             int gyIndex = 0;
 
@@ -402,7 +407,7 @@ namespace KelpNet.Functions.Connections
         /// <param name="batchCount">   Number of batches. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        void CalcBiasGrad(Real[] gy, int[] gyShape, int batchCount)
+        void CalcBiasGrad([CanBeNull] Real[] gy, [CanBeNull] int[] gyShape, int batchCount)
         {
             int gyIndex = 0;
 
@@ -429,7 +434,7 @@ namespace KelpNet.Functions.Connections
         /// <seealso cref="M:KelpNet.Common.Functions.CompressibleFunction.NeedPreviousBackwardCpu(NdArray,NdArray)"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected override void NeedPreviousBackwardCpu(NdArray y, NdArray x)
+        protected override void NeedPreviousBackwardCpu([NotNull] NdArray y, [CanBeNull] NdArray x)
         {
             Real[] activatedgy = Activator != null ? GetActivatedgy(y) : y.Grad;
             if (!NoBias) CalcBiasGrad(activatedgy, y.Shape, y.BatchCount);
@@ -494,7 +499,7 @@ namespace KelpNet.Functions.Connections
         /// <seealso cref="M:KelpNet.Common.Functions.CompressibleFunction.NeedPreviousBackwardGpu(NdArray,NdArray)"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected override void NeedPreviousBackwardGpu(NdArray y, NdArray x)
+        protected override void NeedPreviousBackwardGpu([NotNull] NdArray y, [NotNull] NdArray x)
         {
             Real[] gx = new Real[x.Data.Length];
             Real[] activatedgy = Activator != null ? GetActivatedgy(y) : y.Grad;

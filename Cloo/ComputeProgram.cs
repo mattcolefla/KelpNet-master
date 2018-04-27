@@ -93,7 +93,6 @@ namespace Cloo
         public CLProgramHandle Handle
         {
             get;
-            protected set;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -4,6 +4,8 @@ using KelpNet.Common.Optimizers;
 
 namespace KelpNet.Optimizers
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) an ada graduated. </summary>
     ///
@@ -39,7 +41,7 @@ namespace KelpNet.Optimizers
         /// <seealso cref="M:KelpNet.Common.Optimizers.Optimizer.AddFunctionParameters(NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        internal override void AddFunctionParameters(NdArray[] functionParameters)
+        internal override void AddFunctionParameters([NotNull] NdArray[] functionParameters)
         {
             foreach (NdArray functionParameter in functionParameters)
             {
@@ -71,7 +73,7 @@ namespace KelpNet.Optimizers
         /// <param name="optimizer">            The optimizer. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public AdaGradParameter(NdArray functionParameter, AdaGrad optimizer) : base(functionParameter)
+        public AdaGradParameter([NotNull] NdArray functionParameter, [CanBeNull] AdaGrad optimizer) : base(functionParameter)
         {
             h = new Real[functionParameter.Data.Length];
             this.optimizer = optimizer;

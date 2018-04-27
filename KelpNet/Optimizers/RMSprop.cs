@@ -4,6 +4,8 @@ using KelpNet.Common.Optimizers;
 
 namespace KelpNet.Optimizers
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a remove sprop. </summary>
     ///
@@ -43,7 +45,7 @@ namespace KelpNet.Optimizers
         /// <seealso cref="M:KelpNet.Common.Optimizers.Optimizer.AddFunctionParameters(NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        internal override void AddFunctionParameters(NdArray[] functionParameters)
+        internal override void AddFunctionParameters([NotNull] NdArray[] functionParameters)
         {
             foreach (NdArray functionParameter in functionParameters)
             {
@@ -75,7 +77,7 @@ namespace KelpNet.Optimizers
         /// <param name="optimizer">    The optimizer. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public RMSpropParameter(NdArray parameter, RMSprop optimizer) : base(parameter)
+        public RMSpropParameter([NotNull] NdArray parameter, [CanBeNull] RMSprop optimizer) : base(parameter)
         {
             this.optimizer = optimizer;
             ms = new Real[parameter.Data.Length];

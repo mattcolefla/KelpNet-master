@@ -60,7 +60,6 @@ namespace KelpNetTester.Tests
             };
 
             Linear l0 = new Linear(5, 20, initialW: testWeightValues, name: "l0");
-
             Linear l1 = new Linear(5, 5, initialW: testJaggWeightValues[0], name: "l1");
             Linear l2 = new Linear(5, 5, initialW: testJaggWeightValues[1], name: "l2");
             Linear l3 = new Linear(5, 5, initialW: testJaggWeightValues[2], name: "l3");
@@ -84,19 +83,19 @@ namespace KelpNetTester.Tests
             NdArray[] l0Result = l0.Forward(testInputValuesA);
             RILogManager.Default?.SendDebug(l0Result.ToString());
 
-            RILogManager.Default?.SendDebug("\nl1 for");
+            RILogManager.Default?.SendDebug("l1 for");
             NdArray[] l1Result = l1.Forward(testInputValuesB);
             RILogManager.Default?.SendDebug(l1Result.ToString());
 
-            RILogManager.Default?.SendDebug("\nl2 for");
+            RILogManager.Default?.SendDebug("l2 for");
             NdArray[] l2Result = l2.Forward(testInputValuesB);
             RILogManager.Default?.SendDebug(l2Result.ToString());
 
-            RILogManager.Default?.SendDebug("\nl3 for");
+            RILogManager.Default?.SendDebug("l3 for");
             NdArray[] l3Result = l3.Forward(testInputValuesB);
             RILogManager.Default?.SendDebug(l3Result.ToString());
 
-            RILogManager.Default?.SendDebug("\nl4 for");
+            RILogManager.Default?.SendDebug("l4 for");
             NdArray[] l4Result = l4.Forward(testInputValuesB);
             RILogManager.Default?.SendDebug(l4Result.ToString());
 
@@ -116,33 +115,28 @@ namespace KelpNetTester.Tests
             l4Result[0].Grad = new Real[] {-4.70047118e-04, 3.61101292e-02, -7.12957408e-04, -3.63163825e-04, -1.12809543e-03};
             
 
-            //Backwardを実行
+            //Backward
             l0.Backward(l0Result);
-
             l1.Backward(l1Result);
             l2.Backward(l2Result);
             l3.Backward(l3Result);
             l4.Backward(l4Result);
 
-            RILogManager.Default?.SendDebug("\nl0 back");
+            RILogManager.Default?.SendDebug("l0 back");
             RILogManager.Default?.SendDebug(testInputValuesA.ToString("Grad"));
-
-            RILogManager.Default?.SendDebug("\nl1-l4 sum back");
+            RILogManager.Default?.SendDebug("l1-l4 sum back");
             RILogManager.Default?.SendDebug(testInputValuesB.ToString("Grad"));
 
             l0.Update();  //Although the format is irregular, since 10 contains SGD
             sgd.Update(); // Use stochastic gradient descent as the optimizer
 
-            RILogManager.Default?.SendDebug("\nl0 Weight");
+            RILogManager.Default?.SendDebug("l0 Weight");
             RILogManager.Default?.SendDebug(l0.Weight.ToString());
-
-            RILogManager.Default?.SendDebug("\nl1 Weight");
+            RILogManager.Default?.SendDebug("l1 Weight");
             RILogManager.Default?.SendDebug(l1.Weight.ToString());
-
-            RILogManager.Default?.SendDebug("\nl0 Bias");
+            RILogManager.Default?.SendDebug("l0 Bias");
             RILogManager.Default?.SendDebug(l0.Bias.ToString());
-
-            RILogManager.Default?.SendDebug("\nl1 Bias");
+            RILogManager.Default?.SendDebug("l1 Bias");
             RILogManager.Default?.SendDebug(l1.Bias.ToString());
         }
     }

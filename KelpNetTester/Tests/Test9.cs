@@ -32,13 +32,9 @@ namespace KelpNetTester.Tests
             Vocabulary vocabulary = new Vocabulary();
             string trainPath = InternetFileDownloader.Download(DOWNLOAD_URL + TRAIN_FILE, TRAIN_FILE);
             string testPath = InternetFileDownloader.Download(DOWNLOAD_URL + TEST_FILE, TEST_FILE);
-
             int[] trainData = vocabulary.LoadData(trainPath);
             int[] testData = vocabulary.LoadData(testPath);
-
             int nVocab = vocabulary.Length;
-
-            RILogManager.Default?.SendDebug("Done.");
 
             RILogManager.Default?.SendDebug("Network Initializing.");
             FunctionStack model = new FunctionStack(

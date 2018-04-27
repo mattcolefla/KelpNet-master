@@ -86,7 +86,7 @@ namespace Cloo
         /// <value> The last <see cref="ComputeEventBase"/> on the list. </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ComputeEventBase Last { get { return events[events.Count - 1]; } }
+        public ComputeEventBase Last => events[events.Count - 1];
 
         #endregion
 
@@ -178,14 +178,8 @@ namespace Cloo
 
         public ComputeEventBase this[int index]
         {
-            get
-            {
-                return events[index];
-            }
-            set
-            {
-                events[index] = value;
-            }
+            get => events[index];
+            set => events[index] = value;
         }
 
         #endregion
@@ -240,10 +234,7 @@ namespace Cloo
         /// <value> The count. </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public int Count
-        {
-            get { return events.Count; }
-        }
+        public int Count => events.Count;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Gets a value indicating whether this object is read only. </summary>
@@ -251,10 +242,7 @@ namespace Cloo
         /// <value> True if this object is read only, false if not. </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Removes the given item. </summary>

@@ -14,19 +14,19 @@ namespace KelpNetTester.Tests
 {
     using ReflectSoftware.Insight;
 
-    //Decoupled Neural Interfaces using Synthetic GradientsによるMNIST（手書き文字）の学習
+    //Decoupled Neural Interfaces using Synthetic Gradients Learning MNIST (Handwritten Characters) by Gradients
     // Incorporate label information into teacher signal cDNI
     // Execute Decoupled of all layers expressed as Model D asynchronously
     // http://ralo23.hatenablog.com/entry/2016/10/22/233405
     class Test12
     {
-        //ミニバッチの数
+        // number of mini-batches
         const int BATCH_DATA_COUNT = 256;
 
-        //一世代あたりの訓練回数
+        // Number of exercises per generation
         const int TRAIN_DATA_COUNT = 234; // = 60,000 / 256
 
-        //性能評価時のデータ数
+        // number of data at performance evaluation
         const int TEST_DATA_COUNT = 100;
 
         class ResultDataSet
@@ -56,13 +56,13 @@ namespace KelpNetTester.Tests
 
         public static void Run()
         {
-            //MNISTのデータを用意する
+            // Prepare MNIST data
             RILogManager.Default?.SendDebug("MNIST Data Loading...");
             MnistData mnistData = new MnistData(28);
 
             RILogManager.Default?.SendDebug("Training Start...");
 
-            //ネットワークの構成を FunctionStack に書き連ねる
+            // Write the network configuration in FunctionStack
             FunctionStack Layer1 = new FunctionStack(
                 new Linear(28 * 28, 256, name: "l1 Linear"),
                 new BatchNormalization(256, name: "l1 Norm"),
@@ -85,7 +85,7 @@ namespace KelpNetTester.Tests
                 new Linear(256, 10, name: "l4 Linear")
             );
 
-            //FunctionStack自身もFunctionとして積み上げられる
+            // Function stack itself is also stacked as Function
             FunctionStack nn = new FunctionStack
             (
                 Layer1,
@@ -115,7 +115,6 @@ namespace KelpNetTester.Tests
                 new Linear(1024, 256, initialW: new Real[1024, 256], name: "cDNI3 Linear3")
             );
 
-            //optimizerを宣言
             Layer1.SetOptimizer(new Adam(0.00003f));
             Layer2.SetOptimizer(new Adam(0.00003f));
             Layer3.SetOptimizer(new Adam(0.00003f));
@@ -129,7 +128,7 @@ namespace KelpNetTester.Tests
             {
                 RILogManager.Default?.SendDebug("epoch " + (epoch + 1));
 
-                //全体での誤差を集計
+                // Total error in the whole
                 Real totalLoss = 0;
                 Real cDNI1totalLoss = 0;
                 Real cDNI2totalLoss = 0;
@@ -141,43 +140,43 @@ namespace KelpNetTester.Tests
                 long cDNI3totalLossCount = 0;
 
 
-                //何回バッチを実行するか
+                // how many times to run the batch
                 for (int i = 1; i < TRAIN_DATA_COUNT + 1; i++)
                 {
-                    //訓練データからランダムにデータを取得
+                    // Get data randomly from the training data
                     TestDataSet datasetX = mnistData.GetRandomXSet(BATCH_DATA_COUNT,28,28);
 
-                    //第一層を実行
+                    // Run first tier
                     NdArray[] layer1ForwardResult = Layer1.Forward(datasetX.Data);
                     ResultDataSet layer1ResultDataSet = new ResultDataSet(layer1ForwardResult, datasetX.Label);
 
-                    //第一層の傾きを取得
+                    // Obtain the slope of the first layer
                     NdArray[] cDNI1Result = cDNI1.Forward(layer1ResultDataSet.GetTrainData());
 
-                    //第一層の傾きを適用
+                    // Apply the slope of the first layer
                     layer1ForwardResult[0].Grad = cDNI1Result[0].Data.ToArray();
 
-                    //第一層を更新
+                    //Update first layer
                     Layer1.Backward(layer1ForwardResult);
                     layer1ForwardResult[0].ParentFunc = null;
                     Layer1.Update();
 
-                    //第二層を実行
+                    // Run Layer 2
                     NdArray[] layer2ForwardResult = Layer2.Forward(layer1ResultDataSet.Result);
                     ResultDataSet layer2ResultDataSet = new ResultDataSet(layer2ForwardResult, layer1ResultDataSet.Label);
 
-                    //第二層の傾きを取得
+                    // Get the inclination of the second layer
                     NdArray[] cDNI2Result = cDNI2.Forward(layer2ResultDataSet.GetTrainData());
 
-                    //第二層の傾きを適用
+                    // Apply the slope of the second layer
                     layer2ForwardResult[0].Grad = cDNI2Result[0].Data.ToArray();
 
-                    //第二層を更新
+                    //Update layer 2
                     Layer2.Backward(layer2ForwardResult);
                     layer2ForwardResult[0].ParentFunc = null;
 
 
-                    //第一層用のcDNIの学習を実行
+                    //Perform learning of first layer cDNI
                     Real cDNI1loss = new MeanSquaredError().Evaluate(cDNI1Result, new NdArray(layer1ResultDataSet.Result[0].Grad, cDNI1Result[0].Shape, cDNI1Result[0].BatchCount));
 
                     Layer2.Update();
@@ -188,21 +187,21 @@ namespace KelpNetTester.Tests
                     cDNI1totalLoss += cDNI1loss;
                     cDNI1totalLossCount++;
 
-                    //第三層を実行
+                    //Run Third Tier
                     NdArray[] layer3ForwardResult = Layer3.Forward(layer2ResultDataSet.Result);
                     ResultDataSet layer3ResultDataSet = new ResultDataSet(layer3ForwardResult, layer2ResultDataSet.Label);
 
-                    //第三層の傾きを取得
+                    //Get the inclination of the third layer
                     NdArray[] cDNI3Result = cDNI3.Forward(layer3ResultDataSet.GetTrainData());
 
-                    //第三層の傾きを適用
+                    //Apply the inclination of the third layer
                     layer3ForwardResult[0].Grad = cDNI3Result[0].Data.ToArray();
 
-                    //第三層を更新
+                    //Update third layer
                     Layer3.Backward(layer3ForwardResult);
                     layer3ForwardResult[0].ParentFunc = null;
 
-                    //第二層用のcDNIの学習を実行
+                    //Perform learning of cDNI for layer 2
                     Real cDNI2loss = new MeanSquaredError().Evaluate(cDNI2Result, new NdArray(layer2ResultDataSet.Result[0].Grad, cDNI2Result[0].Shape, cDNI2Result[0].BatchCount));
 
                     Layer3.Update();
@@ -213,20 +212,14 @@ namespace KelpNetTester.Tests
                     cDNI2totalLoss += cDNI2loss;
                     cDNI2totalLossCount++;
 
-                    //第四層を実行
                     NdArray[] layer4ForwardResult = Layer4.Forward(layer3ResultDataSet.Result);
-
-                    //第四層の傾きを取得
                     Real sumLoss = new SoftmaxCrossEntropy().Evaluate(layer4ForwardResult, layer3ResultDataSet.Label);
-
-                    //第四層を更新
                     Layer4.Backward(layer4ForwardResult);
                     layer4ForwardResult[0].ParentFunc = null;
 
                     totalLoss += sumLoss;
                     totalLossCount++;
 
-                    //第三層用のcDNIの学習を実行
                     Real cDNI3loss = new MeanSquaredError().Evaluate(cDNI3Result, new NdArray(layer3ResultDataSet.Result[0].Grad, cDNI3Result[0].Shape, cDNI3Result[0].BatchCount));
 
                     Layer4.Update();
@@ -238,7 +231,6 @@ namespace KelpNetTester.Tests
                     cDNI3totalLossCount++;
 
                     RILogManager.Default?.SendDebug("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
-                    //結果出力
                     RILogManager.Default?.SendDebug("total loss " + totalLoss / totalLossCount);
                     RILogManager.Default?.SendDebug("local loss " + sumLoss);
 
@@ -250,15 +242,10 @@ namespace KelpNetTester.Tests
                     RILogManager.Default?.SendDebug("cDNI2 local loss " + cDNI2loss);
                     RILogManager.Default?.SendDebug("cDNI3 local loss " + cDNI3loss);
 
-                    //20回バッチを動かしたら精度をテストする
                     if (i % 20 == 0)
                     {
                         RILogManager.Default?.SendDebug("\nTesting...");
-
-                        //テストデータからランダムにデータを取得
                         TestDataSet datasetY = mnistData.GetRandomYSet(TEST_DATA_COUNT, 28);
-
-                        //テストを実行
                         Real accuracy = Trainer.Accuracy(nn, datasetY.Data, datasetY.Label);
                         RILogManager.Default?.SendDebug("accuracy " + accuracy);
                     }

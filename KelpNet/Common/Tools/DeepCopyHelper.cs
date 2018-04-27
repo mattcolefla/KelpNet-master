@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace KelpNet.Common.Tools
 {
+    using JetBrains.Annotations;
 
     /// <summary>   http://d.hatena.ne.jp/tekk/20100131/1264913887. </summary>
 
@@ -17,7 +18,8 @@ namespace KelpNet.Common.Tools
         /// <returns>   A T. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static T DeepCopy<T>(T target)
+        [CanBeNull]
+        public static T DeepCopy<T>([NotNull] T target)
         {
             T result;
 

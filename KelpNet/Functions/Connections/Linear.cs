@@ -7,6 +7,8 @@ using KelpNet.Common.Tools;
 
 namespace KelpNet.Functions.Connections
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a linear. </summary>
     ///
@@ -54,7 +56,7 @@ namespace KelpNet.Functions.Connections
         /// <param name="gpuEnable">    (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Linear(int inputCount, int outputCount, bool noBias = false, Array initialW = null, Array initialb = null, CompressibleActivation activation = null, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, activation, new[] { new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE) }, name, inputNames, outputNames, gpuEnable)
+        public Linear(int inputCount, int outputCount, bool noBias = false, [CanBeNull] Array initialW = null, [CanBeNull] Array initialb = null, [CanBeNull] CompressibleActivation activation = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, activation, new[] { new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE) }, name, inputNames, outputNames, gpuEnable)
         {
             OutputCount = outputCount;
             InputCount = inputCount;
@@ -97,6 +99,7 @@ namespace KelpNet.Functions.Connections
         /// <returns>   An array of real. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        [NotNull]
         Real[] GetBiasedValue(int batchCount)
         {
             Real[] y = new Real[OutputCount * batchCount];
@@ -119,7 +122,8 @@ namespace KelpNet.Functions.Connections
         /// <seealso cref="M:KelpNet.Common.Functions.CompressibleFunction.NeedPreviousForwardCpu(NdArray)"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected override NdArray NeedPreviousForwardCpu(NdArray x)
+        [NotNull]
+        protected override NdArray NeedPreviousForwardCpu([NotNull] NdArray x)
         {
             Real[] y = NoBias ? new Real[OutputCount * x.BatchCount] : GetBiasedValue(x.BatchCount);
 
@@ -155,7 +159,8 @@ namespace KelpNet.Functions.Connections
         /// <seealso cref="M:KelpNet.Common.Functions.CompressibleFunction.NeedPreviousForwardGpu(NdArray)"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected override NdArray NeedPreviousForwardGpu(NdArray x)
+        [NotNull]
+        protected override NdArray NeedPreviousForwardGpu([NotNull] NdArray x)
         {
             Real[] y = NoBias ? new Real[OutputCount * x.BatchCount] : GetBiasedValue(x.BatchCount);
 
@@ -190,7 +195,8 @@ namespace KelpNet.Functions.Connections
         /// <returns>   An array of real. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        Real[] GetActivatedgy(NdArray y)
+        [NotNull]
+        Real[] GetActivatedgy([NotNull] NdArray y)
         {
             Real[] activatedgY = new Real[y.Grad.Length];
 
@@ -213,7 +219,7 @@ namespace KelpNet.Functions.Connections
         /// <param name="batchCount">   Number of batches. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        void CalcBiasGrad(Real[] gy, int batchCount)
+        void CalcBiasGrad([CanBeNull] Real[] gy, int batchCount)
         {
             for (int batchCounter = 0; batchCounter < batchCount; batchCounter++)
             {
@@ -233,7 +239,7 @@ namespace KelpNet.Functions.Connections
         /// <seealso cref="M:KelpNet.Common.Functions.CompressibleFunction.NeedPreviousBackwardCpu(NdArray,NdArray)"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected override void NeedPreviousBackwardCpu(NdArray y, NdArray x)
+        protected override void NeedPreviousBackwardCpu([NotNull] NdArray y, [CanBeNull] NdArray x)
         {
             Real[] activatedgy = Activator != null ? GetActivatedgy(y) : y.Grad;
             if (!NoBias) CalcBiasGrad(activatedgy, y.BatchCount);
@@ -262,7 +268,7 @@ namespace KelpNet.Functions.Connections
         /// <seealso cref="M:KelpNet.Common.Functions.CompressibleFunction.NeedPreviousBackwardGpu(NdArray,NdArray)"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected override void NeedPreviousBackwardGpu(NdArray y, NdArray x)
+        protected override void NeedPreviousBackwardGpu([NotNull] NdArray y, [NotNull] NdArray x)
         {
             Real[] gx = new Real[x.Data.Length];
             Real[] activatedgy = Activator != null ? GetActivatedgy(y) : y.Grad;
@@ -319,6 +325,7 @@ namespace KelpNet.Functions.Connections
         /// <returns>   A Convolution2D. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        [NotNull]
         public Convolution2D AsConvolution2D()
         {
             return new Convolution2D(this);

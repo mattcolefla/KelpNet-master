@@ -6,6 +6,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Arrays
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a broadcast. </summary>
     ///
@@ -31,7 +33,7 @@ namespace KelpNet.Functions.Arrays
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Broadcast(int[] shape, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public Broadcast([NotNull] int[] shape, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             Shape = shape.ToArray();
 
@@ -49,7 +51,8 @@ namespace KelpNet.Functions.Arrays
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        NdArray ForwardCpu(NdArray val)
+        [NotNull]
+        NdArray ForwardCpu([NotNull] NdArray val)
         {
             int[] resultShape;
 
@@ -131,7 +134,7 @@ namespace KelpNet.Functions.Arrays
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected void BackwardCpu(NdArray y, NdArray x)
+        protected void BackwardCpu([NotNull] NdArray y, [NotNull] NdArray x)
         {
             int ndim = x.Shape.Length;
 

@@ -1,5 +1,7 @@
 ﻿namespace KelpNet.Common.Loss
 {
+    using JetBrains.Annotations;
+
     /// <summary>   The loss function. </summary>
     public abstract class LossFunction
     {
@@ -12,7 +14,7 @@
         /// <returns>   A Real. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Real Evaluate(NdArray input, NdArray teachSignal)
+        public Real Evaluate([CanBeNull] NdArray input, [CanBeNull] NdArray teachSignal)
         {
             return Evaluate(new[] { input }, new[] { teachSignal });
         }
@@ -26,7 +28,7 @@
         /// <returns>   A Real. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Real Evaluate(NdArray[] input, NdArray teachSignal)
+        public Real Evaluate([CanBeNull] NdArray[] input, [CanBeNull] NdArray teachSignal)
         {
             return Evaluate(input, new[] { teachSignal });
         }

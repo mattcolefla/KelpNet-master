@@ -4,6 +4,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Arrays
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   A reshape. </summary>
     ///
@@ -28,7 +30,7 @@ namespace KelpNet.Functions.Arrays
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Reshape(int[] shape, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public Reshape([CanBeNull] int[] shape, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             Shape = shape;
 
@@ -44,7 +46,8 @@ namespace KelpNet.Functions.Arrays
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        NdArray ForwardCpu(NdArray val)
+        [NotNull]
+        NdArray ForwardCpu([NotNull] NdArray val)
         {
             NdArray result = val.Clone();
             result.ParentFunc = this;
@@ -60,7 +63,7 @@ namespace KelpNet.Functions.Arrays
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        void BackwardCpu(NdArray y, NdArray x)
+        void BackwardCpu([NotNull] NdArray y, [NotNull] NdArray x)
         {
             y.Grad = x.Grad.ToArray();
         }

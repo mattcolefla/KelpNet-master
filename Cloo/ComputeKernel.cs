@@ -137,7 +137,7 @@ namespace Cloo
             functionName = GetStringInfo<CLKernelHandle, ComputeKernelInfo>(Handle, ComputeKernelInfo.FunctionName, CL12.GetKernelInfo);
             this.program = program;
 
-            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace(string.Intern("Create ") + this + string.Intern(" in Thread(") + Thread.CurrentThread.ManagedThreadId + string.Intern(")."), string.Intern("Information"));
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,7 +159,7 @@ namespace Cloo
             this.functionName = functionName;
             this.program = program;
 
-            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace(string.Intern("Create ") + this + string.Intern(" in Thread(") + Thread.CurrentThread.ManagedThreadId + string.Intern(")."), string.Intern("Information"));
         }
 
         #endregion
@@ -297,7 +297,7 @@ namespace Cloo
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
-        /// Sets the size in bytes of an argument specfied with the <c>local</c> or <c>__local</c>
+        /// Sets the size in bytes of an argument specified with the <c>local</c> or <c>__local</c>
         /// address space qualifier.
         /// </summary>
         ///
@@ -401,7 +401,7 @@ namespace Cloo
         {
             if (Handle.IsValid)
             {
-                RILogManager.Default?.SendTrace("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+                RILogManager.Default?.SendTrace(string.Intern("Dispose ") + this + string.Intern(" in Thread(") + Thread.CurrentThread.ManagedThreadId + string.Intern(")."), string.Intern("Information"));
                 CL12.ReleaseKernel(Handle);
                 Handle.Invalidate();
             }

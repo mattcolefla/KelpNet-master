@@ -6,6 +6,7 @@ namespace KelpNet.Functions.Activations
 {
     using System.Collections.Generic;
     using Common.Functions;
+    using JetBrains.Annotations;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a re lu hyperbolic tangent. </summary>
@@ -35,14 +36,14 @@ namespace KelpNet.Functions.Activations
         /// <param name="gpuEnable">    (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ReLuTanh(double slope = 0.2, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false)
+        public ReLuTanh(double slope = 0.2, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false)
             : base(FUNCTION_NAME, new[] { new KeyValuePair<string, string>(PARAM_NAME, slope.ToString()) }, name, inputNames, outputNames, gpuEnable)
 
         {
             _slope = slope;
         }
 
-        internal override Real ForwardActivate(Real x, Real[] args)
+        internal override Real ForwardActivate(Real x, [CanBeNull] Real[] args)
         {
             return x;
         }

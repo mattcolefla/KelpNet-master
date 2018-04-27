@@ -4,6 +4,8 @@ using KelpNet.Common.Optimizers;
 
 namespace KelpNet.Optimizers
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) an ada delta. </summary>
     ///
@@ -39,7 +41,7 @@ namespace KelpNet.Optimizers
         /// <seealso cref="M:KelpNet.Common.Optimizers.Optimizer.AddFunctionParameters(NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        internal override void AddFunctionParameters(NdArray[] functionParameters)
+        internal override void AddFunctionParameters([NotNull] NdArray[] functionParameters)
         {
             foreach (NdArray functionParameter in functionParameters)
             {
@@ -73,7 +75,7 @@ namespace KelpNet.Optimizers
         /// <param name="optimizer">            The optimizer. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public AdaDeltaParameter(NdArray functionParameter, AdaDelta optimizer) : base(functionParameter)
+        public AdaDeltaParameter([NotNull] NdArray functionParameter, [CanBeNull] AdaDelta optimizer) : base(functionParameter)
         {
             msg = new Real[functionParameter.Data.Length];
             msdx = new Real[functionParameter.Data.Length];

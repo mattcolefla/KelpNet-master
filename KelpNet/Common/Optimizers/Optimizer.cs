@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace KelpNet.Common.Optimizers
 {
+    using JetBrains.Annotations;
+
     /// <summary>   Have parameters in the class that Optimizer is a source of. </summary>
     [Serializable]
     public abstract class Optimizer
@@ -31,9 +33,7 @@ namespace KelpNet.Common.Optimizers
                 if (t.FunctionParameter.Reduce())
                 {
                     t.UpdateFunctionParameters();
-
                     t.FunctionParameter?.ClearGrad();
-
                     isUpdated = true;
                 }
             }
@@ -71,7 +71,7 @@ namespace KelpNet.Common.Optimizers
         /// <param name="functionParameter">    The function parameter. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected OptimizerParameter(NdArray functionParameter)
+        protected OptimizerParameter([CanBeNull] NdArray functionParameter)
         {
             FunctionParameter = functionParameter;
         }

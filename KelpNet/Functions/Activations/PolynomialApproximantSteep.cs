@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using Common;
     using Common.Functions;
+    using JetBrains.Annotations;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   A polynomial approximant steep. </summary>
@@ -33,14 +34,14 @@
         /// <param name="gpuEnable">    (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public PolynomialApproximantSteep(double slope = 0.00001, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false)
+        public PolynomialApproximantSteep(double slope = 0.00001, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false)
             : base(FUNCTION_NAME, new[] { new KeyValuePair<string, string>(PARAM_NAME, slope.ToString()) }, name, inputNames, outputNames, gpuEnable)
 
         {
             _slope = slope;
         }
 
-        internal override Real ForwardActivate(Real x, Real[] args)
+        internal override Real ForwardActivate(Real x, [CanBeNull] Real[] args)
         {
             return x;
         }

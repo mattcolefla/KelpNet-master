@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace KelpNet.Common.Tools
 {
+    using JetBrains.Annotations;
     using Nerdle.Ensure;
 
     /// <summary>   A nd array converter. </summary>
@@ -24,9 +25,10 @@ namespace KelpNet.Common.Tools
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static NdArray Image2NdArray(Bitmap input, bool isNorm = true, bool isToBgrArray = false, Real[] bias = null)
+        [NotNull]
+        public static NdArray Image2NdArray([NotNull] Bitmap input, bool isNorm = true, bool isToBgrArray = false, Real[] bias = null)
         {
-            Ensure.Argument(input).NotNull("input is null");
+            Ensure.Argument(input).NotNull(string.Intern("input is null"));
 
             int bitcount = Image.GetPixelFormatSize(input.PixelFormat) / 8;
             if (bias == null || bitcount != bias.Length)
@@ -75,13 +77,14 @@ namespace KelpNet.Common.Tools
         /// <summary>   Nd array 2 image. </summary>
         ///
         /// <param name="input">            The input. </param>
-        /// <param name="isNorm">           (Optional) True if this object is normalise. </param>
+        /// <param name="isNorm">           (Optional) True if this object is normalize. </param>
         /// <param name="isFromBgrArray">   (Optional) True if this object is from BGR array. </param>
         ///
         /// <returns>   A Bitmap. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static Bitmap NdArray2Image(NdArray input, bool isNorm = true, bool isFromBgrArray = false)
+        [CanBeNull]
+        public static Bitmap NdArray2Image([NotNull] NdArray input, bool isNorm = true, bool isFromBgrArray = false)
         {
             Ensure.Argument(input).NotNull("input is null");
 
@@ -104,12 +107,13 @@ namespace KelpNet.Common.Tools
         /// <param name="data">     The data. </param>
         /// <param name="width">    The width. </param>
         /// <param name="height">   The height. </param>
-        /// <param name="isNorm">   True if this object is normalise. </param>
+        /// <param name="isNorm">   True if this object is normalize. </param>
         ///
         /// <returns>   The new mono image. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        static Bitmap CreateMonoImage(Real[] data, int width, int height, bool isNorm)
+        [NotNull]
+        static Bitmap CreateMonoImage([NotNull] Real[] data, int width, int height, bool isNorm)
         {
             Ensure.Argument(data).NotNull("data is null");
 
@@ -147,13 +151,14 @@ namespace KelpNet.Common.Tools
         /// <param name="data">             The data. </param>
         /// <param name="width">            The width. </param>
         /// <param name="height">           The height. </param>
-        /// <param name="isNorm">           True if this object is normalise. </param>
+        /// <param name="isNorm">           True if this object is normalize. </param>
         /// <param name="isFromBgrArray">   True if this object is from BGR array. </param>
         ///
         /// <returns>   The new color image. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        static Bitmap CreateColorImage(Real[] data, int width, int height, bool isNorm, bool isFromBgrArray)
+        [NotNull]
+        static Bitmap CreateColorImage([NotNull] Real[] data, int width, int height, bool isNorm, bool isFromBgrArray)
         {
             Ensure.Argument(data).NotNull("data is null");
 

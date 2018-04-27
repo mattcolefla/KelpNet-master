@@ -6,6 +6,8 @@ using KelpNet.Functions.Arrays;
 
 namespace KelpNet.Functions.Mathmetrics
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) an add bias. </summary>
     ///
@@ -36,7 +38,7 @@ namespace KelpNet.Functions.Mathmetrics
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public AddBias(int axis = 1, int[] biasShape = null, Array initialb = null, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public AddBias(int axis = 1, [NotNull] int[] biasShape = null, [CanBeNull] Array initialb = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             Axis = axis;
             Bias = new NdArray(biasShape);
@@ -60,7 +62,8 @@ namespace KelpNet.Functions.Mathmetrics
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected NdArray ForwardCpu(NdArray x)
+        [CanBeNull]
+        protected NdArray ForwardCpu([NotNull] NdArray x)
         {
             int[] inputShape = x.Shape;
             int[] outputShape = Bias.Shape;
@@ -94,7 +97,7 @@ namespace KelpNet.Functions.Mathmetrics
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected void BackwardCpu(NdArray y, NdArray x)
+        protected void BackwardCpu([CanBeNull] NdArray y, [CanBeNull] NdArray x)
         {
         }
     }

@@ -4,6 +4,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Mathmetrics.Trigonometric
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   An arc tangent. </summary>
     ///
@@ -26,7 +28,7 @@ namespace KelpNet.Functions.Mathmetrics.Trigonometric
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ArcTan(string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public ArcTan([CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             SingleInputForward = ForwardCpu;
             SingleOutputBackward = BackwardCpu;
@@ -40,7 +42,8 @@ namespace KelpNet.Functions.Mathmetrics.Trigonometric
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected NdArray ForwardCpu(NdArray x)
+        [NotNull]
+        protected NdArray ForwardCpu([NotNull] NdArray x)
         {
             Real[] resultData = new Real[x.Data.Length];
 
@@ -59,7 +62,7 @@ namespace KelpNet.Functions.Mathmetrics.Trigonometric
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected void BackwardCpu(NdArray y, NdArray x)
+        protected void BackwardCpu([NotNull] NdArray y, [CanBeNull] NdArray x)
         {
             for (int i = 0; i < y.Grad.Length; i++)
             {

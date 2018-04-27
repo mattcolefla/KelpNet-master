@@ -5,6 +5,7 @@ using KelpNet.Common.Functions.Container;
 
 namespace KelpNet.Common.Tools
 {
+    using JetBrains.Annotations;
     using Nerdle.Ensure;
     using Optimizers;
 
@@ -18,7 +19,7 @@ namespace KelpNet.Common.Tools
         /// <param name="fileName">         Filename of the file. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static void Save(FunctionStack functionStack, string fileName)
+        public static void Save([NotNull] FunctionStack functionStack, [NotNull] string fileName)
         {
             Ensure.Argument(fileName).NotNullOrWhiteSpace("fileName is null");
             Ensure.Argument(functionStack).NotNull("functionStack is null");
@@ -39,7 +40,8 @@ namespace KelpNet.Common.Tools
         /// <returns>   A FunctionStack. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static FunctionStack Load(string fileName)
+        [CanBeNull]
+        public static FunctionStack Load([NotNull] string fileName)
         {
             Ensure.Argument(fileName).NotNullOrWhiteSpace("fileName is null");
             NetDataContractSerializer bf = new NetDataContractSerializer();

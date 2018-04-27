@@ -19,11 +19,11 @@ namespace KelpNetTester.Tests
 
         public static void Run()
         {
-            //読み込みたいネットワークの構成を FunctionStack に書き連ね、各 Function のパラメータを合わせる
-            //ここで必ず name を Chainer の変数名に合わせておくこと
+            // Write the configuration of the network you want to read into FunctionStack and adjust the parameters of each function
+            // Make sure to match name to the variable name of Chainer here
 
             FunctionStack nn = new FunctionStack(
-                new Convolution2D(1, 2, 3, name: "conv1", gpuEnable: true),//必要であればGPUフラグも忘れずに
+                new Convolution2D(1, 2, 3, name: "conv1", gpuEnable: true),// Do not forget the GPU flag if necessary
                 new ReLU(),
                 new MaxPooling(2, 2),
                 new Convolution2D(2, 2, 2, name: "conv2", gpuEnable: true),
@@ -55,10 +55,10 @@ namespace KelpNetTester.Tests
             */
 
 
-            //パラメータを読み込み
+            // Read parameters
             ChainerModelDataLoader.ModelLoad(MODEL_FILE_PATH, nn);
 
-            //あとは通常通り使用する
+            // We will use the rest as usual
             nn.SetOptimizer(new SGD());
 
             NdArray x = new NdArray(new Real[,,]{{

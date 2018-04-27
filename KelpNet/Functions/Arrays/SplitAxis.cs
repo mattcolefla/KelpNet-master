@@ -4,6 +4,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Arrays
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   A split axis. </summary>
     ///
@@ -31,7 +33,7 @@ namespace KelpNet.Functions.Arrays
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public SplitAxis(int indices, int axis, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public SplitAxis(int indices, int axis, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             Indices = new[] { indices };
             Axis = axis;
@@ -52,7 +54,7 @@ namespace KelpNet.Functions.Arrays
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public SplitAxis(int[] indices, int axis, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public SplitAxis([NotNull] int[] indices, int axis, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             Indices = indices.ToArray();
             Axis = axis;
@@ -69,7 +71,8 @@ namespace KelpNet.Functions.Arrays
         /// <returns>   A NdArray[]. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private NdArray[] ForwardCpu(NdArray x)
+        [NotNull]
+        private NdArray[] ForwardCpu([NotNull] NdArray x)
         {
             NdArray[] resultArays = NdArray.Split(x, Indices, Axis);
 
@@ -88,7 +91,7 @@ namespace KelpNet.Functions.Arrays
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private void BackwardCpu(NdArray[] ys, NdArray x)
+        private void BackwardCpu([NotNull] NdArray[] ys, [NotNull] NdArray x)
         {
             NdArray resultNdArray = ys[0].Clone();
 

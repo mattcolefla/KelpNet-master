@@ -9,6 +9,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Noise
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a dropout. </summary>
     ///
@@ -49,7 +51,7 @@ namespace KelpNet.Functions.Noise
         /// <param name="gpuEnable">    (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Dropout(double dropoutRatio = 0.5, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
+        public Dropout(double dropoutRatio = 0.5, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
         {
             this.dropoutRatio = dropoutRatio;
 
@@ -112,6 +114,7 @@ namespace KelpNet.Functions.Noise
         /// <returns>   A Real[]. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        [NotNull]
         private Real[] MakeMask(int xLength)
         {
             Real[] mask = new Real[xLength];
@@ -135,7 +138,8 @@ namespace KelpNet.Functions.Noise
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public NdArray ForwardCpu(NdArray x)
+        [NotNull]
+        public NdArray ForwardCpu([NotNull] NdArray x)
         {
             Real[] result = new Real[x.Data.Length];
             Real[] mask = MakeMask(x.Length);
@@ -156,7 +160,8 @@ namespace KelpNet.Functions.Noise
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public NdArray ForwardGpu(NdArray x)
+        [NotNull]
+        public NdArray ForwardGpu([NotNull] NdArray x)
         {
             Real[] result = new Real[x.Data.Length];
             Real[] mask = MakeMask(x.Length);
@@ -189,7 +194,7 @@ namespace KelpNet.Functions.Noise
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public void BackwardCpu(NdArray y, NdArray x)
+        public void BackwardCpu([NotNull] NdArray y, [NotNull] NdArray x)
         {
             Real[] result = y.Grad.ToArray();
             Real[] mask = maskStack[maskStack.Count - 1];
@@ -216,7 +221,7 @@ namespace KelpNet.Functions.Noise
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public void BackwardGpu(NdArray y, NdArray x)
+        public void BackwardGpu([NotNull] NdArray y, [NotNull] NdArray x)
         {
             Real[] result = y.Grad.ToArray();
             Real[] mask = maskStack[maskStack.Count - 1];

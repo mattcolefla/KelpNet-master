@@ -2,6 +2,8 @@
 
 namespace KelpNet.Common.Functions.Type
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a dual input function. </summary>
     ///
@@ -26,7 +28,7 @@ namespace KelpNet.Common.Functions.Type
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected DualInputFunction(string name, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        protected DualInputFunction([CanBeNull] string name, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
         }
 
@@ -40,7 +42,8 @@ namespace KelpNet.Common.Functions.Type
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Forward(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override NdArray[] Forward(params NdArray[] xs)
+        [NotNull]
+        public override NdArray[] Forward([NotNull] params NdArray[] xs)
         {
             PrevInputs.Add(xs);
 
@@ -66,7 +69,7 @@ namespace KelpNet.Common.Functions.Type
             PrevInputs.RemoveAt(PrevInputs.Count - 1);
 
 #if DEBUG
-            if (xs == null || xs.Length != 2) throw new Exception("Invalid argument");
+            if (xs == null || xs.Length != 2) throw new Exception(string.Intern("Invalid argument"));
 #endif
             BackwardCountUp();
 
@@ -86,6 +89,7 @@ namespace KelpNet.Common.Functions.Type
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Predict(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        [NotNull]
         public override NdArray[] Predict(params NdArray[] xs)
         {
             return new[] { DualInputForward(xs[0], xs[1]) };

@@ -4,6 +4,8 @@ using KelpNet.Common.Loss;
 
 namespace KelpNet.Loss
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   A softmax cross entropy. </summary>
     ///
@@ -25,7 +27,7 @@ namespace KelpNet.Loss
         /// <seealso cref="M:KelpNet.Common.Loss.LossFunction.Evaluate(NdArray[],params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override Real Evaluate(NdArray[] input, params NdArray[] teachSignal)
+        public override Real Evaluate([NotNull] NdArray[] input, [NotNull] params NdArray[] teachSignal)
         {
             Real resultLoss = 0;
 

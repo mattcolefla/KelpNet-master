@@ -4,6 +4,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Activations
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a swish. </summary>
     ///
@@ -26,7 +28,7 @@ namespace KelpNet.Functions.Activations
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Swish(string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public Swish([CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
         }
 
@@ -38,7 +40,8 @@ namespace KelpNet.Functions.Activations
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected NdArray NeedPreviousForwardCpu(NdArray x)
+        [NotNull]
+        protected NdArray NeedPreviousForwardCpu([NotNull] NdArray x)
         {
             Real[] result = new Real[x.Data.Length];
 
@@ -57,7 +60,7 @@ namespace KelpNet.Functions.Activations
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected void NeedPreviousBackwardCpu(NdArray y, NdArray x)
+        protected void NeedPreviousBackwardCpu([NotNull] NdArray y, [CanBeNull] NdArray x)
         {
             for (int i = 0; i < y.Grad.Length; i++)
             {

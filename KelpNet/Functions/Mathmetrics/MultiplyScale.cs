@@ -7,6 +7,8 @@ using KelpNet.Functions.Arrays;
 
 namespace KelpNet.Functions.Mathmetrics
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <inheritdoc />
     ///  <summary>   (Serializable) a multiply scale. </summary>
@@ -44,7 +46,7 @@ namespace KelpNet.Functions.Mathmetrics
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public MultiplyScale(int axis = 1, int[] wShape = null, bool biasTerm = false, Array initialW = null, Array initialb = null, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public MultiplyScale(int axis = 1, [NotNull] int[] wShape = null, bool biasTerm = false, [CanBeNull] Array initialW = null, [CanBeNull] Array initialb = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             Axis = axis;
             BiasTerm = biasTerm;
@@ -90,7 +92,8 @@ namespace KelpNet.Functions.Mathmetrics
         ///
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        private NdArray ForwardCpu(NdArray x)
+        [CanBeNull]
+        private NdArray ForwardCpu([NotNull] NdArray x)
         {
             int[] inputShape = x.Shape;
             int[] outputShape = Weight.Shape;
@@ -131,7 +134,7 @@ namespace KelpNet.Functions.Mathmetrics
         /// <param name="y">    A NdArray to process. </param>
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        private void BackwardCpu(NdArray y, NdArray x)
+        private void BackwardCpu([CanBeNull] NdArray y, [CanBeNull] NdArray x)
         {
         }
     }

@@ -4,6 +4,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Normalization
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   A lrn. </summary>
     ///
@@ -42,7 +44,7 @@ namespace KelpNet.Functions.Normalization
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public LRN(int n = 5, double k = 2, double alpha = 1e-4, double beta = 0.75, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public LRN(int n = 5, double k = 2, double alpha = 1e-4, double beta = 0.75, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             this.n = n;
             this.k = (Real)k;
@@ -61,7 +63,8 @@ namespace KelpNet.Functions.Normalization
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private NdArray NeedPreviousForwardCpu(NdArray input)
+        [NotNull]
+        private NdArray NeedPreviousForwardCpu([NotNull] NdArray input)
         {
             int nHalf = n / 2;
             Real[] result = new Real[input.Data.Length];
@@ -121,7 +124,7 @@ namespace KelpNet.Functions.Normalization
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private void NeedPreviousBackwardCpu(NdArray y, NdArray x)
+        private void NeedPreviousBackwardCpu([NotNull] NdArray y, [NotNull] NdArray x)
         {
             int nHalf = n / 2;
             Real[] summand = new Real[y.Grad.Length];

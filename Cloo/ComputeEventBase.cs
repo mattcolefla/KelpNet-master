@@ -252,7 +252,7 @@ namespace Cloo
 
         protected virtual void OnCompleted(object sender, ComputeCommandStatusArgs evArgs)
         {
-            RILogManager.Default?.SendTrace("Complete " + Type + " operation of " + this + ".", "Information");
+            RILogManager.Default?.SendTrace(string.Intern("Complete ") + Type + string.Intern(" operation of ") + this + string.Intern("."), string.Intern("Information"));
             completed?.Invoke(sender, evArgs);
         }
 
@@ -265,7 +265,7 @@ namespace Cloo
 
         protected virtual void OnAborted(object sender, ComputeCommandStatusArgs evArgs)
         {
-            RILogManager.Default?.SendTrace("Abort " + Type + " operation of " + this + ".", "Information");
+            RILogManager.Default?.SendTrace(string.Intern("Abort ") + Type + string.Intern(" operation of ") + this + string.Intern("."), string.Intern("Information"));
             aborted?.Invoke(sender, evArgs);
         }
 

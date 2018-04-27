@@ -2,6 +2,8 @@
 
 namespace KelpNet.Common.Functions.Type
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a single input function. </summary>
     ///
@@ -26,7 +28,7 @@ namespace KelpNet.Common.Functions.Type
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected SingleInputFunction(string name, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        protected SingleInputFunction([CanBeNull] string name, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
         }
 
@@ -40,7 +42,8 @@ namespace KelpNet.Common.Functions.Type
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Forward(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override NdArray[] Forward(params NdArray[] xs)
+        [NotNull]
+        public override NdArray[] Forward([NotNull] params NdArray[] xs)
         {
             PrevInputs.Add(xs);
             xs[0].UseCount++;
@@ -64,7 +67,7 @@ namespace KelpNet.Common.Functions.Type
             PrevInputs.RemoveAt(PrevInputs.Count - 1);
 
 #if DEBUG
-            if (xs == null || xs.Length != 1) throw new Exception("Invalid argument");
+            if (xs == null || xs.Length != 1) throw new Exception(string.Intern("Invalid argument"));
 #endif
             BackwardCountUp();
 
@@ -82,6 +85,7 @@ namespace KelpNet.Common.Functions.Type
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Predict(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        [NotNull]
         public override NdArray[] Predict(params NdArray[] xs)
         {
             return new[] { Predict(xs[0]) };
@@ -95,7 +99,8 @@ namespace KelpNet.Common.Functions.Type
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public virtual NdArray Predict(NdArray input)
+        [CanBeNull]
+        public virtual NdArray Predict([CanBeNull] NdArray input)
         {
             return SingleInputForward(input);
         }

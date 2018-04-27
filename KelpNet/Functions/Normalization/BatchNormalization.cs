@@ -5,6 +5,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Normalization
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   ported from Chainer finetuning is not implemented yet. </summary>
     ///
@@ -59,7 +61,7 @@ namespace KelpNet.Functions.Normalization
         /// <param name="outputNames">      (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public BatchNormalization(int channelSize, double decay = 0.9, double eps = 1e-5, Array initialAvgMean = null, Array initialAvgVar = null, bool isTrain = true, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public BatchNormalization(int channelSize, double decay = 0.9, double eps = 1e-5, [CanBeNull] Array initialAvgMean = null, [CanBeNull] Array initialAvgVar = null, bool isTrain = true, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             ChannelSize = channelSize;
             Decay = decay;
@@ -120,7 +122,8 @@ namespace KelpNet.Functions.Normalization
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private NdArray ForwardCpu(NdArray x)
+        [NotNull]
+        private NdArray ForwardCpu([NotNull] NdArray x)
         {
             // Acquire parameters for calculation
             if (IsTrain)
@@ -222,7 +225,7 @@ namespace KelpNet.Functions.Normalization
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private void BackwardCpu(NdArray y, NdArray x)
+        private void BackwardCpu([CanBeNull] NdArray y, [CanBeNull] NdArray x)
         {
             Beta.ClearGrad();
             Gamma.ClearGrad();

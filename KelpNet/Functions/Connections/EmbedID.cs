@@ -5,6 +5,8 @@ using KelpNet.Common.Tools;
 
 namespace KelpNet.Functions.Connections
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) an embed identifier. </summary>
     ///
@@ -38,7 +40,7 @@ namespace KelpNet.Functions.Connections
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public EmbedID(int inputCount, int outputCount, Real[,] initialW = null, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public EmbedID(int inputCount, int outputCount, [CanBeNull] Real[,] initialW = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             InputCount = inputCount;
             OutputCount = outputCount;
@@ -70,7 +72,8 @@ namespace KelpNet.Functions.Connections
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected NdArray NeedPreviousForwardCpu(NdArray x)
+        [NotNull]
+        protected NdArray NeedPreviousForwardCpu([NotNull] NdArray x)
         {
             Real[] result = new Real[x.Data.Length * OutputCount];
 
@@ -95,7 +98,7 @@ namespace KelpNet.Functions.Connections
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected void NeedPreviousBackwardCpu(NdArray y, NdArray x)
+        protected void NeedPreviousBackwardCpu([NotNull] NdArray y, [CanBeNull] NdArray x)
         {
             for (int b = 0; b < y.BatchCount; b++)
             {

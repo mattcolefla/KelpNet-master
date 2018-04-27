@@ -40,20 +40,18 @@ namespace Cloo
     using ReflectSoftware.Insight;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   Represents an OpenCL command queue. </summary>
-    ///
-    /// <remarks>
-    /// A command queue is an object that holds commands that will be executed on a specific device.
-    /// The command queue is created on a specific device in a context. Commands to a command queue
-    /// are queued in-order but may be executed in-order or out-of-order.
-    /// </remarks>
-    ///
-    /// <seealso cref="T:Cloo.ComputeResource"/>
-    /// <seealso cref="ComputeContext"/>
-    /// <seealso cref="ComputeDevice"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <inheritdoc />
+    ///  <summary>   Represents an OpenCL command queue. </summary>
+    ///  <remarks>
+    ///  A command queue is an object that holds commands that will be executed on a specific device.
+    ///  The command queue is created on a specific device in a context. Commands to a command queue
+    ///  are queued in-order but may be executed in-order or out-of-order.
+    ///  </remarks>
+    ///  <seealso cref="T:Cloo.ComputeResource" />
+    ///  <seealso cref="T:Cloo.ComputeContext" />
+    ///  <seealso cref="T:Cloo.ComputeDevice" />
 
-    public partial class ComputeCommandQueue : ComputeResource
+    public sealed partial class ComputeCommandQueue : ComputeResource
     {
         #region Fields
 
@@ -193,11 +191,9 @@ namespace Cloo
 
         public void AcquireGLObjects(ICollection<ComputeMemory> memObjs, ICollection<ComputeEventBase> events)
         {
-            int memObjCount;
-            CLMemoryHandle[] memObjHandles = ComputeTools.ExtractHandles(memObjs, out memObjCount);
+            CLMemoryHandle[] memObjHandles = ComputeTools.ExtractHandles(memObjs, out var memObjCount);
 
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -232,8 +228,7 @@ namespace Cloo
 
         public ComputeEvent AddMarker()
         {
-            CLEventHandle newEventHandle;
-            ComputeErrorCode error = CL12.EnqueueMarker(Handle, out newEventHandle);
+            ComputeErrorCode error = CL12.EnqueueMarker(Handle, out var newEventHandle);
             ComputeException.ThrowOnError(error);
             return new ComputeEvent(newEventHandle, this);
         }
@@ -260,8 +255,7 @@ namespace Cloo
         {
             int sizeofT = Marshal.SizeOf(typeof(T));
 
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -314,9 +308,8 @@ namespace Cloo
             sourceOffset.X = new IntPtr(sizeofT * sourceOffset.X.ToInt64());
             destinationOffset.X = new IntPtr(sizeofT * destinationOffset.X.ToInt64());
             region.X = new IntPtr(sizeofT * region.X.ToInt64());
-            
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -349,8 +342,7 @@ namespace Cloo
         {
             int sizeofT = Marshal.SizeOf(typeof(T));
 
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -383,8 +375,7 @@ namespace Cloo
         {
             int sizeofT = Marshal.SizeOf(typeof(T));
 
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -414,8 +405,7 @@ namespace Cloo
 
         public void Copy(ComputeImage source, ComputeImage destination, SysIntX3 sourceOffset, SysIntX3 destinationOffset, SysIntX3 region, ICollection<ComputeEventBase> events)
         {
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -438,8 +428,7 @@ namespace Cloo
 
         public void ExecuteTask(ComputeKernel kernel, ICollection<ComputeEventBase> events)
         {
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events != null && !events.IsReadOnly);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -478,8 +467,7 @@ namespace Cloo
 
         public void Execute(ComputeKernel kernel, long[] globalWorkOffset, long[] globalWorkSize, long[] localWorkSize, ICollection<ComputeEventBase> events)
         {
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -547,8 +535,7 @@ namespace Cloo
         {
             int sizeofT = Marshal.SizeOf(typeof(T));
 
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -588,8 +575,7 @@ namespace Cloo
 
         public IntPtr Map(ComputeImage image, bool blocking, ComputeMemoryMappingFlags flags, SysIntX3 offset, SysIntX3 region, ICollection<ComputeEventBase> events)
         {
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -633,8 +619,7 @@ namespace Cloo
         {
             int sizeofT = Marshal.SizeOf(typeof(T));
 
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -690,8 +675,7 @@ namespace Cloo
             destinationOffset.X = new IntPtr(sizeofT * destinationOffset.X.ToInt64());
             region.X = new IntPtr(sizeofT * region.X.ToInt64());
 
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -731,8 +715,7 @@ namespace Cloo
 
         public void Read(ComputeImage source, bool blocking, SysIntX3 offset, SysIntX3 region, long rowPitch, long slicePitch, IntPtr destination, ICollection<ComputeEventBase> events)
         {
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -759,11 +742,9 @@ namespace Cloo
 
         public void ReleaseGLObjects(ICollection<ComputeMemory> memObjs, ICollection<ComputeEventBase> events)
         {
-            int memObjCount;
-            CLMemoryHandle[] memObjHandles = ComputeTools.ExtractHandles(memObjs, out memObjCount);
+            CLMemoryHandle[] memObjHandles = ComputeTools.ExtractHandles(memObjs, out var memObjCount);
 
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -793,8 +774,7 @@ namespace Cloo
 
         public void Unmap(ComputeMemory memory, ref IntPtr mappedPtr, ICollection<ComputeEventBase> events)
         {
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -908,8 +888,7 @@ namespace Cloo
             destinationOffset.X = new IntPtr(sizeofT * destinationOffset.X.ToInt64());
             region.X = new IntPtr(sizeofT * region.X.ToInt64());
 
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -950,8 +929,7 @@ namespace Cloo
 
         public void Write(ComputeImage destination, bool blocking, SysIntX3 destinationOffset, SysIntX3 region, long rowPitch, long slicePitch, IntPtr source, ICollection<ComputeEventBase> events)
         {
-            int eventWaitListSize;
-            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out eventWaitListSize);
+            CLEventHandle[] eventHandles = ComputeTools.ExtractHandles(events, out var eventWaitListSize);
             bool eventsWritable = (events?.IsReadOnly == false);
             CLEventHandle[] newEventHandle = (eventsWritable) ? new CLEventHandle[1] : null;
 
@@ -989,9 +967,16 @@ namespace Cloo
             // free native resources
             if (Handle.IsValid)
             {
-                RILogManager.Default?.SendTrace("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
                 CL12.ReleaseCommandQueue(Handle);
                 Handle.Invalidate();
+
+                try
+                {
+                    RILogManager.Default?.SendTrace("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 

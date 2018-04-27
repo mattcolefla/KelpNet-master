@@ -4,6 +4,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Activations
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) an elu. </summary>
     ///
@@ -30,7 +32,7 @@ namespace KelpNet.Functions.Activations
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public ELU(double alpha = 1, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public ELU(double alpha = 1, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             _alpha = alpha;
 
@@ -46,7 +48,8 @@ namespace KelpNet.Functions.Activations
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private NdArray NeedPreviousForwardCpu(NdArray x)
+        [NotNull]
+        private NdArray NeedPreviousForwardCpu([NotNull] NdArray x)
         {
             Real[] result = new Real[x.Data.Length];
 
@@ -72,7 +75,7 @@ namespace KelpNet.Functions.Activations
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private void NeedPreviousBackwardCpu(NdArray y, NdArray x)
+        private void NeedPreviousBackwardCpu([NotNull] NdArray y, [CanBeNull] NdArray x)
         {
             for (int i = 0; i < y.Grad.Length; i++)
             {

@@ -5,6 +5,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Poolings
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) an average pooling. </summary>
     ///
@@ -43,7 +45,7 @@ namespace KelpNet.Functions.Poolings
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public AveragePooling(int ksize, int stride = 1, int pad = 0, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public AveragePooling(int ksize, int stride = 1, int pad = 0, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             _kWidth = ksize;
             _kHeight = ksize;
@@ -69,7 +71,7 @@ namespace KelpNet.Functions.Poolings
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public AveragePooling(Size ksize, Size stride = new Size(), Size pad = new Size(), string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public AveragePooling(Size ksize, Size stride = new Size(), Size pad = new Size(), [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             if (pad == Size.Empty)
                 pad = new Size(0, 0);
@@ -96,7 +98,8 @@ namespace KelpNet.Functions.Poolings
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected NdArray NeedPreviousForwardCpu(NdArray input)
+        [NotNull]
+        protected NdArray NeedPreviousForwardCpu([NotNull] NdArray input)
         {
             int outputHeight = (int)Math.Floor((input.Shape[1] - _kHeight + _padY * 2.0) / _strideY) + 1;
             int outputWidth = (int)Math.Floor((input.Shape[2] - _kWidth + _padX * 2.0) / _strideX) + 1;
@@ -146,7 +149,7 @@ namespace KelpNet.Functions.Poolings
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected void NeedPreviousBackwardCpu(NdArray y, NdArray x)
+        protected void NeedPreviousBackwardCpu([NotNull] NdArray y, [CanBeNull] NdArray x)
         {
             Real m = _kHeight * _kWidth;
 

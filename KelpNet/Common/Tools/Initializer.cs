@@ -2,6 +2,8 @@
 
 namespace KelpNet.Common.Tools
 {
+    using JetBrains.Annotations;
+
     /// <summary>   An initializer. </summary>
     class Initializer
     {
@@ -12,7 +14,7 @@ namespace KelpNet.Common.Tools
         /// <param name="masterScale">  (Optional) The master scale. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static void InitWeight(NdArray array, double masterScale = 1)
+        public static void InitWeight([NotNull] NdArray array, double masterScale = 1)
         {
             double localScale = 1 / Math.Sqrt(2);
             int fanIn = GetFans(array.Shape);
@@ -46,7 +48,7 @@ namespace KelpNet.Common.Tools
         /// <returns>   The fans. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private static int GetFans(int[] shape)
+        private static int GetFans([NotNull] int[] shape)
         {
             int result = 1;
 

@@ -153,7 +153,7 @@ namespace Cloo
 
         public override string ToString()
         {
-            return GetType().Name + "(" + handle.ToString() + ")";
+            return GetType().Name + string.Intern("(") + handle.ToString() + string.Intern(")");
         }
 
         #endregion

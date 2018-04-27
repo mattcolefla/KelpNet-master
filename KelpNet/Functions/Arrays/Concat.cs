@@ -4,6 +4,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Arrays
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   A concatenate. </summary>
     ///
@@ -31,7 +33,7 @@ namespace KelpNet.Functions.Arrays
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Concat(int axis = 1, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public Concat(int axis = 1, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             Axis = axis;
 
@@ -47,7 +49,8 @@ namespace KelpNet.Functions.Arrays
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private NdArray ForwardCpu(params NdArray[] xs)
+        [NotNull]
+        private NdArray ForwardCpu([NotNull] params NdArray[] xs)
         {
             int[] sections = new int[xs.Length - 1];
             int sizeOffset = xs[0].Shape[Axis];
@@ -76,7 +79,7 @@ namespace KelpNet.Functions.Arrays
         /// <param name="xs">   The xs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private void BackwardCpu(NdArray y, NdArray[] xs)
+        private void BackwardCpu([NotNull] NdArray y, [NotNull] NdArray[] xs)
         {
             int[] prevInputShapes = _prevInputSections[_prevInputSections.Count - 1];
             _prevInputSections.RemoveAt(_prevInputSections.Count - 1);

@@ -5,6 +5,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Connections
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a lstm. </summary>
     ///
@@ -81,7 +83,7 @@ namespace KelpNet.Functions.Connections
         /// <param name="gpuEnable">        (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public LSTM(int inSize, int outSize, Real[,] initialUpwardW = null, Real[] initialUpwardb = null, Real[,] initialLateralW = null, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
+        public LSTM(int inSize, int outSize, [CanBeNull] Real[,] initialUpwardW = null, [CanBeNull] Real[] initialUpwardb = null, [CanBeNull] Real[,] initialLateralW = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
         {
             InputCount = inSize;
             OutputCount = outSize;
@@ -123,7 +125,8 @@ namespace KelpNet.Functions.Connections
         /// <returns>   A NdArray. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public NdArray ForwardCpu(NdArray x)
+        [NotNull]
+        public NdArray ForwardCpu([NotNull] NdArray x)
         {
             Real[][] upwards = new Real[4][];
             upwards[0] = upward0.Forward(x)[0].Data;
@@ -209,7 +212,7 @@ namespace KelpNet.Functions.Connections
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public void BackwardCpu(NdArray y, NdArray x)
+        public void BackwardCpu([NotNull] NdArray y, [CanBeNull] NdArray x)
         {
             if (gcPrev == null)
             {

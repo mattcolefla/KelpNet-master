@@ -139,7 +139,7 @@ namespace Cloo
         {
             if (Handle.IsValid)
             {
-                RILogManager.Default?.SendTrace("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+                RILogManager.Default?.SendTrace(string.Intern("Dispose ") + this + string.Intern(" in Thread(") + Thread.CurrentThread.ManagedThreadId + string.Intern(")."), string.Intern("Information"));
                 CL12.ReleaseMemObject(Handle);
                 Handle.Invalidate();
             }

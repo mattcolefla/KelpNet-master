@@ -2,6 +2,8 @@
 
 namespace KelpNet.Common.Functions.Type
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a multi input function. </summary>
     ///
@@ -26,7 +28,7 @@ namespace KelpNet.Common.Functions.Type
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        protected MultiInputFunction(string name, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        protected MultiInputFunction([CanBeNull] string name, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
         }
 
@@ -40,7 +42,8 @@ namespace KelpNet.Common.Functions.Type
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Forward(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override NdArray[] Forward(params NdArray[] xs)
+        [NotNull]
+        public override NdArray[] Forward([NotNull] params NdArray[] xs)
         {
             PrevInputs.Add(xs);
 
@@ -85,6 +88,7 @@ namespace KelpNet.Common.Functions.Type
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Predict(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        [NotNull]
         public override NdArray[] Predict(params NdArray[] xs)
         {
             return new[] { MultiInputForward(xs) };

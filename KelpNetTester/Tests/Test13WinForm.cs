@@ -11,10 +11,10 @@ namespace KelpNetTester.Tests
 {
     public partial class Test13WinForm : Form
     {
-        Deconvolution2D model;
-        private Deconvolution2D decon_core;
-        private SGD optimizer;
-        MeanSquaredError meanSquaredError = new MeanSquaredError();
+        readonly Deconvolution2D model;
+        private readonly Deconvolution2D decon_core;
+        private readonly SGD optimizer;
+        readonly MeanSquaredError meanSquaredError = new MeanSquaredError();
         private int counter = 0;
 
         public Test13WinForm()
@@ -23,7 +23,7 @@ namespace KelpNetTester.Tests
 
             ClientSize = new Size(128 * 4, 128 * 4);
 
-            //目標とするフィルタを作成（実践であればココは不明な値となる）
+            // Create a target filter (In case of practice, here is the unknown value)
             decon_core = new Deconvolution2D(1, 1, 15, 1, 7, gpuEnable: true)
             {
                 Weight = { Data = MakeOneCore() }
@@ -31,13 +31,13 @@ namespace KelpNetTester.Tests
 
             model = new Deconvolution2D(1, 1, 15, 1, 7, gpuEnable: true);
 
-            optimizer = new SGD(learningRate: 0.01); //大きいと発散する
+            optimizer = new SGD(learningRate: 0.01); // diverge if big
             model.SetOptimizer(optimizer);
         }
 
         static NdArray getRandomImage(int N = 1, int img_w = 128, int img_h = 128)
         {
-            // ランダムに0.1％の点を作る
+            // Make a 0.1% point randomly
             Real[] img_p = new Real[N * img_w * img_h];
 
             for (int i = 0; i < img_p.Length; i++)
@@ -49,7 +49,7 @@ namespace KelpNetTester.Tests
             return new NdArray(img_p, new[] { N, img_h, img_w }, 1);
         }
 
-        //１つの球状の模様を作成（ガウスですが）
+        // Create one spherical pattern (Gauss)
         static Real[] MakeOneCore()
         {
             int max_xy = 15;
@@ -72,19 +72,19 @@ namespace KelpNetTester.Tests
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            //移植元では同じ教育画像で教育しているが、より実践に近い学習に変更
+            // I am educating with the same educational image at the transplanting source, but changing to learning closer to practice
             if (counter < 11)
             {
-                //ランダムに点が打たれた画像を生成
+                // Generate an image with randomly struck points
                 NdArray img_p = getRandomImage();
 
-                //目標とするフィルタで学習用の画像を出力
-                NdArray[] img_core = decon_core.Forward(img_p);
+                // Output a learning image with a target filter
+                NdArray[] img_core = decon_core?.Forward(img_p);
 
-                //未学習のフィルタで画像を出力
-                NdArray[] img_y = model.Forward(img_p);
+                // Output an image with an unlearned filter
+                NdArray[] img_y = model?.Forward(img_p);
 
-                //img_yを暗黙的にNdArrayとして使用
+                // implicitly use img_y as NdArray
                 BackgroundImage = NdArrayConverter.NdArray2Image(img_y[0].GetSingleArray(0));
 
                 Real loss = meanSquaredError.Evaluate(img_y, img_core);
@@ -92,7 +92,7 @@ namespace KelpNetTester.Tests
                 model.Backward(img_y);
                 model.Update();
 
-                Text = "[epoch" + counter + "] Loss : " + string.Format("{0:F4}", loss);
+                Text = "[epoch" + counter + "] Loss : " + $"{loss:F4}";
 
                 counter++;
             }

@@ -39,7 +39,7 @@ namespace KelpNetTester
             //Test7.Run();
 
             //Learning of Sin function by LSTM
-            //Test8.Run();
+            Test8.Run();
 
             //RNNLM with Simple RNN
             //Test9.Run();
@@ -81,9 +81,10 @@ namespace KelpNetTester
             //Test20.Run();
 
             //benchmark
-            SingleBenchmark.Run();
+            //SingleBenchmark.Run();
 
             RILogManager.Default?.SendDebug("Test Done...");
+            Console.WriteLine("Test Complete, press any key to end");
             Console.Read();
         }
     }

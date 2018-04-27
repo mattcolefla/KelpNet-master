@@ -3,6 +3,8 @@ using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Common.Functions.Container
 {
+    using JetBrains.Annotations;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a split function. </summary>
     ///
@@ -31,7 +33,7 @@ namespace KelpNet.Common.Functions.Container
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public SplitFunction(int splitNum = 2, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public SplitFunction(int splitNum = 2, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             _splitNum = splitNum;
             SplitedFunctions = new FunctionStack[splitNum];
@@ -53,7 +55,8 @@ namespace KelpNet.Common.Functions.Container
         /// <returns>   A NdArray[]. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private NdArray[] ForwardCpu(NdArray x)
+        [NotNull]
+        private NdArray[] ForwardCpu([CanBeNull] NdArray x)
         {
             NdArray[] result = new NdArray[_splitNum];
 
@@ -72,7 +75,7 @@ namespace KelpNet.Common.Functions.Container
         /// <param name="x">    A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private void BackwardCpu(NdArray[] ys, NdArray x)
+        private void BackwardCpu([CanBeNull] NdArray[] ys, [CanBeNull] NdArray x)
         {
         }
 
@@ -86,7 +89,8 @@ namespace KelpNet.Common.Functions.Container
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Predict(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override NdArray[] Predict(params NdArray[] xs)
+        [NotNull]
+        public override NdArray[] Predict([CanBeNull] params NdArray[] xs)
         {
             NdArray[] result = new NdArray[_splitNum];
 

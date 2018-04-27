@@ -155,8 +155,7 @@ namespace Cloo
 
         public ComputeSampler(ComputeContext context, bool normalizedCoords, ComputeImageAddressing addressing, ComputeImageFiltering filtering)
         {
-            ComputeErrorCode error = ComputeErrorCode.Success;
-            Handle = CL12.CreateSampler(context.Handle, normalizedCoords, addressing, filtering, out error);
+            Handle = CL12.CreateSampler(context.Handle, normalizedCoords, addressing, filtering, out var error);
             ComputeException.ThrowOnError(error);
 
             SetID(Handle.Value);
@@ -166,7 +165,7 @@ namespace Cloo
             this.filtering = filtering;
             this.normalizedCoords = normalizedCoords;
 
-            RILogManager.Default?.SendTrace("Create " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+            RILogManager.Default?.SendTrace(string.Intern("Create ") + this + string.Intern(" in Thread(") + Thread.CurrentThread.ManagedThreadId + string.Intern(")."), string.Intern("Information"));
         }
 
         #endregion
@@ -190,7 +189,7 @@ namespace Cloo
         {
             if (Handle.IsValid)
             {
-                RILogManager.Default?.SendTrace("Dispose " + this + " in Thread(" + Thread.CurrentThread.ManagedThreadId + ").", "Information");
+                RILogManager.Default?.SendTrace(string.Intern("Dispose ") + this + string.Intern(" in Thread(") + Thread.CurrentThread.ManagedThreadId + string.Intern(")."), string.Intern("Information"));
                 CL12.ReleaseSampler(Handle);
                 Handle.Invalidate();
             }

@@ -36,7 +36,7 @@ namespace Cloo
     using System.Runtime.InteropServices;
 
     /// <content>   Queue of compute commands. </content>
-    public partial class ComputeCommandQueue
+    public sealed partial class ComputeCommandQueue
     {
         #region CopyBuffer
 

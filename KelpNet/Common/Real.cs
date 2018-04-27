@@ -5,6 +5,8 @@ using RealType = System.Double;
 
 namespace KelpNet.Common
 {
+    using JetBrains.Annotations;
+
     /// <summary>   A real tool. </summary>
     class RealTool
     {
@@ -118,6 +120,7 @@ namespace KelpNet.Common
         /// <returns>   An array of real. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        [NotNull]
         public static Real[] GetArray(Array data)
         {
             Type arrayType = data.GetType().GetElementType();

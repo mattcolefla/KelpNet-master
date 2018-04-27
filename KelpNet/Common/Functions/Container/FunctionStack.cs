@@ -5,6 +5,7 @@ using KelpNet.Common.Optimizers;
 namespace KelpNet.Common.Functions.Container
 {
     using System.Linq;
+    using JetBrains.Annotations;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>
@@ -40,7 +41,7 @@ namespace KelpNet.Common.Functions.Container
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public FunctionStack(Function[] functions, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public FunctionStack([CanBeNull] Function[] functions, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             Functions = functions;
         }
@@ -56,7 +57,7 @@ namespace KelpNet.Common.Functions.Container
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public FunctionStack(Function function, string name = FUNCTION_NAME, string[] inputNames = null, string[] outputNames = null) : base(name, inputNames, outputNames)
+        public FunctionStack([CanBeNull] Function function, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             Functions = new[] { function };
         }
@@ -69,7 +70,7 @@ namespace KelpNet.Common.Functions.Container
         /// <param name="functions">    A variable-length parameters list containing functions. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public FunctionStack(params Function[] functions) : base(FUNCTION_NAME)
+        public FunctionStack([CanBeNull] params Function[] functions) : base(FUNCTION_NAME)
         {
             Functions = new Function[]{};
             Add(functions);
@@ -83,7 +84,7 @@ namespace KelpNet.Common.Functions.Container
         /// <param name="function"> A variable-length parameters list containing function. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public void Add(params Function[] function)
+        public void Add([CanBeNull] params Function[] function)
         {
             if (function != null && function.Length > 0)
             {
@@ -134,7 +135,8 @@ namespace KelpNet.Common.Functions.Container
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Forward(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override NdArray[] Forward(params NdArray[] xs)
+        [CanBeNull]
+        public override NdArray[] Forward([CanBeNull] params NdArray[] xs)
         {
             return Functions.Aggregate(xs, (current, t) => t.Forward(current));
         }
@@ -147,7 +149,7 @@ namespace KelpNet.Common.Functions.Container
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Backward(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override void Backward(params NdArray[] ys)
+        public override void Backward([NotNull] params NdArray[] ys)
         {
             NdArray.Backward(ys[0]);
         }
@@ -192,7 +194,8 @@ namespace KelpNet.Common.Functions.Container
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Predict(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override NdArray[] Predict(params NdArray[] xs)
+        [CanBeNull]
+        public override NdArray[] Predict([CanBeNull] params NdArray[] xs)
         {
             return Functions.Aggregate(xs, (current, t) => t.Predict(current));
         }
@@ -205,7 +208,7 @@ namespace KelpNet.Common.Functions.Container
         /// <seealso cref="M:KelpNet.Common.Functions.Function.SetOptimizer(params Optimizer[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override void SetOptimizer(params Optimizer[] optimizers)
+        public override void SetOptimizer([CanBeNull] params Optimizer[] optimizers)
         {
             foreach (Function function in Functions)
             {

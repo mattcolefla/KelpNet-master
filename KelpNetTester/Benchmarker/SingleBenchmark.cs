@@ -35,6 +35,8 @@ namespace KelpNetTester.Benchmarker
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
+            Ensure.Argument(gradArrayCpu).NotNull();
+
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data; // Use Data as Grad
 
             sw.Restart();
