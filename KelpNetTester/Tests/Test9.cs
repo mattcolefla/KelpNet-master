@@ -127,10 +127,15 @@ namespace KelpNetTester.Tests
                 {
                     if (!unkWord)
                     {
-                        RILogManager.Default?.SendDebug("pos" + pos);
-                        RILogManager.Default?.SendDebug("tsLen" + ts.Count);
-                        RILogManager.Default?.SendDebug("sum" + sum);
-                        RILogManager.Default?.SendDebug("wnum" + wnum);
+                        RILogManager.Default?.SendDebug("pos: " + pos);
+                        RILogManager.Default?.SendDebug("tsLen: " + ts.Count);
+                        RILogManager.Default?.SendDebug("sum: " + sum);
+                        RILogManager.Default?.SendDebug("wnum: " + wnum);
+                        RILogManager.Default?.ViewerSendWatch("pos", pos);
+                        RILogManager.Default?.ViewerSendWatch("tsLen", ts.Count);
+                        RILogManager.Default?.ViewerSendWatch("sum", sum);
+                        RILogManager.Default?.ViewerSendWatch("wnum", wnum);
+
 
                         sum += CalPs(model, ts);
                         wnum += ts.Count - 1;

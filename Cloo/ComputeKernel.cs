@@ -401,7 +401,6 @@ namespace Cloo
         {
             if (Handle.IsValid)
             {
-                RILogManager.Default?.SendTrace(string.Intern("Dispose ") + this + string.Intern(" in Thread(") + Thread.CurrentThread.ManagedThreadId + string.Intern(")."), string.Intern("Information"));
                 CL12.ReleaseKernel(Handle);
                 Handle.Invalidate();
             }

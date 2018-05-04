@@ -65,6 +65,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Functions\CompressibleActivation.cs" />
+    <Compile Include="Common\Functions\Container\SortedList.cs" />
+    <Compile Include="Common\Functions\Container\SortedFunctionStack.cs" />
     <Compile Include="Common\Functions\Container\SplitFunction.cs" />
     <Compile Include="Common\Functions\Type\DualInputFunction.cs" />
     <Compile Include="Common\Functions\Container\FunctionDictionary.cs" />

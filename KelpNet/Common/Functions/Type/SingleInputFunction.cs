@@ -1,4 +1,6 @@
 ﻿using System;
+using ReflectSoftware.Insight;
+
 
 namespace KelpNet.Common.Functions.Type
 {
@@ -45,9 +47,9 @@ namespace KelpNet.Common.Functions.Type
         [NotNull]
         public override NdArray[] Forward([NotNull] params NdArray[] xs)
         {
-            PrevInputs.Add(xs);
+            PrevInputs?.Add(xs);
             xs[0].UseCount++;
-
+            RILogManager.Default?.ViewerSendWatch("xs[0] use count", xs[0].UseCount.ToString("N0"));
             return new[] { SingleInputForward(xs[0]) };
         }
 
@@ -72,6 +74,7 @@ namespace KelpNet.Common.Functions.Type
             BackwardCountUp();
 
             xs[0].UseCount--;
+            RILogManager.Default?.ViewerSendWatch("xs[0] use count", xs[0].UseCount.ToString("N0"));
             SingleOutputBackward(ys[0], xs[0]);
         }
 

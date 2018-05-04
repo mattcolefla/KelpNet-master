@@ -6,6 +6,7 @@ using System.Text;
 using JetBrains.Annotations;
 using KelpNet.Common.Functions;
 using KelpNet.Functions.Mathmetrics.BasicMath;
+using ReflectSoftware.Insight;
 
 namespace KelpNet.Common
 {
@@ -245,6 +246,9 @@ namespace KelpNet.Common
             int val = 0;
             int dimension = Length;
 
+            RILogManager.Default?.SendDebug("Reshaping Array");
+            RILogManager.Default?.ViewerSendWatch("Status", "Reshaping Array");
+
             //Calculate / / -1 specification
             if (shape.Contains(-1))
             {
@@ -295,6 +299,9 @@ namespace KelpNet.Common
         [NotNull]
         public NdArray[] DivideArrays()
         {
+            RILogManager.Default?.SendDebug("Dividing Array");
+            RILogManager.Default?.ViewerSendWatch("Status", "Dividing Array");
+
             NdArray[] result = new NdArray[BatchCount];
 
             for (int i = 0; i < result.Length; i++)
@@ -385,17 +392,21 @@ namespace KelpNet.Common
 
         public bool Reduce()
         {
-            if (TrainCount > 0)
-            {
-                for (int i = 0; i < Grad.Length; i++)
-                {
-                    Grad[i] /= TrainCount;
-                }
+            //RILogManager.Default?.SendDebug("Correcting Slope");
+            RILogManager.Default?.ViewerSendWatch("Status", "Correcting Slope");
 
-                return true;
+            if (TrainCount <= 0)
+            {
+                return false;
             }
 
-            return false;
+            for (int i = 0; i < Grad.Length; i++)
+            {
+                Grad[i] /= TrainCount;
+            }
+
+            return true;
+
         }
 
         /// <summary>   Initialize slope. </summary>
@@ -463,7 +474,7 @@ namespace KelpNet.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [NotNull]
-        public string ToString([NotNull] Real[] datas)
+        private string ToString([NotNull] Real[] datas)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -599,6 +610,8 @@ namespace KelpNet.Common
             {
                 sb.Append("}");
             }
+
+            RILogManager.Default?.SendDebug(sb.ToString());
 
             return sb.ToString();
         }
@@ -863,6 +876,7 @@ namespace KelpNet.Common
         [CanBeNull]
         public static NdArray Sum([CanBeNull] NdArray a, bool keepDims = false, params int[] axis)
         {
+
 #if DEBUG
             if (axis.Length != axis.Distinct().ToArray().Length)
             {
@@ -888,7 +902,11 @@ namespace KelpNet.Common
                 result = Sum(result, axis[i] - i);
             }
 
-            if (keepDims)
+            if (!keepDims)
+            {
+                return result;
+            }
+
             {
                 List<int> resultKeepDimShape = new List<int>();
                 int count = a.Shape.Length - result.Shape.Length;
@@ -917,6 +935,9 @@ namespace KelpNet.Common
         [NotNull]
         private static NdArray Sum([NotNull] NdArray a, int axis)
         {
+            RILogManager.Default?.SendDebug("Summing Array");
+            RILogManager.Default?.ViewerSendWatch("Status", "Summing Array");
+
             int[] resultShape = new int[a.Shape.Length - 1];
 
             for (int i = 0, j = 0; i < a.Shape.Length; i++)
@@ -974,6 +995,9 @@ namespace KelpNet.Common
         [NotNull]
         public static NdArray[] Split([NotNull] NdArray array, [NotNull] int[] indices, int axis = 1)
         {
+            RILogManager.Default?.SendDebug("Splitting Array");
+            RILogManager.Default?.ViewerSendWatch("Status", "Splitting Array");
+
             int[] shapeOffets = new int[indices.Length + 1];        // an array with the leading 0 of the entered indices added
             int[] resultAxisShapes = new int[indices.Length + 1];   // Shape of specified axis after division
 
@@ -1027,16 +1051,16 @@ namespace KelpNet.Common
         [NotNull]
         public static NdArray Concatenate([NotNull] NdArray a, [NotNull] NdArray b, int axis)
         {
+            RILogManager.Default?.SendDebug("Concatenating Array");
+            RILogManager.Default?.ViewerSendWatch("Status", "Concatenating Array");
+
             int[] shapeList = a.Shape.ToArray();
             shapeList[axis] += b.Shape[axis];
 
 #if DEBUG
-            for (int i = 0; i < a.Shape.Length; i++)
+            if (a.Shape.Where((t, i) => i != axis && t != b.Shape[i]).Any())
             {
-                if (i != axis && a.Shape[i] != b.Shape[i])
-                {
-                    throw new Exception(string.Intern("Array sizes are not matched"));
-                }
+                throw new Exception(string.Intern("Array sizes are not matched"));
             }
 
             if (a.BatchCount != b.BatchCount)

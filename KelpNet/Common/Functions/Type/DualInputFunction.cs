@@ -3,6 +3,7 @@
 namespace KelpNet.Common.Functions.Type
 {
     using JetBrains.Annotations;
+    using ReflectSoftware.Insight;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a dual input function. </summary>
@@ -49,6 +50,8 @@ namespace KelpNet.Common.Functions.Type
 
             xs[0].UseCount++;
             xs[1].UseCount++;
+            RILogManager.Default?.ViewerSendWatch("xs[0] use count", xs[0].UseCount.ToString("N0"));
+            RILogManager.Default?.ViewerSendWatch("xs[1] use count", xs[1].UseCount.ToString("N0"));
 
             return new[] { DualInputForward(xs[0], xs[1]) };
         }
@@ -75,6 +78,8 @@ namespace KelpNet.Common.Functions.Type
 
             xs[0].UseCount--;
             xs[1].UseCount--;
+            RILogManager.Default?.ViewerSendWatch("xs[0] use count", xs[0].UseCount.ToString("N0"));
+            RILogManager.Default?.ViewerSendWatch("xs[1] use count", xs[1].UseCount.ToString("N0"));
 
             DualOutputBackward(ys[0], xs[0], xs[1]);
         }

@@ -108,11 +108,6 @@ namespace KelpNetTester.Tests
 
                     if (i % 20 == 0)
                     {
-                        RILogManager.Default?.SendDebug("\nbatch count " + i + "/" + TRAIN_DATA_COUNT + ", epoch " + epoch+1);
-                        RILogManager.Default?.SendDebug("Total/Mean loss " + stats.Mean);
-                        RILogManager.Default?.SendDebug("local loss " + sumLoss);
-                        RILogManager.Default?.SendDebug("");
-
                         RILogManager.Default.ViewerSendWatch("Batch Count ", i);
                         RILogManager.Default.ViewerSendWatch("Total/Mean loss", stats.Mean);
                         RILogManager.Default.ViewerSendWatch("Local loss", sumLoss);
@@ -123,7 +118,6 @@ namespace KelpNetTester.Tests
 
 
                         RILogManager.Default?.SendDebug("Testing...");
-                        RILogManager.Default.SendInformation("Testing");
 
                         TestDataSet datasetY = mnistData.GetRandomYSet(TEST_DATA_COUNT, 28);
                         Real accuracy = Trainer.Accuracy(nn, datasetY?.Data, datasetY.Label);

@@ -5,6 +5,10 @@ using KelpNetTester.Tests;
 
 namespace KelpNetTester
 {
+    using System.Diagnostics;
+    using System.IO;
+    using System.Threading;
+    using HdrHistogram;
     using ReflectSoftware.Insight;
 
     //Please uncomment the test you want to run
@@ -18,28 +22,28 @@ namespace KelpNetTester
             //Weaver.Initialize(ComputeDeviceTypes.Cpu, 1); //Subscript required if there are multiple devices
 
             //Learning XOR with MLP
-            //Test1.Run();
+            //recorder.Record(() => Test1.Run());
 
             //Learning XOR with MLP 【Returned version】
             //Test2.Run();
 
             //Learning of Sin function by MLP
-            //Test3.Run();
+            //recorder.Record(() => Test3.Run());
 
             //Learning of MNIST (Handwritten Characters) by MLP
             //Test4.Run();
 
             //Reproduction of Excel CNN
-            //Test5.Run();
+            //recorder.Record(() => Test5.Run());
 
             //Learning of MNIST by 5-layer CNN
-            //Test6.Run();
+            //recorder.Record(() => Test6.Run());
 
             //Learning of MNIST by 15-tier MLP using BatchNorm
             //Test7.Run();
 
             //Learning of Sin function by LSTM
-            Test8.Run();
+            //Test8.Run();
 
             //RNNLM with Simple RNN
             //Test9.Run();
@@ -78,7 +82,7 @@ namespace KelpNetTester
             //Test19.Run();
 
             // 1000 layer neural network
-            //Test20.Run();
+            Test20.Run();
 
             //benchmark
             //SingleBenchmark.Run();

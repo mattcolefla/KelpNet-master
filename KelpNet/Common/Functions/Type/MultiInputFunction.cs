@@ -3,6 +3,7 @@
 namespace KelpNet.Common.Functions.Type
 {
     using JetBrains.Annotations;
+    using ReflectSoftware.Insight;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>   (Serializable) a multi input function. </summary>
@@ -50,8 +51,9 @@ namespace KelpNet.Common.Functions.Type
             foreach (NdArray x in xs)
             {
                 x.UseCount++;
+                RILogManager.Default?.ViewerSendWatch("x use count", x.UseCount.ToString("N0"));
             }
-
+            
             return new[] { MultiInputForward(xs) };
         }
 
@@ -73,6 +75,7 @@ namespace KelpNet.Common.Functions.Type
             foreach (NdArray x in xs)
             {
                 x.UseCount--;
+                RILogManager.Default?.ViewerSendWatch("x use count", x.UseCount.ToString("N0"));
             }
 
             MultiOutputBackward(ys[0], xs);
