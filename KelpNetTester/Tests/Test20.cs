@@ -37,8 +37,8 @@ namespace KelpNetTester.Tests
             MnistData mnistData = new MnistData(neuronCount);
             RILogManager.Default.SendInformation("Training Start, creating function stack.");
 
-            FunctionStack nn = new FunctionStack();
-            List<Function> functions = new List<Function>();
+            SortedFunctionStack nn = new SortedFunctionStack();
+            SortedList<Function> functions = new SortedList<Function>();
 
             ParallelOptions po = new ParallelOptions();
             po.MaxDegreeOfParallelism = 4;

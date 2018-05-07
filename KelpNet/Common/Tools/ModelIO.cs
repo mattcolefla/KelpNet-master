@@ -33,6 +33,25 @@ namespace KelpNet.Common.Tools
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>   Saves. </summary>
+        ///
+        /// <param name="functionStack">    Stack of functions. This cannot be null. </param>
+        /// <param name="fileName">         Filename of the file. This cannot be null. </param>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        public static void Save([NotNull] SortedFunctionStack functionStack, [NotNull] string fileName)
+        {
+            Ensure.Argument(fileName).NotNullOrWhiteSpace("fileName is null");
+            Ensure.Argument(functionStack).NotNull("functionStack is null");
+
+            NetDataContractSerializer bf = new NetDataContractSerializer();
+
+            using (Stream stream = File.OpenWrite(fileName))
+            {
+                bf.Serialize(stream, functionStack);
+            }
+        }
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Loads the given file. </summary>
         ///
         /// <param name="fileName"> The file name to load. </param>
