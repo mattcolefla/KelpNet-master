@@ -11,7 +11,7 @@ namespace KelpNet.Functions.Normalization
     ///
     /// <seealso cref="T:KelpNet.Common.Functions.Type.SingleInputFunction"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    [Serializable]
     public class LRN : SingleInputFunction
     {
         /// <summary>   Name of the function. </summary>
@@ -74,11 +74,9 @@ namespace KelpNet.Functions.Normalization
             scale = new Real[input.Data.Length];
 
             for (int i = 0; i < x2.Length; i++)
-            {
                 x2[i] = input.Data[i] * input.Data[i];
-            }
-            Array.Copy(x2, sumPart, x2.Length);
 
+            Array.Copy(x2, sumPart, x2.Length);
 
             for (int b = 0; b < input.BatchCount; b++)
             {
@@ -131,9 +129,7 @@ namespace KelpNet.Functions.Normalization
             Real[] sumPart = new Real[y.Grad.Length];
 
             for (int i = 0; i < y.Grad.Length; i++)
-            {
                 summand[i] = y.Data[i] * y.Grad[i] / unitScale[i];
-            }
 
             Array.Copy(summand, sumPart, summand.Length);
 
@@ -164,9 +160,7 @@ namespace KelpNet.Functions.Normalization
             }
 
             for (int i = 0; i < x.Grad.Length; i++)
-            {
                 x.Grad[i] += y.Grad[i] * scale[i] - 2 * alpha * beta * y.Data[i] * sumPart[i];
-            }
         }
     }
 }

@@ -26,14 +26,12 @@ namespace KelpNet.Functions.Activations
         public QuadraticSigmoid([CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, null, name, inputNames, outputNames, gpuEnable)
         {
         }
-
-
+        
         internal override Real ForwardActivate(Real x, [CanBeNull] Real[] args)
         {
             return x;
         }
-
-
+        
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Activate virtual function used in / / .Net. </summary>
         ///
@@ -48,20 +46,14 @@ namespace KelpNet.Functions.Activations
         {
             const double t = 0.999;
             const double a = 0.00001;
-
             double sign = Math.Sign(x);
             x = Math.Abs(x);
 
             double y = 0;
             if (x >= 0 && x < t)
-            {
                 y = t - ((x - t) * (x - t));
-            }
-            else //if (x >= t) 
-            {
+            else 
                 y = t + (x - t) * a;
-            }
-
             return (y * sign * 0.5) + 0.5;
         }
 
@@ -80,6 +72,5 @@ namespace KelpNet.Functions.Activations
         {
             return gy * (1 - y * y);
         }
-
     }
 }

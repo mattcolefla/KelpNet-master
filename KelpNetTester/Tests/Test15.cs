@@ -34,7 +34,7 @@ namespace KelpNetTester.Tests
             {
                 RILogManager.Default?.SendDebug("Model Loading.");
                 string modelFilePath = InternetFileDownloader.Download(DOWNLOAD_URL, MODEL_FILE);
-                List<Function> vgg16Net = CaffemodelDataLoader.ModelLoad(modelFilePath);
+                List<Function> vgg16Net = CaffemodelDataLoader.ModelLoad(true, modelFilePath);
                 string[] classList = File.ReadAllLines(CLASS_LIST_PATH);
 
                 // Initialize the GPU
@@ -67,7 +67,7 @@ namespace KelpNetTester.Tests
 
                     RILogManager.Default?.SendDebug("Start predict.");
                     Stopwatch sw = Stopwatch.StartNew();
-                    NdArray result = nn.Predict(imageArray)[0];
+                    NdArray result = nn.Predict(true, imageArray)[0];
                     sw.Stop();
 
                     RILogManager.Default?.SendDebug("Result Time : " +

@@ -78,6 +78,7 @@
     <Compile Include="Common\Functions\IParallelizable.cs" />
     <Compile Include="Common\Real.cs" />
     <Compile Include="Common\Tools\DeepCopyHelper.cs" />
+    <Compile Include="Common\Tools\Helpers.cs" />
     <Compile Include="Common\Tools\Initializer.cs" />
     <Compile Include="Common\Tools\ModelIO.cs" />
     <Compile Include="Common\Tools\NdArrayConverter.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Common\Functions\Function.cs" />
     <Compile Include="Functions\Activations\ArcSinH.cs" />
     <Compile Include="Functions\Activations\ArcTan.cs" />
+    <Compile Include="Functions\Activations\BipolarGaussian.cs" />
     <Compile Include="Functions\Activations\ELU.cs" />
     <Compile Include="Functions\Activations\Gaussian.cs" />
     <Compile Include="Functions\Activations\LeakyReLU.cs" />

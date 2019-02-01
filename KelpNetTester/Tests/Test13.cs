@@ -15,12 +15,12 @@ namespace KelpNetTester.Tests
         public static void Run()
         {
             // Create a target filter (In case of practice, here is the unknown value)
-            Deconvolution2D decon_core = new Deconvolution2D(1, 1, 15, 1, 7, gpuEnable: true)
+            Deconvolution2D decon_core = new Deconvolution2D(true, 1, 1, 15, 1, 7, gpuEnable: true)
             {
                 Weight = { Data = MakeOneCore() }
             };
 
-            Deconvolution2D model = new Deconvolution2D(1, 1, 15, 1, 7, gpuEnable: true);
+            Deconvolution2D model = new Deconvolution2D(true, 1, 1, 15, 1, 7, gpuEnable: true);
 
             SGD optimizer = new SGD(learningRate: 0.00005); // diverge if big
             model.SetOptimizer(optimizer);
@@ -33,14 +33,14 @@ namespace KelpNetTester.Tests
                 NdArray img_p = getRandomImage();
 
                 // Output a learning image with a target filter
-                NdArray[] img_core = decon_core.Forward(img_p);
+                NdArray[] img_core = decon_core.Forward(true, img_p);
 
                 // Output an image with an unlearned filter
-                NdArray[] img_y = model.Forward(img_p);
+                NdArray[] img_y = model.Forward(true, img_p);
 
                 Real loss = meanSquaredError.Evaluate(img_y, img_core);
 
-                model.Backward(img_y);
+                model.Backward(true, img_y);
                 model.Update();
 
                 RILogManager.Default?.SendDebug("epoch" + i + " : " + loss);

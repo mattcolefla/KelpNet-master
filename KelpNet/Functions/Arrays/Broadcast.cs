@@ -33,7 +33,8 @@ namespace KelpNet.Functions.Arrays
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Broadcast([NotNull] int[] shape, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
+        public Broadcast([NotNull] int[] shape, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] 
+            string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool verbose = true) : base(name, inputNames, outputNames)
         {
             Shape = shape.ToArray();
 
@@ -140,7 +141,7 @@ namespace KelpNet.Functions.Arrays
 
             if (y.Shape.Length != ndim)
             {
-                NdArray.Sum(y, false, Enumerable.Range(0, y.Shape.Length - ndim).ToArray());
+                NdArray.Sum(y, false, false, Enumerable.Range(0, y.Shape.Length - ndim).ToArray());
             }
 
             List<int> axis = new List<int>();
@@ -154,7 +155,7 @@ namespace KelpNet.Functions.Arrays
 
             if (axis.Count > 0)
             {
-                NdArray result = NdArray.Sum(y, true, axis.ToArray());
+                NdArray result = NdArray.Sum(y, true, false, axis.ToArray());
                 for (int i = 0; i < x.Grad.Length; i++)
                 {
                     x.Grad[i] += result.Grad[i];
@@ -167,8 +168,6 @@ namespace KelpNet.Functions.Arrays
                     x.Grad[i] += y.Grad[i];
                 }
             }
-
-
         }
     }
 }

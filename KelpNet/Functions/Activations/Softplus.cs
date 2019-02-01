@@ -12,6 +12,7 @@ namespace KelpNet.Functions.Activations
     /// <seealso cref="T:KelpNet.Common.Functions.Type.SingleInputFunction"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    [Serializable]
     public class Softplus : SingleInputFunction
     {
         /// <summary>   Name of the function. </summary>
@@ -58,24 +59,17 @@ namespace KelpNet.Functions.Activations
             for (int b = 0; b < x.BatchCount; b++)
             {
                 for (int i = 0; i < x.Length; i++)
-                {
                     y[i + b * x.Length] = x.Data[i + b * x.Length] * _beta;
-                }
 
                 Real maxval = y[b * x.Length];
                 for (int i = 1; i < x.Length; i++)
                 {
                     if (maxval < y[i + b * x.Length])
-                    {
                         maxval = y[i + b * x.Length];
-                    }
                 }
 
                 for (int i = 0; i < x.Length; i++)
-                {
                     y[i + b * x.Length] = (maxval + Math.Log(1.0 + Math.Exp(-Math.Abs(x.Data[i + b * x.Length] * _beta)))) * _betaInv;
-                }
-
             }
 
             return NdArray.Convert(y, x.Shape, x.BatchCount, this);
@@ -91,10 +85,7 @@ namespace KelpNet.Functions.Activations
         protected void NeedPreviousBackwardCpu([CanBeNull] NdArray y, [NotNull] NdArray x)
         {
             for (int i = 0; i < x.Grad.Length; i++)
-            {
                 x.Grad[i] += (1 - 1 / (1 + Math.Exp(_beta * y.Data[i]))) * y.Grad[i];
-            }
-
         }
     }
 }

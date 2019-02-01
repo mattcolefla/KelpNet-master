@@ -44,14 +44,12 @@ namespace KelpNet.Loss
                 {
                     Real localloss = 0;
                     Real coeff = 2.0 / teachSignal[k].Length;
-
                     int batchoffset = b * teachSignal[k].Length;
 
                     for (int i = 0; i < input[k].Length; i++)
                     {
                         Real result = input[k].Data[b * input[k].Length + i] - teachSignal[k].Data[batchoffset + i];
                         localloss += result * result;
-
                         resultArray[batchoffset + i] *= coeff;
                     }
 
@@ -64,7 +62,6 @@ namespace KelpNet.Loss
             }
 
             resultLoss /= input.Length;
-
             return resultLoss;
         }
     }

@@ -34,10 +34,10 @@ namespace KelpNetTester.Tests
                 trainLabel[i] = new Real[] { Math.Sin(radian) };
             }
 
-            FunctionStack nn = new FunctionStack(
-                new Linear(1, 4, name: "l1 Linear"),
+            FunctionStack nn = new FunctionStack("Test3",
+                new Linear(true, 1, 4, name: "l1 Linear"),
                 new Tanh(name: "l1 Tanh"),
-                new Linear(4, 1, name: "l2 Linear")
+                new Linear(true, 4, 1, name: "l2 Linear")
             );
 
             nn.SetOptimizer(new SGD());
@@ -62,7 +62,7 @@ namespace KelpNetTester.Tests
             RILogManager.Default?.SendDebug("Test Start...");
             foreach (Real[] val in trainData)
             {
-                RILogManager.Default?.SendDebug(val[0] + ":" + nn.Predict(val)[0].Data[0]);
+                RILogManager.Default?.SendDebug(val[0] + ":" + nn.Predict(true, val)[0].Data[0]);
             }
         }
     }

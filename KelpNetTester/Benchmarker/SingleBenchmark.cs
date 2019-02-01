@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using KelpNet.Common;
+using KelpNet.Common.Functions;
 using KelpNet.Functions.Activations;
 using KelpNet.Functions.Connections;
 using KelpNet.Functions.Noise;
@@ -17,7 +18,46 @@ namespace KelpNetTester.Benchmarker
         const int INPUT_SIZE = 25088;
         const int OUTPUT_SIZE = 4096;
 
-        public static void Run()
+
+        private static void HandleGPU(bool verbose, Stopwatch sw, CompressibleActivation ca, NdArray nArray)
+        {
+            sw.Restart();
+            NdArray[] gradArrayGpu = ca.Forward(verbose, nArray);
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+
+            gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
+
+            sw.Restart();
+            ca.Backward(verbose, gradArrayGpu);
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+        }
+        private static void HandleGPU(bool verbose, Stopwatch sw, CompressibleFunction ca, NdArray nArray)
+        {
+            sw.Restart();
+            NdArray[] gradArrayGpu = ca.Forward(verbose, nArray);
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+
+            gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
+
+            sw.Restart();
+            ca.Backward(verbose, gradArrayGpu);
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+        }
+
+        private static void PrintResults(Stopwatch sw)
+        {
+            RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+        }
+
+        public static void Run(bool verbose)
         {
             Stopwatch sw = new Stopwatch();
 
@@ -27,104 +67,95 @@ namespace KelpNetTester.Benchmarker
             Ensure.Argument(inputArrayCpu).NotNull();
 
             //Linear
-            Linear linear = new Linear(INPUT_SIZE, OUTPUT_SIZE);
-            RILogManager.Default?.EnterMethod(linear.Name);
+            Linear linear = new Linear(verbose, INPUT_SIZE, OUTPUT_SIZE);
+            if (verbose)
+                RILogManager.Default?.EnterMethod(linear.Name);
 
             sw.Restart();
-            NdArray[] gradArrayCpu = linear.Forward(inputArrayCpu);
+            NdArray[] gradArrayCpu = linear.Forward(verbose, inputArrayCpu);
             sw.Stop();
-            RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+            if (verbose)
+                RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             Ensure.Argument(gradArrayCpu).NotNull();
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data; // Use Data as Grad
 
             sw.Restart();
-            linear.Backward(gradArrayCpu);
+            linear.Backward(verbose, gradArrayCpu);
             sw.Stop();
-            RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+            if (verbose)
+                RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (linear.SetGpuEnable(true))
             {
                 sw.Restart();
-                NdArray[] gradArrayGpu = linear.Forward(inputArrayGpu);
+                NdArray[] gradArrayGpu = linear.Forward(verbose, inputArrayGpu);
                 sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+                if (verbose)
+                    RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
                 gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
 
                 sw.Restart();
-                linear.Backward(gradArrayGpu);
+                linear.Backward(verbose, gradArrayGpu);
                 sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+                if (verbose)
+                    RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
             }
-            RILogManager.Default?.ExitMethod(linear.Name);
+            if (verbose)
+                RILogManager.Default?.ExitMethod(linear.Name);
 
             //Tanh
             Tanh tanh = new Tanh();
-            RILogManager.Default?.EnterMethod(tanh.Name);
+            if (verbose)
+                RILogManager.Default?.EnterMethod(tanh.Name);
 
             sw.Restart();
-            gradArrayCpu = tanh.Forward(inputArrayCpu);
+            gradArrayCpu = tanh.Forward(verbose, inputArrayCpu);
             sw.Stop();
-            RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+            if (verbose)
+                RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            tanh.Backward(gradArrayCpu);
+            tanh.Backward(verbose, gradArrayCpu);
             sw.Stop();
-            RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+            if (verbose)
+                RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (tanh.SetGpuEnable(true))
-            {
-                sw.Restart();
-                NdArray[] gradArrayGpu = tanh.Forward(inputArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+                HandleGPU(verbose, sw, tanh, inputArrayGpu);
 
-                gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
-
-                sw.Restart();
-                tanh.Backward(gradArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            }
-            RILogManager.Default?.ExitMethod(tanh.Name);
+            if (verbose)
+                RILogManager.Default?.ExitMethod(tanh.Name);
 
 
 
             //Sigmoid
             Sigmoid sigmoid = new Sigmoid();
-            RILogManager.Default?.EnterMethod(sigmoid.Name);
+            if (verbose)
+                RILogManager.Default?.EnterMethod(sigmoid.Name);
 
             sw.Restart();
-            gradArrayCpu = sigmoid.Forward(inputArrayCpu);
+            gradArrayCpu = sigmoid.Forward(verbose, inputArrayCpu);
             sw.Stop();
-            RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+            if (verbose)
+                RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            sigmoid.Backward(gradArrayCpu);
+            sigmoid.Backward(verbose, gradArrayCpu);
             sw.Stop();
-            RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+            if (verbose)
+                RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (sigmoid.SetGpuEnable(true))
-            {
-                sw.Restart();
-                NdArray[] gradArrayGpu = sigmoid.Forward(inputArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-
-                gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
-
-                sw.Restart();
-                sigmoid.Backward(gradArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            }
-            RILogManager.Default?.ExitMethod(tanh.Name);
+                HandleGPU(verbose, sw, sigmoid, inputArrayGpu);
+            if (verbose)
+                RILogManager.Default?.ExitMethod(tanh.Name);
 
 
             //Softmax
@@ -132,33 +163,36 @@ namespace KelpNetTester.Benchmarker
             RILogManager.Default?.EnterMethod(sm.Name);
 
             sw.Restart();
-            gradArrayCpu = sm.Forward(inputArrayCpu);
+            gradArrayCpu = sm.Forward(verbose, inputArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            sm.Backward(gradArrayCpu);
+            sm.Backward(verbose, gradArrayCpu);
             sw.Stop();
-            RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            RILogManager.Default?.ExitMethod(sm.Name);
+            if (verbose)
+              RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+            if (verbose)
+                RILogManager.Default?.ExitMethod(sm.Name);
 
 
 
             //Softplus
             Softplus sp = new Softplus();
-            RILogManager.Default?.EnterMethod(sp.Name);
+            if (verbose)
+                RILogManager.Default?.EnterMethod(sp.Name);
 
             sw.Restart();
-            gradArrayCpu = sp.Forward(inputArrayCpu);
+            gradArrayCpu = sp.Forward(verbose, inputArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            sp.Backward(gradArrayCpu);
+            sp.Backward(verbose, gradArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
             RILogManager.Default?.ExitMethod(sp.Name);
@@ -169,31 +203,20 @@ namespace KelpNetTester.Benchmarker
             RILogManager.Default?.EnterMethod(relu.Name);
 
             sw.Restart();
-            gradArrayCpu = relu.Forward(inputArrayCpu);
+            gradArrayCpu = relu.Forward(verbose, inputArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            relu.Backward(gradArrayCpu);
+            relu.Backward(verbose, gradArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (relu.SetGpuEnable(true))
-            {
-                sw.Restart();
-                NdArray[] gradArrayGpu = relu.Forward(inputArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+                HandleGPU(verbose, sw, relu, inputArrayGpu);
 
-                gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
-
-                sw.Restart();
-                relu.Backward(gradArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            }
             RILogManager.Default?.ExitMethod(relu.Name);
 
 
@@ -202,32 +225,20 @@ namespace KelpNetTester.Benchmarker
             RILogManager.Default?.EnterMethod(leakyRelu.Name);
 
             sw.Restart();
-            gradArrayCpu = leakyRelu.Forward(inputArrayCpu);
+            gradArrayCpu = leakyRelu.Forward(verbose, inputArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            leakyRelu.Backward(gradArrayCpu);
+            leakyRelu.Backward(verbose, gradArrayCpu);
             sw.Stop();
 
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (leakyRelu.SetGpuEnable(true))
-            {
-                sw.Restart();
-                NdArray[] gradArrayGpu = leakyRelu.Forward(inputArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-
-                gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
-
-                sw.Restart();
-                leakyRelu.Backward(gradArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            }
+                HandleGPU(verbose, sw, leakyRelu, inputArrayGpu);
             RILogManager.Default?.ExitMethod(leakyRelu.Name);
 
 
@@ -236,32 +247,20 @@ namespace KelpNetTester.Benchmarker
             RILogManager.Default?.EnterMethod(rth.Name);
 
             sw.Restart();
-            gradArrayCpu = rth.Forward(inputArrayCpu);
+            gradArrayCpu = rth.Forward(verbose, inputArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            rth.Backward(gradArrayCpu);
+            rth.Backward(verbose, gradArrayCpu);
             sw.Stop();
 
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (rth.SetGpuEnable(true))
-            {
-                sw.Restart();
-                NdArray[] gradArrayGpu = rth.Forward(inputArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-
-                gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
-
-                sw.Restart();
-                rth.Backward(gradArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            }
+                HandleGPU(verbose, sw, rth, inputArrayGpu);
             RILogManager.Default?.ExitMethod(rth.Name);
 
 
@@ -283,36 +282,29 @@ namespace KelpNetTester.Benchmarker
             //RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
 
-
-
-
             NdArray inputImageArrayGpu = new NdArray(BenchDataMaker.GetRealArray(3 * 256 * 256 * 5), new[] { 3, 256, 256 }, 5);
             NdArray inputImageArrayCpu = new NdArray(BenchDataMaker.GetRealArray(3 * 256 * 256 * 5), new[] { 3, 256, 256 }, 5);
-
-
-
-
 
             //MaxPooling
             MaxPooling maxPooling = new MaxPooling(3);
             RILogManager.Default?.EnterMethod(maxPooling.Name);
 
             sw.Restart();
-            NdArray[] gradImageArrayCpu = maxPooling.Forward(inputImageArrayCpu);
+            NdArray[] gradImageArrayCpu = maxPooling.Forward(verbose, inputImageArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradImageArrayCpu[0].Grad = gradImageArrayCpu[0].Data;
 
             sw.Restart();
-            maxPooling.Backward(gradImageArrayCpu);
+            maxPooling.Backward(verbose, gradImageArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (maxPooling.SetGpuEnable(true))
             {
                 sw.Restart();
-                maxPooling.Forward(inputImageArrayGpu);
+                maxPooling.Forward(verbose, inputImageArrayGpu);
                 sw.Stop();
                 RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
@@ -327,83 +319,60 @@ namespace KelpNetTester.Benchmarker
             RILogManager.Default?.EnterMethod(avgPooling.Name);
 
             sw.Restart();
-            gradImageArrayCpu = avgPooling.Forward(inputImageArrayCpu);
+            gradImageArrayCpu = avgPooling.Forward(verbose, inputImageArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradImageArrayCpu[0].Grad = gradImageArrayCpu[0].Data;
 
             sw.Restart();
-            avgPooling.Backward(gradImageArrayCpu);
+            avgPooling.Backward(verbose, gradImageArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
             RILogManager.Default?.ExitMethod(avgPooling.Name);
 
 
             //Conv2D
-            Convolution2D conv2d = new Convolution2D(3, 3, 3);
+            Convolution2D conv2d = new Convolution2D(verbose, 3, 3, 3);
             RILogManager.Default?.EnterMethod(conv2d.Name);
 
             sw.Restart();
-            gradImageArrayCpu = conv2d.Forward(inputImageArrayCpu);
+            gradImageArrayCpu = conv2d.Forward(verbose, inputImageArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradImageArrayCpu[0].Grad = gradImageArrayCpu[0].Data;
 
             sw.Restart();
-            conv2d.Backward(gradImageArrayCpu);
+            conv2d.Backward(verbose, gradImageArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (conv2d.SetGpuEnable(true))
-            {
-                sw.Restart();
-                NdArray[] gradImageArrayGpu = conv2d.Forward(inputImageArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+                HandleGPU(verbose, sw, conv2d, inputArrayGpu);
 
-                gradImageArrayGpu[0].Grad = gradImageArrayGpu[0].Data;
-
-                sw.Restart();
-                conv2d.Backward(gradImageArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            }
             RILogManager.Default?.ExitMethod(conv2d.Name);
 
 
-
             //Deconv2D
-            Deconvolution2D deconv2d = new Deconvolution2D(3, 3, 3);
+            Deconvolution2D deconv2d = new Deconvolution2D(verbose, 3, 3, 3);
             RILogManager.Default?.EnterMethod(deconv2d.Name);
 
             sw.Restart();
-            gradImageArrayCpu = deconv2d.Forward(inputImageArrayCpu);
+            gradImageArrayCpu = deconv2d.Forward(verbose, inputImageArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradImageArrayCpu[0].Grad = gradImageArrayCpu[0].Data;
 
             sw.Restart();
-            deconv2d.Backward(gradImageArrayCpu);
+            deconv2d.Backward(verbose, gradImageArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (deconv2d.SetGpuEnable(true))
-            {
-                sw.Restart();
-                NdArray[] gradImageArrayGpu = deconv2d.Forward(inputImageArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
+                HandleGPU(verbose, sw, deconv2d, inputArrayGpu);
 
-                gradImageArrayGpu[0].Grad = gradImageArrayGpu[0].Data;
-
-                sw.Restart();
-                deconv2d.Backward(gradImageArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            }
             RILogManager.Default?.ExitMethod(deconv2d.Name);
 
 
@@ -412,67 +381,51 @@ namespace KelpNetTester.Benchmarker
             RILogManager.Default?.EnterMethod(dropout.Name);
 
             sw.Restart();
-            gradArrayCpu = dropout.Forward(inputArrayCpu);
+            gradArrayCpu = dropout.Forward(verbose, inputArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            dropout.Backward(gradArrayCpu);
+            dropout.Backward(verbose, gradArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (dropout.SetGpuEnable(true))
             {
                 sw.Restart();
-                NdArray[] gradArrayGpu = dropout.Forward(inputArrayGpu);
+                NdArray[] gradArrayGpu = dropout.Forward(verbose, inputArrayGpu);
                 sw.Stop();
                 RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
                 gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
 
                 sw.Restart();
-                dropout.Backward(gradArrayGpu);
+                dropout.Backward(verbose, gradArrayGpu);
                 sw.Stop();
                 RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
             }
             RILogManager.Default?.ExitMethod(dropout.Name);
-
-
-
-
 
             //ArcSinH
             ArcSinH a = new ArcSinH();
             RILogManager.Default?.EnterMethod(a.Name);
 
             sw.Restart();
-            gradArrayCpu = a.Forward(inputArrayCpu);
+            gradArrayCpu = a.Forward(verbose, inputArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            a.Backward(gradArrayCpu);
+            a.Backward(verbose, gradArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (a.SetGpuEnable(true))
-            {
-                sw.Restart();
-                NdArray[] gradArrayGpu = a.Forward(inputArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-
-                gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
-
-                sw.Restart();
-                a.Backward(gradArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            }
+                HandleGPU(verbose, sw, a, inputArrayGpu);
             RILogManager.Default?.ExitMethod(a.Name);
 
             //ELU
@@ -480,14 +433,14 @@ namespace KelpNetTester.Benchmarker
             RILogManager.Default?.EnterMethod(e.Name);
 
             sw.Restart();
-            gradArrayCpu = e.Forward(inputArrayCpu);
+            gradArrayCpu = e.Forward(verbose, inputArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            e.Backward(gradArrayCpu);
+            e.Backward(verbose, gradArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
             RILogManager.Default?.ExitMethod(e.Name);
@@ -497,31 +450,19 @@ namespace KelpNetTester.Benchmarker
             RILogManager.Default?.EnterMethod(lrs.Name);
 
             sw.Restart();
-            gradArrayCpu = lrs.Forward(inputArrayCpu);
+            gradArrayCpu = lrs.Forward(verbose, inputArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            lrs.Backward(gradArrayCpu);
+            lrs.Backward(verbose, gradArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (lrs.SetGpuEnable(true))
-            {
-                sw.Restart();
-                NdArray[] gradArrayGpu = lrs.Forward(inputArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-
-                gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
-
-                sw.Restart();
-                lrs.Backward(gradArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            }
+                HandleGPU(verbose, sw, lrs, inputArrayGpu);
             RILogManager.Default?.ExitMethod(lrs.Name);
 
 
@@ -530,31 +471,19 @@ namespace KelpNetTester.Benchmarker
             RILogManager.Default?.EnterMethod(lf.Name);
 
             sw.Restart();
-            gradArrayCpu = lf.Forward(inputArrayCpu);
+            gradArrayCpu = lf.Forward(verbose, inputArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            lf.Backward(gradArrayCpu);
+            lf.Backward(verbose, gradArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (lf.SetGpuEnable(true))
-            {
-                sw.Restart();
-                NdArray[] gradArrayGpu = lf.Forward(inputArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-
-                gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
-
-                sw.Restart();
-                lf.Backward(gradArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            }
+                HandleGPU(verbose, sw, lf, inputArrayGpu);
             RILogManager.Default?.ExitMethod(lf.Name);
 
 
@@ -563,31 +492,19 @@ namespace KelpNetTester.Benchmarker
             RILogManager.Default?.EnterMethod(mmo.Name);
 
             sw.Restart();
-            gradArrayCpu = mmo.Forward(inputArrayCpu);
+            gradArrayCpu = mmo.Forward(verbose, inputArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            mmo.Backward(gradArrayCpu);
+            mmo.Backward(verbose, gradArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (mmo.SetGpuEnable(true))
-            {
-                sw.Restart();
-                NdArray[] gradArrayGpu = mmo.Forward(inputArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-
-                gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
-
-                sw.Restart();
-                mmo.Backward(gradArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            }
+                HandleGPU(verbose, sw, mmo, inputArrayGpu);
             RILogManager.Default?.ExitMethod(mmo.Name);
 
 
@@ -596,31 +513,19 @@ namespace KelpNetTester.Benchmarker
             RILogManager.Default?.EnterMethod(se.Name);
 
             sw.Restart();
-            gradArrayCpu = se.Forward(inputArrayCpu);
+            gradArrayCpu = se.Forward(verbose, inputArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            se.Backward(gradArrayCpu);
+            se.Backward(verbose, gradArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (se.SetGpuEnable(true))
-            {
-                sw.Restart();
-                NdArray[] gradArrayGpu = se.Forward(inputArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-
-                gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
-
-                sw.Restart();
-                se.Backward(gradArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            }
+                HandleGPU(verbose, sw, se, inputArrayGpu);
             RILogManager.Default?.ExitMethod(se.Name);
 
 
@@ -629,31 +534,19 @@ namespace KelpNetTester.Benchmarker
             RILogManager.Default?.EnterMethod(s.Name);
 
             sw.Restart();
-            gradArrayCpu = s.Forward(inputArrayCpu);
+            gradArrayCpu = s.Forward(verbose, inputArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Forward [Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             gradArrayCpu[0].Grad = gradArrayCpu[0].Data;
 
             sw.Restart();
-            s.Backward(gradArrayCpu);
+            s.Backward(verbose, gradArrayCpu);
             sw.Stop();
             RILogManager.Default?.SendDebug("Backward[Cpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
 
             if (s.SetGpuEnable(true))
-            {
-                sw.Restart();
-                NdArray[] gradArrayGpu = s.Forward(inputArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Forward [Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-
-                gradArrayGpu[0].Grad = gradArrayGpu[0].Data;
-
-                sw.Restart();
-                s.Backward(gradArrayGpu);
-                sw.Stop();
-                RILogManager.Default?.SendDebug("Backward[Gpu] : " + (sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("n0") + "μｓ");
-            }
+                HandleGPU(verbose, sw, s, inputArrayGpu);
             RILogManager.Default?.ExitMethod(s.Name);
 
 

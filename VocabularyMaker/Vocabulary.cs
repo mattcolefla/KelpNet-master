@@ -9,7 +9,6 @@ namespace VocabularyMaker
     {
         public List<string> Data = new List<string>();
         public int EosID = -1;
-
         public int Length => Data.Count;
 
         public int[] LoadData(string fileName)
@@ -24,21 +23,15 @@ namespace VocabularyMaker
 
                 string[] replace = strText.Replace("\r\n", "\n").Replace("\n", "<EOS>").Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                // Add to the dictionary except for Daburi
                 Data.AddRange(replace);
-
                 Data = new List<string>(Data.Distinct());
 
                 result = new int[replace.Length];
                 for (int i = 0; i < replace.Length; i++)
-                {
                     result[i] = Data.IndexOf(replace[i]);
-                }
 
                 if (EosID == -1)
-                {
                     EosID = Data.IndexOf("<EOS>");
-                }
             }
 
             return result;

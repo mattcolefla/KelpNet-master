@@ -47,15 +47,15 @@ namespace KelpNetTester.Tests
             {
                 Application.DoEvents();
 
-                functions.Add(new Linear(neuronCount * neuronCount, N, name: $"l{x} Linear"));
-                functions.Add(new BatchNormalization(N, name: $"l{x} BatchNorm"));
+                functions.Add(new Linear(true, neuronCount * neuronCount, N, name: $"l{x} Linear"));
+                functions.Add(new BatchNormalization(true, N, name: $"l{x} BatchNorm"));
                 functions.Add(new ReLU(name: $"l{x} ReLU"));
                 RILogManager.Default.ViewerSendWatch("Total Layers", (x + 1));
             };
 
             RILogManager.Default.SendInformation("Adding Output Layer");
             Application.DoEvents();
-            nn.Add(new Linear(N, 10, noBias: false, name: $"l{numLayers + 1} Linear"));
+            nn.Add(new Linear(true, N, 10, noBias: false, name: $"l{numLayers + 1} Linear"));
             RILogManager.Default.ViewerSendWatch("Total Layers", numLayers);
 
 

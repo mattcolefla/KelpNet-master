@@ -1,6 +1,8 @@
 ﻿using System;
 using CIFARLoader;
 using KelpNet.Common;
+using KelpNet.Common.Functions;
+using ReflectSoftware.Insight;
 
 namespace KelpNetTester.TestData
 {
@@ -75,8 +77,8 @@ namespace KelpNetTester.TestData
 
         public TestDataSet GetRandomYSet(int dataCount)
         {
-            NdArray listY = new NdArray(new[] { 3, 32, 32 }, dataCount);
-            NdArray listTy = new NdArray(new[] { 1 }, dataCount);
+            NdArray listY = new NdArray(new[] { 3, 32, 32 }, dataCount, (Function)null);
+            NdArray listTy = new NdArray(new[] { 1 }, dataCount, (Function)null);
 
             for (int i = 0; i < dataCount; i++)
             {
@@ -86,7 +88,9 @@ namespace KelpNetTester.TestData
                 listTy.Data[i] = Ty[index].Data[0];
             }
 
-            return new TestDataSet(listY, listTy);
+            TestDataSet tds = new TestDataSet(listY, listTy);
+            RILogManager.Default?.SendDebug("Getting random Y data (" + tds.Data.Length + ") bytes");
+            return tds;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,8 +103,8 @@ namespace KelpNetTester.TestData
 
         public TestDataSet GetRandomXSet(int dataCount)
         {
-            NdArray listX = new NdArray(new[] { 3, 32, 32 }, dataCount);
-            NdArray listTx = new NdArray(new[] { 1 }, dataCount);
+            NdArray listX = new NdArray(new[] { 3, 32, 32 }, dataCount, (Function)null);
+            NdArray listTx = new NdArray(new[] { 1 }, dataCount, (Function)null);
 
             for (int i = 0; i < dataCount; i++)
             {
@@ -110,7 +114,9 @@ namespace KelpNetTester.TestData
                 listTx.Data[i] = Tx[index].Data[0];
             }
 
-            return new TestDataSet(listX, listTx);
+            TestDataSet tds = new TestDataSet(listX, listTx);
+            RILogManager.Default?.SendDebug("Getting random X data (" + tds.Data.Length + ") bytes");
+            return tds;
         }
     }
 }

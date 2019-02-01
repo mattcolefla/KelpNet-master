@@ -1,10 +1,12 @@
 ﻿using System;
 using KelpNet.Common;
+using KelpNet.Common.Functions;
 using MNISTLoader;
+using ReflectSoftware.Insight;
 
 namespace KelpNetTester.TestData
 {
-    /// <summary>   A mnist data. </summary>
+    /// <summary>   mnist data. </summary>
     class MnistData
     {
         /// <summary>   The mnist data loader. </summary>
@@ -12,20 +14,18 @@ namespace KelpNetTester.TestData
 
         /// <summary>   A NdArray[] to process. </summary>
         private NdArray[] X;
-        /// <summary>   The transmit. </summary>
+        /// <summary>   The training data. </summary>
         private NdArray[] Tx;
 
         /// <summary>   A NdArray[] to process. </summary>
         private NdArray[] Y;
-        /// <summary>   The ty. </summary>
+        /// <summary>   The label data. </summary>
         private NdArray[] Ty;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <summary>
-        /// Initializes a new instance of the KelpNetTester.TestData.MnistData class.
-        /// </summary>
+        /// <summary>   Initializes a new instance of the KelpNetTester.TestData.MnistData class. </summary>
         ///
-        /// <param name="xdim"> The xdim. </param>
+        /// <param name="xdim"> Total dimension size. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public MnistData(int xdim)
@@ -74,8 +74,8 @@ namespace KelpNetTester.TestData
 
         public TestDataSet GetRandomYSet(int dataCount, int xdim)
         {
-            NdArray listY = new NdArray(new[] { 1, xdim, xdim }, dataCount);
-            NdArray listTy = new NdArray(new[] { 1 }, dataCount);
+            NdArray listY = new NdArray(new[] { 1, xdim, xdim }, dataCount, (Function)null);
+            NdArray listTy = new NdArray(new[] { 1 }, dataCount, (Function)null);
 
             for (int i = 0; i < dataCount; i++)
             {
@@ -85,7 +85,9 @@ namespace KelpNetTester.TestData
                 listTy.Data[i] = Ty[index].Data[0];
             }
 
-            return new TestDataSet(listY, listTy);
+            TestDataSet tds = new TestDataSet(listY, listTy);
+            RILogManager.Default?.SendDebug("Getting random Y data (" + tds.Data.Length + ") bytes");
+            return tds;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,8 +102,8 @@ namespace KelpNetTester.TestData
 
         public TestDataSet GetRandomXSet(int dataCount, int x, int y)
         {
-            NdArray listX = new NdArray(new[] { 1, x, y }, dataCount);
-            NdArray listTx = new NdArray(new[] { 1 }, dataCount);
+            NdArray listX = new NdArray(new[] { 1, x, y }, dataCount, (Function)null);
+            NdArray listTx = new NdArray(new[] { 1 }, dataCount, (Function)null);
 
             for (int i = 0; i < dataCount; i++)
             {
@@ -111,7 +113,9 @@ namespace KelpNetTester.TestData
                 listTx.Data[i] = Tx[index].Data[0];
             }
 
-            return new TestDataSet(listX, listTx);
+            TestDataSet tds = new TestDataSet(listX, listTx);
+            RILogManager.Default?.SendDebug("Getting random X data (" + tds.Data.Length + ") bytes");
+            return tds;
         }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using KelpNet.Common;
 using KelpNet.Common.Optimizers;
+using KelpNet.Common.Tools;
+using ReflectSoftware.Insight;
 
 namespace KelpNet.Optimizers
 {
@@ -29,10 +32,11 @@ namespace KelpNet.Optimizers
         /// <param name="momentum">     (Optional) The momentum. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public MomentumSGD(double learningRate = 0.01, double momentum = 0.9)
+        public MomentumSGD(string Name = "MomentumSGD", double learningRate = 0.01, double momentum = 0.9)
         {
             LearningRate = learningRate;
             Momentum = momentum;
+            NAME = Name;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,8 +91,11 @@ namespace KelpNet.Optimizers
         /// <seealso cref="M:KelpNet.Common.Optimizers.OptimizerParameter.UpdateFunctionParameters()"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override void UpdateFunctionParameters()
+        public override void UpdateFunctionParameters(bool verbose)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             for (int i = 0; i < FunctionParameter.Data.Length; i++)
             {
                 v[i] *= optimizer.Momentum;
@@ -96,6 +103,9 @@ namespace KelpNet.Optimizers
 
                 FunctionParameter.Data[i] += v[i];
             }
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("MomentumSGD Function Parameter Updating took " + Helpers.FormatTimeSpan(sw.Elapsed));
         }
     }
 

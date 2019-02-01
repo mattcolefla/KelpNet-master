@@ -1,52 +1,36 @@
-﻿namespace KelpNet.Functions.Activations
+﻿using System;
+
+namespace KelpNet.Functions.Activations
 {
-    using System;
-    using System.Collections.Generic;
     using Common;
     using Common.Functions;
     using JetBrains.Annotations;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   A polynomial approximant steep. </summary>
-    ///
-    /// <seealso cref="T:KelpNet.Common.Functions.CompressibleActivation"/>
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
     [Serializable]
-    public class PolynomialApproximantSteep : CompressibleActivation
+    public class BipolarGaussian : CompressibleActivation
     {
         /// <summary>   Name of the function. </summary>
-        const string FUNCTION_NAME = "PolynomialApproximantSteep";
-        /// <summary>   Name of the parameter. </summary>
-        private const string PARAM_NAME = "/*slope*/";
-        /// <summary>   The slope. </summary>
-        private readonly Real _slope = 0.00001;
+        const string FUNCTION_NAME = "BipolarGaussian";
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
-        /// Initializes a new instance of the KelpNet.Functions.Activations.PolynomialApproximantSteep
-        /// class.
+        /// Initializes a new instance of the KelpNet.Functions.Activations.BipolarGaussian class.
         /// </summary>
         ///
-        /// <param name="slope">        (Optional) The slope. </param>
         /// <param name="name">         (Optional) The name. </param>
         /// <param name="inputNames">   (Optional) List of names of the inputs. </param>
         /// <param name="outputNames">  (Optional) List of names of the outputs. </param>
         /// <param name="gpuEnable">    (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public PolynomialApproximantSteep(double slope = 0.00001, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false)
-            : base(FUNCTION_NAME, new[] { new KeyValuePair<string, string>(PARAM_NAME, slope.ToString()) }, name, inputNames, outputNames, gpuEnable)
-
+        public BipolarGaussian([CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, null, name, inputNames, outputNames, gpuEnable)
         {
-            _slope = slope;
         }
 
-        internal override Real ForwardActivate(Real x, [CanBeNull] Real[] args)
+        internal override Real ForwardActivate(Real x)
         {
             return x;
         }
-
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Activate virtual function used in / / .Net. </summary>
         ///
@@ -57,13 +41,9 @@
         /// <seealso cref="M:KelpNet.Common.Functions.CompressibleActivation.ForwardActivate(Real)"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        internal override Real ForwardActivate(Real x)
+        internal override Real ForwardActivate(Real x, [NotNull] Real[] args)
         {
-            x = x * 4.9;
-            double x2 = x * x;
-            double e = 1.0 + Math.Abs(x) + (x2 * 0.555) + (x2 * x2 * 0.143);
-            double f = (x > 0) ? (1.0 / e) : e;
-            return 1.0 / (1.0 + f);
+            return ((2.0 * Math.Exp(-Math.Pow(x * 2.5, 2.0))) - 1.0);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,11 +59,7 @@
 
         internal override Real BackwardActivate(Real gy, Real y)
         {
-            y = y * 4.9;
-            double x2 = y * y;
-            double e = 1.0 + Math.Abs(y) + (x2 * 0.555) + (x2 * x2 * 0.143);
-            double f = (y > 0) ? (1.0 / e) : e;
-            return 1.0 / (1.0 + f);
+            return gy * (1 - y * y);
         }
     }
 }

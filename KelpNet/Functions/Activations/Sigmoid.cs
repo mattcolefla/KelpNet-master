@@ -37,8 +37,7 @@ namespace KelpNet.Functions.Activations
         {
             return x;
         }
-
-
+        
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Activate virtual function used in / / .Net. </summary>
         ///

@@ -114,13 +114,13 @@ namespace KelpNet.Functions.Mathmetrics
 
             int[] preShape = shapeList.ToArray();
 
-            NdArray y1 = new Reshape(preShape).Forward(Weight)[0];
-            NdArray y2 = new Broadcast(inputShape).Forward(y1)[0];
+            NdArray y1 = new Reshape(preShape).Forward(false, Weight)[0];
+            NdArray y2 = new Broadcast(inputShape).Forward(false, y1)[0];
 
             if (BiasTerm)
             {
-                NdArray b1 = new Reshape(preShape).Forward(Bias)[0];
-                NdArray b2 = new Broadcast(inputShape).Forward(b1)[0];
+                NdArray b1 = new Reshape(preShape).Forward(false, Bias)[0];
+                NdArray b2 = new Broadcast(inputShape).Forward(false, b1)[0];
 
                 return x * y2 + b2;
             }

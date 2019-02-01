@@ -2,13 +2,14 @@
 using System.Linq;
 using KelpNet.Common;
 using KelpNet.Common.Functions.Type;
+using ReflectSoftware.Insight;
 
 namespace KelpNet.Functions.Normalization
 {
     using JetBrains.Annotations;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   ported from Chainer finetuning is not implemented yet. </summary>
+    /// <summary>   We normalize the input layer by adjusting and scaling the activations. </summary>
     ///
     /// <seealso cref="T:KelpNet.Common.Functions.Type.SingleInputFunction"/>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -18,7 +19,6 @@ namespace KelpNet.Functions.Normalization
     {
         /// <summary>   Name of the function. </summary>
         const string FUNCTION_NAME = "BatchNormalization";
-
         /// <summary>   True if this object is train. </summary>
         public bool IsTrain;
         /// <summary>   The gamma. </summary>
@@ -43,13 +43,14 @@ namespace KelpNet.Functions.Normalization
         private Real[] Variance;
         /// <summary>   Size of the channel. </summary>
         private readonly int ChannelSize;
+        public bool Verbose;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
-        /// Initializes a new instance of the KelpNet.Functions.Normalization.BatchNormalization
-        /// class.
+        /// Initializes a new instance of the KelpNet.Functions.Normalization.BatchNormalization class.
         /// </summary>
         ///
+        /// <param name="verbose">          True to verbose. </param>
         /// <param name="channelSize">      Size of the channel. </param>
         /// <param name="decay">            (Optional) The decay. </param>
         /// <param name="eps">              (Optional) The EPS. </param>
@@ -61,8 +62,9 @@ namespace KelpNet.Functions.Normalization
         /// <param name="outputNames">      (Optional) List of names of the outputs. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public BatchNormalization(int channelSize, double decay = 0.9, double eps = 1e-5, [CanBeNull] Array initialAvgMean = null, [CanBeNull] Array initialAvgVar = null, bool isTrain = true, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
+        public BatchNormalization(bool verbose, int channelSize, double decay = 0.9, double eps = 1e-5, [CanBeNull] Array initialAvgMean = null, [CanBeNull] Array initialAvgVar = null, bool isTrain = true, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
+            Verbose = verbose;
             ChannelSize = channelSize;
             Decay = decay;
             Eps = eps;
@@ -80,7 +82,6 @@ namespace KelpNet.Functions.Normalization
             };
 
             Parameters = new NdArray[IsTrain ? 2 : 4];
-
             // register parameter to be learned
             Parameters[0] = Gamma;
             Parameters[1] = Beta;
@@ -95,14 +96,10 @@ namespace KelpNet.Functions.Normalization
             };
 
             if (initialAvgMean != null)
-            {
                 AvgMean.Data = Real.GetArray(initialAvgMean);
-            }
 
             if (initialAvgVar != null)
-            {
                 AvgVar.Data = Real.GetArray(initialAvgVar);
-            }
 
             if (!IsTrain)
             {
@@ -131,17 +128,13 @@ namespace KelpNet.Functions.Normalization
                 // Set Mean and Variance of member
                 Variance = new Real[ChannelSize];
                 for (int i = 0; i < Variance.Length; i++)
-                {
                     Variance[i] = 0;
-                }
 
                 Mean = new Real[ChannelSize];
                 for (int i = 0; i < Mean.Length; i++)
                 {
                     for (int index = 0; index < x.BatchCount; index++)
-                    {
                         Mean[i] += x.Data[i + index * x.Length];
-                    }
 
                     Mean[i] /= x.BatchCount;
                 }
@@ -149,17 +142,13 @@ namespace KelpNet.Functions.Normalization
                 for (int i = 0; i < Mean.Length; i++)
                 {
                     for (int index = 0; index < x.BatchCount; index++)
-                    {
                         Variance[i] += (x.Data[i + index * x.Length] - Mean[i]) * (x.Data[i + index * x.Length] - Mean[i]);
-                    }
 
                     Variance[i] /= x.BatchCount;
                 }
 
                 for (int i = 0; i < Variance.Length; i++)
-                {
                     Variance[i] += Eps;
-                }
             }
             else
             {
@@ -169,9 +158,7 @@ namespace KelpNet.Functions.Normalization
 
             Std = new Real[Variance.Length];
             for (int i = 0; i < Variance.Length; i++)
-            {
                 Std[i] = Math.Sqrt(Variance[i]);
-            }
 
             // Calculate result
             Xhat = new Real[x.Data.Length];
@@ -180,9 +167,7 @@ namespace KelpNet.Functions.Normalization
 
             int dataSize = 1;
             for (int i = 1; i < x.Shape.Length; i++)
-            {
                 dataSize *= x.Shape[i];
-            }
 
             for (int batchCount = 0; batchCount < x.BatchCount; batchCount++)
             {
@@ -202,13 +187,14 @@ namespace KelpNet.Functions.Normalization
             {
                 int m = x.BatchCount;
                 Real adjust = m / Math.Max(m - 1.0, 1.0); // unbiased estimation
+                if (Verbose)
+                    RILogManager.Default?.ViewerSendWatch("Unbiased Estimation", adjust);
 
                 for (int i = 0; i < AvgMean.Data.Length; i++)
                 {
                     AvgMean.Data[i] *= Decay;
                     Mean[i] *= 1 - Decay; // reuse buffer as a temporary
                     AvgMean.Data[i] += Mean[i];
-
                     AvgVar.Data[i] *= Decay;
                     Variance[i] *= (1 - Decay) * adjust; // reuse buffer as a temporary
                     AvgVar.Data[i] += Variance[i];
@@ -239,6 +225,9 @@ namespace KelpNet.Functions.Normalization
                 }
             }
 
+            if (Verbose)
+                RILogManager.Default?.ViewerSendWatch("Learning", (IsTrain ? "Yes" : "No"));
+
             if (IsTrain)
             {
                 // with learning
@@ -251,7 +240,6 @@ namespace KelpNet.Functions.Normalization
                     for (int j = 0; j < y.BatchCount; j++)
                     {
                         Real val = (Xhat[j * ChannelSize + i] * Gamma.Grad[i] + Beta.Grad[i]) / m;
-
                         x.Grad[i + j * ChannelSize] += gs * (y.Grad[i + j * y.Length] - val);
                     }
                 }
@@ -266,9 +254,7 @@ namespace KelpNet.Functions.Normalization
                     AvgVar.Grad[i] = -0.5 * Gamma.Data[i] / AvgVar.Data[i] * Gamma.Grad[i];
 
                     for (int j = 0; j < y.BatchCount; j++)
-                    {
                         x.Grad[i + j * ChannelSize] += gs * y.Grad[i + j * y.Length];
-                    }
                 }
             }
         }
@@ -276,6 +262,7 @@ namespace KelpNet.Functions.Normalization
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Evaluation function. </summary>
         ///
+        /// <param name="verbose">  (Optional) True to verbose. </param>
         /// <param name="input">    A variable-length parameters list containing input. </param>
         ///
         /// <returns>   A NdArray[]. </returns>
@@ -283,7 +270,7 @@ namespace KelpNet.Functions.Normalization
         /// <seealso cref="M:KelpNet.Common.Functions.Type.SingleInputFunction.Predict(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override NdArray[] Predict(params NdArray[] input)
+        public override NdArray[] Predict(bool verbose = true, [NotNull] params NdArray[] input)
         {
             NdArray[] result;
 
@@ -292,15 +279,13 @@ namespace KelpNet.Functions.Normalization
                 // Do not train Predict
                 IsTrain = false;
 
-                result = Forward(input);
+                result = Forward(verbose, input);
 
                 // reset flag
                 IsTrain = true;
             }
             else
-            {
-                result = Forward(input);
-            }
+                result = Forward(verbose, input);
 
             return result;
         }

@@ -84,8 +84,8 @@ namespace KelpNet.Functions.Mathmetrics
 
             int[] y1Shape = shapeList.ToArray();
 
-            NdArray y1 = new Reshape(y1Shape).Forward(Bias)[0];
-            NdArray y2 = new Broadcast(inputShape).Forward(y1)[0];
+            NdArray y1 = new Reshape(y1Shape).Forward(false, Bias)[0];
+            NdArray y2 = new Broadcast(inputShape).Forward(false, y1)[0];
 
             return x + y2;
         }

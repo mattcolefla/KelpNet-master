@@ -37,10 +37,10 @@ namespace KelpNetTester.Tests
                 new Real[] { 0 }
             };
 
-            FunctionStack nn = new FunctionStack(
-                new Linear(2, 2, name: "l1 Linear"),
+            FunctionStack nn = new FunctionStack("Test2",
+                new Linear(true, 2, 2, name: "l1 Linear"),
                 new ReLU(name: "l1 ReLU"),
-                new Linear(2, 1, name: "l2 Linear"));
+                new Linear(true, 2, 1, name: "l2 Linear"));
 
             nn.SetOptimizer(new AdaGrad());
 
@@ -60,7 +60,7 @@ namespace KelpNetTester.Tests
             RILogManager.Default?.SendDebug("Test Start...");
             foreach (Real[] val in trainData)
             {
-                NdArray result = nn.Predict(val)[0];
+                NdArray result = nn.Predict(true, val)[0];
                 RILogManager.Default?.SendDebug($"{val[0]} xor {val[1]} = {(result.Data[0] > 0.5 ? 1 : 0)} {result}");
             }
         }

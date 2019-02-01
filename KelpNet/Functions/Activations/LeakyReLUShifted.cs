@@ -26,14 +26,12 @@ namespace KelpNet.Functions.Activations
         public LeakyReLUShifted([CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, null, name, inputNames, outputNames, gpuEnable)
         {
         }
-
-
+        
         internal override Real ForwardActivate(Real x, [CanBeNull] Real[] args)
         {
             return x;
         }
-
-
+        
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Activate virtual function used in / / .Net. </summary>
         ///
@@ -48,16 +46,12 @@ namespace KelpNet.Functions.Activations
         {
             const double a = 0.001;
             const double offset = 0.5;
-
             double y;
+
             if (x + offset > 0.0)
-            {
                 y = x + offset;
-            }
             else
-            {
                 y = (x + offset) * a;
-            }
             return y;
         }
 
@@ -76,6 +70,5 @@ namespace KelpNet.Functions.Activations
         {
             return gy * (1 - y * y);
         }
-
     }
 }

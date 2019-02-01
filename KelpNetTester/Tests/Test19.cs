@@ -22,7 +22,7 @@ namespace KelpNetTester.Tests
     class Test19
     {
         const int BATCH_DATA_COUNT = 128;
-        private const int TRAIN_DATA_COUNT = 1000; //50000;
+        private const int TRAIN_DATA_COUNT = 100; //1000; //50000;
         const int TEST_DATA_COUNT = 200;
         private const int N = 60; 
         
@@ -33,50 +33,50 @@ namespace KelpNetTester.Tests
             RILogManager.Default?.SendDebug("Training Start...");
 
             int neuronCount = 28;
-            FunctionStack nn = new FunctionStack(
-                new Linear(neuronCount * neuronCount, N, name: "l1 Linear"), // L1
-                new BatchNormalization(N, name: "l1 BatchNorm"),
+            FunctionStack nn = new FunctionStack("Test19",
+                new Linear(true, neuronCount * neuronCount, N, name: "l1 Linear"), // L1
+                new BatchNormalization(true, N, name: "l1 BatchNorm"),
                 new LeakyReLU(slope: 0.000001, name: "l1 LeakyReLU"),
-                new Linear(N, N, name: "l2 Linear"), // L2
-                new BatchNormalization(N, name: "l2 BatchNorm"),
+                new Linear(true, N, N, name: "l2 Linear"), // L2
+                new BatchNormalization(true, N, name: "l2 BatchNorm"),
                 new LeakyReLU(slope: 0.000001, name: "l2 LeakyReLU"),
-                new Linear(N, N, name: "l3 Linear"), // L3
-                new BatchNormalization(N, name: "l3 BatchNorm"),
+                new Linear(true, N, N, name: "l3 Linear"), // L3
+                new BatchNormalization(true, N, name: "l3 BatchNorm"),
                 new LeakyReLU(slope: 0.000001, name: "l3 LeakyReLU"),
-                new Linear(N, N, name: "l4 Linear"), // L4
-                new BatchNormalization(N, name: "l4 BatchNorm"),
+                new Linear(true, N, N, name: "l4 Linear"), // L4
+                new BatchNormalization(true, N, name: "l4 BatchNorm"),
                 new LeakyReLU(slope: 0.000001, name: "l4 LeakyReLU"),
-                new Linear(N, N, name: "l5 Linear"), // L5
-                new BatchNormalization(N, name: "l5 BatchNorm"),
+                new Linear(true, N, N, name: "l5 Linear"), // L5
+                new BatchNormalization(true, N, name: "l5 BatchNorm"),
                 new LeakyReLU(slope: 0.000001, name: "l5 LeakyReLU"),
-                new Linear(N, N, name: "l6 Linear"), // L6
-                new BatchNormalization(N, name: "l6 BatchNorm"),
+                new Linear(true, N, N, name: "l6 Linear"), // L6
+                new BatchNormalization(true, N, name: "l6 BatchNorm"),
                 new LeakyReLU(slope: 0.000001, name: "l6 LeakyReLU"),
-                new Linear(N, N, name: "l7 Linear"), // L7
-                new BatchNormalization(N, name: "l7 BatchNorm"),
+                new Linear(true, N, N, name: "l7 Linear"), // L7
+                new BatchNormalization(true, N, name: "l7 BatchNorm"),
                 new LeakyReLU(slope: 0.000001, name: "l7 ReLU"),
-                new Linear(N, N, name: "l8 Linear"), // L8
-                new BatchNormalization(N, name: "l8 BatchNorm"),
+                new Linear(true, N, N, name: "l8 Linear"), // L8
+                new BatchNormalization(true, N, name: "l8 BatchNorm"),
                 new LeakyReLU(slope: 0.000001, name: "l8 LeakyReLU"),
-                new Linear(N, N, name: "l9 Linear"), // L9
-                new BatchNormalization(N, name: "l9 BatchNorm"),
+                new Linear(true, N, N, name: "l9 Linear"), // L9
+                new BatchNormalization(true, N, name: "l9 BatchNorm"),
                 new PolynomialApproximantSteep(slope: 0.000001, name: "l9 PolynomialApproximantSteep"),
-                new Linear(N, N, name: "l10 Linear"), // L10
-                new BatchNormalization(N, name: "l10 BatchNorm"),
+                new Linear(true, N, N, name: "l10 Linear"), // L10
+                new BatchNormalization(true, N, name: "l10 BatchNorm"),
                 new PolynomialApproximantSteep(slope: 0.000001, name: "l10 PolynomialApproximantSteep"),
-                new Linear(N, N, name: "l11 Linear"), // L11
-                new BatchNormalization(N, name: "l11 BatchNorm"),
+                new Linear(true, N, N, name: "l11 Linear"), // L11
+                new BatchNormalization(true, N, name: "l11 BatchNorm"),
                 new PolynomialApproximantSteep(slope: 0.000001, name: "l11 PolynomialApproximantSteep"),
-                new Linear(N, N, name: "l12 Linear"), // L12
-                new BatchNormalization(N, name: "l12 BatchNorm"),
+                new Linear(true, N, N, name: "l12 Linear"), // L12
+                new BatchNormalization(true, N, name: "l12 BatchNorm"),
                 new PolynomialApproximantSteep(slope: 0.000001, name: "l12 PolynomialApproximantSteep"),
-                new Linear(N, N, name: "l13 Linear"), // L13
-                new BatchNormalization(N, name: "l13 BatchNorm"),
+                new Linear(true, N, N, name: "l13 Linear"), // L13
+                new BatchNormalization(true, N, name: "l13 BatchNorm"),
                 new PolynomialApproximantSteep(slope: 0.000001, name: "l13 PolynomialApproximantSteep"),
-                new Linear(N, N, name: "l14 Linear"), // L14
-                new BatchNormalization(N, name: "l14 BatchNorm"),
+                new Linear(true, N, N, name: "l14 Linear"), // L14
+                new BatchNormalization(true, N, name: "l14 BatchNorm"),
                 new PolynomialApproximantSteep(slope: 0.000001, name: "l14 PolynomialApproximantSteep"),
-                new Linear(N, 10, name: "l15 Linear") // L15
+                new Linear(true, N, 10, name: "l15 Linear") // L15
             );
 
 
@@ -91,6 +91,9 @@ namespace KelpNetTester.Tests
             Real highestAccuracy = 0;
             Real bestLocalLoss = 0;
             Real bestTotalLoss = 0;
+
+            // First skeleton save
+            ModelIO.Save(nn, nn.Name);
 
             for (int epoch = 0; epoch < 1; epoch++)
             {
@@ -168,6 +171,8 @@ namespace KelpNetTester.Tests
             RILogManager.Default?.ViewerSendWatch("Best Total Loss", bestTotalLoss);
             RILogManager.Default?.ViewerSendWatch("Best Local Loss", bestLocalLoss);
 
+            // Save all with training data
+            ModelIO.Save(nn, nn.Name);
 
         }
     }

@@ -35,7 +35,7 @@ namespace CaffemodelLoader
             {
                 BlobProto bp = Serializer.Deserialize<BlobProto>(stream);
 
-                NdArray result = new NdArray(new[] { bp.Channels, bp.Height, bp.Width }, bp.Num);
+                NdArray result = new NdArray(new[] { bp.Channels, bp.Height, bp.Width }, bp.Num, (Function)null);
 
                 if (bp.Datas != null)
                 {
@@ -64,12 +64,13 @@ namespace CaffemodelLoader
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Functions for branched models. </summary>
         ///
-        /// <param name="path"> Full pathname of the file. </param>
+        /// <param name="verbose">  True to verbose. </param>
+        /// <param name="path">     Full pathname of the file. </param>
         ///
         /// <returns>   The net work. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static FunctionDictionary LoadNetWork(string path)
+        public static FunctionDictionary LoadNetWork(bool verbose, string path)
         {
             FunctionDictionary functionDictionary = new FunctionDictionary();
 
@@ -79,7 +80,7 @@ namespace CaffemodelLoader
 
                 foreach (V1LayerParameter layer in netparam.Layers)
                 {
-                    Function func = CreateFunction(layer);
+                    Function func = CreateFunction(verbose, layer);
 
                     if (func != null)
                     {
@@ -89,7 +90,7 @@ namespace CaffemodelLoader
 
                 foreach (LayerParameter layer in netparam.Layer)
                 {
-                    Function func = CreateFunction(layer);
+                    Function func = CreateFunction(verbose, layer);
 
                     if (func != null)
                     {
@@ -104,12 +105,13 @@ namespace CaffemodelLoader
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Function for branching-none model. </summary>
         ///
-        /// <param name="path"> Full pathname of the file. </param>
+        /// <param name="verbose">  True to verbose. </param>
+        /// <param name="path">     Full pathname of the file. </param>
         ///
         /// <returns>   A List&lt;Function&gt; </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static List<Function> ModelLoad(string path)
+        public static List<Function> ModelLoad(bool verbose, string path)
         {
             List<Function> result = new List<Function>();
 
@@ -119,7 +121,7 @@ namespace CaffemodelLoader
 
                 foreach (V1LayerParameter layer in netparam.Layers)
                 {
-                    Function func = CreateFunction(layer);
+                    Function func = CreateFunction(verbose, layer);
 
                     if (func != null)
                     {
@@ -129,7 +131,7 @@ namespace CaffemodelLoader
 
                 foreach (LayerParameter layer in netparam.Layer)
                 {
-                    Function func = CreateFunction(layer);
+                    Function func = CreateFunction(verbose, layer);
 
                     if (func != null)
                     {
@@ -144,12 +146,13 @@ namespace CaffemodelLoader
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Creates a function. </summary>
         ///
+        /// <param name="verbose">  True to verbose. </param>
         /// <param name="layer">    The layer. </param>
         ///
         /// <returns>   The new function. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        static Function CreateFunction(LayerParameter layer)
+        static Function CreateFunction(bool verbose, LayerParameter layer)
         {
             switch (layer.Type)
             {
@@ -175,7 +178,7 @@ namespace CaffemodelLoader
                     return SetupBatchnorm(layer.BatchNormParam, layer.Blobs, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
 
                 case "Convolution":
-                    return SetupConvolution(layer.ConvolutionParam, layer.Blobs, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
+                    return SetupConvolution(verbose, layer.ConvolutionParam, layer.Blobs, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
 
                 case "Dropout":
                     return new Dropout(layer.DropoutParam.DropoutRatio, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
@@ -187,7 +190,7 @@ namespace CaffemodelLoader
                     return layer.ReluParam != null ? layer.ReluParam.NegativeSlope == 0 ? (Function)new ReLU(layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray()) : (Function)new LeakyReLU(layer.ReluParam.NegativeSlope, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray()) : (Function)new ReLU(layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
 
                 case "InnerProduct":
-                    return SetupInnerProduct(layer.InnerProductParam, layer.Blobs, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
+                    return SetupInnerProduct(verbose, layer.InnerProductParam, layer.Blobs, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
 
                 case "Softmax":
                     return new Softmax(layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
@@ -204,12 +207,13 @@ namespace CaffemodelLoader
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Creates a function. </summary>
         ///
+        /// <param name="verbose">  True to verbose. </param>
         /// <param name="layer">    The layer. </param>
         ///
         /// <returns>   The new function. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        static Function CreateFunction(V1LayerParameter layer)
+        static Function CreateFunction(bool verbose,  V1LayerParameter layer)
         {
             switch (layer.Type)
             {
@@ -229,7 +233,7 @@ namespace CaffemodelLoader
                     return SetupEltwise(layer.EltwiseParam, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
 
                 case V1LayerParameter.LayerType.Convolution:
-                    return SetupConvolution(layer.ConvolutionParam, layer.Blobs, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
+                    return SetupConvolution(verbose, layer.ConvolutionParam, layer.Blobs, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
 
                 case V1LayerParameter.LayerType.Dropout:
                     return new Dropout(layer.DropoutParam.DropoutRatio, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
@@ -241,7 +245,7 @@ namespace CaffemodelLoader
                     return layer.ReluParam != null ? layer.ReluParam.NegativeSlope == 0 ? (Function)new ReLU(layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray()) : (Function)new LeakyReLU(layer.ReluParam.NegativeSlope, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray()) : (Function)new ReLU(layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
 
                 case V1LayerParameter.LayerType.InnerProduct:
-                    return SetupInnerProduct(layer.InnerProductParam, layer.Blobs, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
+                    return SetupInnerProduct(verbose, layer.InnerProductParam, layer.Blobs, layer.Name, layer.Bottoms.ToArray(), layer.Tops.ToArray());
 
                 case V1LayerParameter.LayerType.Softmax:
                     return new Softmax();
@@ -389,12 +393,13 @@ namespace CaffemodelLoader
                 }
             }
 
-            return new BatchNormalization(size, decay, eps, avgMean, avgVar, name: name, inputNames: inputNames, outputNames: outputNames);
+            return new BatchNormalization(true, size, decay, eps, avgMean, avgVar, name: name, inputNames: inputNames, outputNames: outputNames);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Sets up the convolution. </summary>
         ///
+        /// <param name="verbose">      True to verbose. </param>
         /// <param name="param">        The parameter. </param>
         /// <param name="blobs">        The blobs. </param>
         /// <param name="name">         The name. </param>
@@ -404,7 +409,7 @@ namespace CaffemodelLoader
         /// <returns>   A Convolution2D. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        static Convolution2D SetupConvolution(ConvolutionParameter param, List<BlobProto> blobs, string name, string[] inputNames, string[] outputNames)
+        static Convolution2D SetupConvolution(bool verbose, ConvolutionParameter param, List<BlobProto> blobs, string name, string[] inputNames, string[] outputNames)
         {
             Size ksize = GetKernelSize(param);
             Size stride = GetKernelStride(param);
@@ -418,10 +423,10 @@ namespace CaffemodelLoader
             if (param.BiasTerm)
             {
                 float[] b = blobs[1].Datas;
-                return new Convolution2D(nIn, nOut, ksize, stride, pad, !param.BiasTerm, w, b, name: name, inputNames: inputNames, outputNames: outputNames);
+                return new Convolution2D(verbose,nIn, nOut, ksize, stride, pad, !param.BiasTerm, w, b, name: name, inputNames: inputNames, outputNames: outputNames);
             }
 
-            return new Convolution2D(nIn, nOut, ksize, stride, pad, !param.BiasTerm, w, name: name, inputNames: inputNames, outputNames: outputNames);
+            return new Convolution2D(verbose,nIn, nOut, ksize, stride, pad, !param.BiasTerm, w, name: name, inputNames: inputNames, outputNames: outputNames);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -429,6 +434,7 @@ namespace CaffemodelLoader
         ///
         /// <exception cref="Exception">    Thrown when an exception error condition occurs. </exception>
         ///
+        /// <param name="verbose">      True to verbose. </param>
         /// <param name="param">        The parameter. </param>
         /// <param name="blobs">        The blobs. </param>
         /// <param name="name">         The name. </param>
@@ -438,7 +444,7 @@ namespace CaffemodelLoader
         /// <returns>   A Linear. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        static Linear SetupInnerProduct(InnerProductParameter param, List<BlobProto> blobs, string name, string[] inputNames, string[] outputNames)
+        static Linear SetupInnerProduct(bool verbose, InnerProductParameter param, List<BlobProto> blobs, string name, string[] inputNames, string[] outputNames)
         {
             if (param.Axis != 1)
             {
@@ -451,10 +457,10 @@ namespace CaffemodelLoader
 
             if (param.BiasTerm)
             {
-                return new Linear(width, height, !param.BiasTerm, w, blobs[1].Datas, name: name, inputNames: inputNames, outputNames: outputNames);
+                return new Linear(verbose, width, height, !param.BiasTerm, w, blobs[1].Datas, name: name, inputNames: inputNames, outputNames: outputNames);
             }
 
-            return new Linear(width, height, !param.BiasTerm, w, name: name);
+            return new Linear(verbose, width, height, !param.BiasTerm, w, name: name);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////

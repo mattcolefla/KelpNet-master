@@ -58,7 +58,7 @@ namespace KelpNetTester.Tests
 
                 RILogManager.Default?.SendDebug("Model Loading.");
                 string modelFilePath = InternetFileDownloader.Download(Urls[resnetId], FileNames[resnetId]);
-                FunctionDictionary nn = CaffemodelDataLoader.LoadNetWork(modelFilePath);
+                FunctionDictionary nn = CaffemodelDataLoader.LoadNetWork(true, modelFilePath);
                 string[] classList = File.ReadAllLines(CLASS_LIST_PATH);
 
                 // Initialize the GPU
@@ -85,7 +85,7 @@ namespace KelpNetTester.Tests
 
                     RILogManager.Default?.SendDebug("Start predict.");
                     Stopwatch sw = Stopwatch.StartNew();
-                    NdArray result = nn.Predict(imageArray)[0];
+                    NdArray result = nn.Predict(true, imageArray)[0];
                     sw.Stop();
 
                     RILogManager.Default?.SendDebug("Result Time : " +
@@ -94,7 +94,8 @@ namespace KelpNetTester.Tests
 
                     int maxIndex = Array.IndexOf(result.Data, result.Data.Max());
                     RILogManager.Default?.SendDebug("[" + result.Data[maxIndex] + "] : " + classList[maxIndex]);
-                } while (ofd.ShowDialog() == DialogResult.OK);
+                } 
+                while (ofd.ShowDialog() == DialogResult.OK);
             }
         }
 

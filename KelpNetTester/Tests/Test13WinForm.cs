@@ -24,12 +24,12 @@ namespace KelpNetTester.Tests
             ClientSize = new Size(128 * 4, 128 * 4);
 
             // Create a target filter (In case of practice, here is the unknown value)
-            decon_core = new Deconvolution2D(1, 1, 15, 1, 7, gpuEnable: true)
+            decon_core = new Deconvolution2D(true, 1, 1, 15, 1, 7, gpuEnable: true)
             {
                 Weight = { Data = MakeOneCore() }
             };
 
-            model = new Deconvolution2D(1, 1, 15, 1, 7, gpuEnable: true);
+            model = new Deconvolution2D(true, 1, 1, 15, 1, 7, gpuEnable: true);
 
             optimizer = new SGD(learningRate: 0.01); // diverge if big
             model.SetOptimizer(optimizer);
@@ -79,17 +79,17 @@ namespace KelpNetTester.Tests
                 NdArray img_p = getRandomImage();
 
                 // Output a learning image with a target filter
-                NdArray[] img_core = decon_core?.Forward(img_p);
+                NdArray[] img_core = decon_core?.Forward(true, img_p);
 
                 // Output an image with an unlearned filter
-                NdArray[] img_y = model?.Forward(img_p);
+                NdArray[] img_y = model?.Forward(true, img_p);
 
                 // implicitly use img_y as NdArray
                 BackgroundImage = NdArrayConverter.NdArray2Image(img_y[0].GetSingleArray(0));
 
                 Real loss = meanSquaredError.Evaluate(img_y, img_core);
 
-                model.Backward(img_y);
+                model.Backward(true, img_y);
                 model.Update();
 
                 Text = "[epoch" + counter + "] Loss : " + $"{loss:F4}";

@@ -44,14 +44,13 @@ namespace KelpNet.Common.Functions.Type
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [NotNull]
-        public override NdArray[] Forward([NotNull] params NdArray[] xs)
+        public override NdArray[] Forward(bool verbose = true, [NotNull] params NdArray[] xs)
         {
             PrevInputs.Add(xs);
 
             foreach (NdArray x in xs)
             {
                 x.UseCount++;
-                RILogManager.Default?.ViewerSendWatch("x use count", x.UseCount.ToString("N0"));
             }
             
             return new[] { MultiInputForward(xs) };
@@ -65,7 +64,7 @@ namespace KelpNet.Common.Functions.Type
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Backward(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override void Backward(params NdArray[] ys)
+        public override void Backward(bool verbose = true, params NdArray[] ys)
         {
             NdArray[] xs = PrevInputs[PrevInputs.Count - 1];
             PrevInputs.RemoveAt(PrevInputs.Count - 1);
@@ -75,7 +74,6 @@ namespace KelpNet.Common.Functions.Type
             foreach (NdArray x in xs)
             {
                 x.UseCount--;
-                RILogManager.Default?.ViewerSendWatch("x use count", x.UseCount.ToString("N0"));
             }
 
             MultiOutputBackward(ys[0], xs);
@@ -92,7 +90,7 @@ namespace KelpNet.Common.Functions.Type
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [NotNull]
-        public override NdArray[] Predict(params NdArray[] xs)
+        public override NdArray[] Predict(bool verbose = true, params NdArray[] xs)
         {
             return new[] { MultiInputForward(xs) };
         }

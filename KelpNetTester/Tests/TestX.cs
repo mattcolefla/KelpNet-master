@@ -59,11 +59,11 @@ namespace KelpNetTester.Tests
                              {0.08390063, -0.03253863, 0.0311571, 0.08088892, -0.07267931}}
             };
 
-            Linear l0 = new Linear(5, 20, initialW: testWeightValues, name: "l0");
-            Linear l1 = new Linear(5, 5, initialW: testJaggWeightValues[0], name: "l1");
-            Linear l2 = new Linear(5, 5, initialW: testJaggWeightValues[1], name: "l2");
-            Linear l3 = new Linear(5, 5, initialW: testJaggWeightValues[2], name: "l3");
-            Linear l4 = new Linear(5, 5, initialW: testJaggWeightValues[3], name: "l4");
+            Linear l0 = new Linear(true, 5, 20, initialW: testWeightValues, name: "l0");
+            Linear l1 = new Linear(true, 5, 5, initialW: testJaggWeightValues[0], name: "l1");
+            Linear l2 = new Linear(true, 5, 5, initialW: testJaggWeightValues[1], name: "l2");
+            Linear l3 = new Linear(true, 5, 5, initialW: testJaggWeightValues[2], name: "l3");
+            Linear l4 = new Linear(true, 5, 5, initialW: testJaggWeightValues[3], name: "l4");
 
             l0.SetOptimizer(new SGD());
 
@@ -80,23 +80,23 @@ namespace KelpNetTester.Tests
             NdArray testInputValuesB = new NdArray(testValue);
 
             RILogManager.Default?.SendDebug("l0 for");
-            NdArray[] l0Result = l0.Forward(testInputValuesA);
+            NdArray[] l0Result = l0.Forward(true, testInputValuesA);
             RILogManager.Default?.SendDebug(l0Result.ToString());
 
             RILogManager.Default?.SendDebug("l1 for");
-            NdArray[] l1Result = l1.Forward(testInputValuesB);
+            NdArray[] l1Result = l1.Forward(true, testInputValuesB);
             RILogManager.Default?.SendDebug(l1Result.ToString());
 
             RILogManager.Default?.SendDebug("l2 for");
-            NdArray[] l2Result = l2.Forward(testInputValuesB);
+            NdArray[] l2Result = l2.Forward(true, testInputValuesB);
             RILogManager.Default?.SendDebug(l2Result.ToString());
 
             RILogManager.Default?.SendDebug("l3 for");
-            NdArray[] l3Result = l3.Forward(testInputValuesB);
+            NdArray[] l3Result = l3.Forward(true, testInputValuesB);
             RILogManager.Default?.SendDebug(l3Result.ToString());
 
             RILogManager.Default?.SendDebug("l4 for");
-            NdArray[] l4Result = l4.Forward(testInputValuesB);
+            NdArray[] l4Result = l4.Forward(true, testInputValuesB);
             RILogManager.Default?.SendDebug(l4Result.ToString());
 
 
@@ -116,11 +116,11 @@ namespace KelpNetTester.Tests
             
 
             //Backward
-            l0.Backward(l0Result);
-            l1.Backward(l1Result);
-            l2.Backward(l2Result);
-            l3.Backward(l3Result);
-            l4.Backward(l4Result);
+            l0.Backward(true, l0Result);
+            l1.Backward(true, l1Result);
+            l2.Backward(true, l2Result);
+            l3.Backward(true, l3Result);
+            l4.Backward(true, l4Result);
 
             RILogManager.Default?.SendDebug("l0 back");
             RILogManager.Default?.SendDebug(testInputValuesA.ToString("Grad"));

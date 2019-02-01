@@ -39,14 +39,16 @@ namespace KelpNetTester.Tests
                 new Real[] { 0 }
             };
 
-            FunctionStack nn = new FunctionStack(
-                new Linear(2, 2, name: "l1 Linear"),
+            bool verbose = true;
+
+            FunctionStack nn = new FunctionStack("Test1",
+                new Linear(verbose, 2, 2, name: "l1 Linear"),
                 new Sigmoid(name: "l1 Sigmoid"),
-                new Linear(2, 2, name: "l2 Linear"));
+                new Linear(verbose, 2, 2, name: "l2 Linear"));
 
             nn.SetOptimizer(new MomentumSGD());
 
-            RILogManager.Default?.SendDebug("Training...");
+            Info("Training...");
             for (int i = 0; i < learningCount; i++)
             {
                 for (int j = 0; j < trainData.Length; j++)
@@ -55,25 +57,35 @@ namespace KelpNetTester.Tests
                 }
             }
 
-            RILogManager.Default?.SendDebug("Test Start...");
+            Info("Test Start...");
 
             foreach (Real[] input in trainData)
             {
-                NdArray result = nn.Predict(input)?[0];
+                NdArray result = nn.Predict(true, input)?[0];
                 int resultIndex = Array.IndexOf(result?.Data, result.Data.Max());
-                RILogManager.Default?.SendDebug($"{input[0]} xor {input[1]} = {resultIndex} {result}");
+                Info($"{input[0]} xor {input[1]} = {resultIndex} {result}");
             }
 
+            Info("Saving Model...");
             ModelIO.Save(nn, "test.nn");
 
+            Info("Loading Model...");
             FunctionStack testnn = ModelIO.Load("test.nn");
-            RILogManager.Default?.SendDebug("Test Start...");
+
+            Info(testnn.Describe());
+
+            Info("Test Start...");
             foreach (Real[] input in trainData)
             {
-                NdArray result = testnn?.Predict(input)?[0];
+                NdArray result = testnn?.Predict(true, input)?[0];
                 int resultIndex = Array.IndexOf(result?.Data, result?.Data.Max());
-                RILogManager.Default?.SendDebug($"{input[0]} xor {input[1]} = {resultIndex} {result}");
+                Info($"{input[0]} xor {input[1]} = {resultIndex} {result}");
             }
+        }
+
+        private static void Info(string message)
+        {
+            RILogManager.Default?.SendDebug(message);
         }
     }
 }

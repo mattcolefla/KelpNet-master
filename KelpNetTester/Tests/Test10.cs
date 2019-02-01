@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using KelpNet.Common;
+using KelpNet.Common.Functions;
 using KelpNet.Common.Functions.Container;
 using KelpNet.Functions.Connections;
 using KelpNet.Functions.Noise;
@@ -16,6 +17,7 @@ namespace KelpNetTester.Tests
     using HdrHistogram;
     using ReflectSoftware.Insight;
 
+    // The network is trained to predict the word given the preceding word sequence.
     //https://github.com/pfnet/chainer/tree/master/examples/ptb
     class Test10
     {
@@ -105,14 +107,14 @@ namespace KelpNetTester.Tests
             int nVocab = vocabulary.Length;
 
             RILogManager.Default?.SendDebug("Network Initializing.");
-            FunctionStack model = new FunctionStack(
+            FunctionStack model = new FunctionStack("Test10",
                 new EmbedID(nVocab, N_UNITS, name: "l1 EmbedID"),
                 new Dropout(),
-                new LSTM(N_UNITS, N_UNITS, name: "l2 LSTM"),
+                new LSTM(true, N_UNITS, N_UNITS, name: "l2 LSTM"),
                 new Dropout(),
-                new LSTM(N_UNITS, N_UNITS, name: "l3 LSTM"),
+                new LSTM(true, N_UNITS, N_UNITS, name: "l3 LSTM"),
                 new Dropout(),
-                new Linear(N_UNITS, nVocab, name: "l4 Linear")
+                new Linear(true, N_UNITS, nVocab, name: "l4 Linear")
             );
             DocumentResults(accumulatingHistogram, recorder);
 
@@ -130,8 +132,8 @@ namespace KelpNetTester.Tests
 
             RILogManager.Default?.SendDebug("Train Start.");
             double dVal;
-            NdArray x = new NdArray(new[] { 1 }, BATCH_SIZE);
-            NdArray t = new NdArray(new[] { 1 }, BATCH_SIZE);
+            NdArray x = new NdArray(new[] { 1 }, BATCH_SIZE, (Function)null);
+            NdArray t = new NdArray(new[] { 1 }, BATCH_SIZE, (Function)null);
 
             for (int i = 0; i < jump * N_EPOCH; i++)
             {
@@ -141,7 +143,7 @@ namespace KelpNetTester.Tests
                     t.Data[j] = trainData[(int)((jump * j + i + 1) % wholeLen)];
                 }
 
-                NdArray[] result = model.Forward(x);
+                NdArray[] result = model.Forward(true, x);
                 Real sumLoss = new SoftmaxCrossEntropy().Evaluate(result, t);
                 backNdArrays.Push(result);
                 RILogManager.Default?.SendDebug("[{0}/{1}] Loss: {2}", i + 1, jump, sumLoss);
@@ -152,7 +154,7 @@ namespace KelpNetTester.Tests
                     for (int j = 0; backNdArrays.Count > 0; j++)
                     {
                         RILogManager.Default?.SendDebug("backward" + backNdArrays.Count);
-                        model.Backward(backNdArrays.Pop());
+                        model.Backward(true, backNdArrays.Pop());
                     }
 
                     model.Update();
@@ -213,8 +215,8 @@ namespace KelpNetTester.Tests
 
             Real totalLoss = 0;
             long totalLossCount = 0;
-            NdArray x = new NdArray(new[] { 1 }, BATCH_SIZE);
-            NdArray t = new NdArray(new[] { 1 }, BATCH_SIZE);
+            NdArray x = new NdArray(new[] { 1 }, BATCH_SIZE, (Function)null);
+            NdArray t = new NdArray(new[] { 1 }, BATCH_SIZE, (Function)null);
 
             for (int i = 0; i < dataset.Length - 1; i++)
             {
@@ -226,7 +228,7 @@ namespace KelpNetTester.Tests
 
                 RILogManager.Default?.SendDebug("validating Cross Entropy " + i);
 
-                Real sumLoss = new SoftmaxCrossEntropy().Evaluate(predictModel.Forward(x), t);
+                Real sumLoss = new SoftmaxCrossEntropy().Evaluate(predictModel.Forward(true, x), t);
                 totalLoss += sumLoss;
                 totalLossCount++;
             }

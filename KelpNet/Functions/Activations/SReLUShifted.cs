@@ -30,14 +30,12 @@ namespace KelpNet.Functions.Activations
         public SReLUShifted([CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, null, name, inputNames, outputNames, gpuEnable)
         {
         }
-
-
+        
         internal override Real ForwardActivate(Real x, [CanBeNull] Real[] args)
         {
             return x;
         }
-
-
+        
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Activate virtual function used in / / .Net. </summary>
         ///
@@ -54,20 +52,14 @@ namespace KelpNet.Functions.Activations
             const double tr = 0.999; // threshold (right).
             const double a = 0.00001;
             const double offset = 0.5;
-
             double y;
+
             if (x + offset > tl && x + offset < tr)
-            {
                 y = x + offset;
-            }
             else if (x + offset <= tl)
-            {
                 y = tl + ((x + offset) - tl) * a;
-            }
             else
-            {
                 y = tr + ((x + offset) - tr) * a;
-            }
 
             return y;
         }
@@ -87,6 +79,5 @@ namespace KelpNet.Functions.Activations
         {
             return gy * (1 - y * y);
         }
-
     }
 }

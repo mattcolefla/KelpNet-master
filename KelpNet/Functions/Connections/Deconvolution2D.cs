@@ -57,6 +57,7 @@ namespace KelpNet.Functions.Connections
         /// Initializes a new instance of the KelpNet.Functions.Connections.Deconvolution2D class.
         /// </summary>
         ///
+        /// <param name="verbose">          True to verbose. </param>
         /// <param name="inputChannels">    The input channels. </param>
         /// <param name="outputChannels">   The output channels. </param>
         /// <param name="kSize">            The size. </param>
@@ -72,7 +73,8 @@ namespace KelpNet.Functions.Connections
         /// <param name="gpuEnable">        (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Deconvolution2D(int inputChannels, int outputChannels, int kSize, int subSample = 1, int trim = 0, bool noBias = false, [CanBeNull] Array initialW = null, [CanBeNull] Array initialb = null, [CanBeNull] CompressibleActivation activation = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, activation, new []{new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE)}, name, inputNames, outputNames, gpuEnable)
+        public Deconvolution2D(bool verbose, int inputChannels, int outputChannels, int kSize, int subSample = 1, int trim = 0, bool noBias = false, [CanBeNull] Array initialW = null, [CanBeNull] Array initialb = null, [CanBeNull] CompressibleActivation activation = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) 
+            : base(verbose, FUNCTION_NAME, activation, new []{new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE)}, name, inputNames, outputNames, gpuEnable)
         {
             _kWidth = kSize;
             _kHeight = kSize;
@@ -95,6 +97,7 @@ namespace KelpNet.Functions.Connections
         /// Initializes a new instance of the KelpNet.Functions.Connections.Deconvolution2D class.
         /// </summary>
         ///
+        /// <param name="verbose">          True to verbose. </param>
         /// <param name="inputChannels">    The input channels. </param>
         /// <param name="outputChannels">   The output channels. </param>
         /// <param name="kSize">            The size. </param>
@@ -110,7 +113,8 @@ namespace KelpNet.Functions.Connections
         /// <param name="gpuEnable">        (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Deconvolution2D(int inputChannels, int outputChannels, Size kSize, Size subSample = new Size(), Size trim = new Size(), bool noBias = false, [CanBeNull] Array initialW = null, [CanBeNull] Array initialb = null, [CanBeNull] CompressibleActivation activation = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, activation, new []{new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE)}, name, inputNames, outputNames, gpuEnable)
+        public Deconvolution2D(bool verbose, int inputChannels, int outputChannels, Size kSize, Size subSample = new Size(), Size trim = new Size(), bool noBias = false, [CanBeNull] Array initialW = null, [CanBeNull] Array initialb = null, [CanBeNull] CompressibleActivation activation = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) 
+            : base(verbose, FUNCTION_NAME, activation, new []{new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE)}, name, inputNames, outputNames, gpuEnable)
         {
             if (subSample == Size.Empty)
                 subSample = new Size(1, 1);

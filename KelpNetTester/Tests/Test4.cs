@@ -28,10 +28,10 @@ namespace KelpNetTester.Tests
 
             RILogManager.Default?.SendDebug("Training Start...");
 
-            FunctionStack nn = new FunctionStack(
-                new Linear(28 * 28, 1024, name: "l1 Linear"),
+            FunctionStack nn = new FunctionStack("Test4",
+                new Linear(true, 28 * 28, 1024, name: "l1 Linear"),
                 new Sigmoid(name: "l1 Sigmoid"),
-                new Linear(1024, 10, name: "l2 Linear")
+                new Linear(true, 1024, 10, name: "l2 Linear")
             );
 
             nn.SetOptimizer(new MomentumSGD());

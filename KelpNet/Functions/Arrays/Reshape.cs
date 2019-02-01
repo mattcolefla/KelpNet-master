@@ -51,7 +51,7 @@ namespace KelpNet.Functions.Arrays
         {
             NdArray result = val.Clone();
             result.ParentFunc = this;
-            result.Reshape(Shape);
+            result.Reshape(false, Shape);
 
             return result;
         }

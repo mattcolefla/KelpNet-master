@@ -35,7 +35,6 @@ namespace KelpNet.Functions.Activations
         public ELU(double alpha = 1, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null) : base(name, inputNames, outputNames)
         {
             _alpha = alpha;
-
             SingleInputForward = NeedPreviousForwardCpu;
             SingleOutputBackward = NeedPreviousBackwardCpu;
         }
@@ -56,13 +55,9 @@ namespace KelpNet.Functions.Activations
             for (int i = 0; i < x.Data.Length; i++)
             {
                 if (x.Data[i] >= 0)
-                {
                     result[i] = x.Data[i];
-                }
                 else
-                {
                     result[i] = _alpha * (Math.Exp(x.Data[i]) - 1);
-                }
             }
 
             return NdArray.Convert(result, x.Shape, x.BatchCount, this);
@@ -80,13 +75,9 @@ namespace KelpNet.Functions.Activations
             for (int i = 0; i < y.Grad.Length; i++)
             {
                 if (x.Data[i] >= 0)
-                {
                     x.Grad[i] += y.Grad[i];
-                }
                 else
-                {
                     x.Grad[i] += y.Grad[i] * _alpha * Math.Exp(x.Data[i]);
-                }
             }
         }
     }

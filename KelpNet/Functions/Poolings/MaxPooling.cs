@@ -13,7 +13,7 @@ namespace KelpNet.Functions.Poolings
     using Nerdle.Ensure;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// <summary>   (Serializable) a maximum pooling. </summary>
+    /// <summary>   Maximum pooling. </summary>
     ///
     /// <seealso cref="T:KelpNet.Common.Functions.Type.SingleInputFunction"/>
     /// <seealso cref="T:KelpNet.Common.Functions.IParallelizable"/>
@@ -70,7 +70,6 @@ namespace KelpNet.Functions.Poolings
             _strideY = stride;
 
             SetGpuEnable(gpuEnable);
-
             SingleOutputBackward = BackwardCpu;
         }
 
@@ -91,13 +90,9 @@ namespace KelpNet.Functions.Poolings
             CreateKernel();
 
             if (GpuEnable)
-            {
                 SingleInputForward = ForwardGpu;
-            }
             else
-            {
                 SingleInputForward = ForwardCpu;
-            }
 
             return GpuEnable;
         }
@@ -210,7 +205,6 @@ namespace KelpNet.Functions.Poolings
                         }
                     }
                 }
-
             }
 
             return GetForwardResult(input, outputIndices, outputWidth, outputHeight);
@@ -249,8 +243,7 @@ namespace KelpNet.Functions.Poolings
                     ForwardKernel?.SetValueArgument(11, _padY);
                     ForwardKernel?.SetValueArgument(12, _padX);
 
-                    Weaver.CommandQueue?.Execute(ForwardKernel, null, new long[] { input.BatchCount * input.Shape[0], outputHeight, outputWidth },
-                        null, null);
+                    Weaver.CommandQueue?.Execute(ForwardKernel, null, new long[] { input.BatchCount * input.Shape[0], outputHeight, outputWidth }, null, null);
                     Weaver.CommandQueue?.Finish();
                     Weaver.CommandQueue?.ReadFromBuffer(gpuYIndex, ref outputIndices, true, null);
                 }
@@ -281,7 +274,6 @@ namespace KelpNet.Functions.Poolings
             }
 
             _outputIndicesList?.Add(outputIndices);
-
             return NdArray.Convert(result, new[] { input.Shape[0], outputHeight, outputWidth }, input.BatchCount, this);
         }
 

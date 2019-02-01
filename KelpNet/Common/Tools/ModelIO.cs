@@ -1,7 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using KelpNet.Common.Functions;
 using KelpNet.Common.Functions.Container;
+using ReflectSoftware.Insight;
 
 namespace KelpNet.Common.Tools
 {
@@ -25,10 +28,21 @@ namespace KelpNet.Common.Tools
             Ensure.Argument(functionStack).NotNull("functionStack is null");
 
             NetDataContractSerializer bf = new NetDataContractSerializer();
+            RILogManager.Default?.SendDebug("Saving model " + functionStack.Name + " to " + fileName);
 
-            using (Stream stream = File.OpenWrite(fileName))
+            try
             {
-                bf.Serialize(stream, functionStack);
+                using (Stream stream = File.OpenWrite(fileName))
+                {
+                    bf.Serialize(stream, functionStack);
+                }
+
+                FileStream fs = File.OpenRead(fileName);
+                RILogManager.Default?.SendDebug("Model " + functionStack.Name + " saved, size is " + fs.Length.ToString("N0") + " bytes");
+            }
+            catch (Exception ex)
+            {
+                RILogManager.Default?.SendException(ex.Message, ex);
             }
         }
 
@@ -45,10 +59,20 @@ namespace KelpNet.Common.Tools
             Ensure.Argument(functionStack).NotNull("functionStack is null");
 
             NetDataContractSerializer bf = new NetDataContractSerializer();
+            RILogManager.Default?.SendDebug("Saving model " + functionStack.Name + " to " + fileName);
 
-            using (Stream stream = File.OpenWrite(fileName))
+            try
             {
-                bf.Serialize(stream, functionStack);
+                using (Stream stream = File.OpenWrite(fileName))
+                {
+                    bf.Serialize(stream, functionStack);
+                }
+                FileStream fs = File.OpenRead(fileName);
+                RILogManager.Default?.SendDebug("Model " + functionStack.Name + " saved, size is " + fs.Length.ToString("N0") + " bytes");
+            }
+            catch (Exception ex)
+            {
+                RILogManager.Default?.SendException(ex.Message, ex);
             }
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,29 +88,39 @@ namespace KelpNet.Common.Tools
         {
             Ensure.Argument(fileName).NotNullOrWhiteSpace("fileName is null");
             NetDataContractSerializer bf = new NetDataContractSerializer();
-            FunctionStack result;
+            FunctionStack result = null;
+            RILogManager.Default?.SendDebug("Loading model from " + fileName);
 
-            using (Stream stream = File.OpenRead(fileName))
+            try
             {
-                result = (FunctionStack)bf.Deserialize(stream);
+                using (Stream stream = File.OpenRead(fileName))
+                {
+                    result = (FunctionStack)bf.Deserialize(stream);
+                    RILogManager.Default?.SendDebug("Model " + result.Name + " loaded, size is " + stream.Length.ToString("N0") + " bytes");
+                }
+            }
+            catch (Exception ex)
+            {
+                RILogManager.Default?.SendException(ex.Message, ex);
             }
 
             if (result?.Functions != null)
             {
                 foreach (Function function in result?.Functions)
                 {
+                    RILogManager.Default?.SendDebug("Resetting " + function.Name);
                     function.ResetState();
 
                     if (function.Optimizers != null)
                     {
+                        RILogManager.Default?.SendDebug("Resetting " + function.Name + " Optimizers");
                         foreach (var t in function.Optimizers)
-                        {
                             t.ResetParams();
-                        }
                     }
 
                     if (function is IParallelizable parallelizable)
                     {
+                        RILogManager.Default?.SendDebug("Creating " + function.Name + " Kernel");
                         parallelizable.CreateKernel();
                     }
                 }
@@ -94,6 +128,5 @@ namespace KelpNet.Common.Tools
 
             return result;
         }
-
     }
 }

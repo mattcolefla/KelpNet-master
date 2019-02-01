@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using KelpNet.Common;
 using KelpNet.Common.Optimizers;
+using KelpNet.Common.Tools;
+using ReflectSoftware.Insight;
 
 namespace KelpNet.Optimizers
 {
@@ -24,9 +27,10 @@ namespace KelpNet.Optimizers
         /// <param name="learningRate"> (Optional) The learning rate. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public SGD(double learningRate = 0.1)
+        public SGD(string Name = "SGD", double learningRate = 0.1)
         {
             LearningRate = learningRate;
+            NAME = Name;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,12 +82,18 @@ namespace KelpNet.Optimizers
         /// <seealso cref="M:KelpNet.Common.Optimizers.OptimizerParameter.UpdateFunctionParameters()"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override void UpdateFunctionParameters()
+        public override void UpdateFunctionParameters(bool verbose)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             for (int i = 0; i < FunctionParameter.Data.Length; i++)
             {
                 FunctionParameter.Data[i] -= optimizer.LearningRate * FunctionParameter.Grad[i];
             }
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("RMSProp Function Parameter Updating took " + Helpers.FormatTimeSpan(sw.Elapsed));
         }
     }
 

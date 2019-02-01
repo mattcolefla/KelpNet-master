@@ -36,9 +36,7 @@ namespace KelpNet.Functions.Noise
         private bool IsSkip()
         {
             bool result = Mother.Dice.NextDouble() >= _pl;
-
             _skipList.Add(result);
-
             return result;
         }
 
@@ -59,14 +57,14 @@ namespace KelpNet.Functions.Noise
         {
             _function = function;
             _resBlock = resBlock;
-
             _pl = pl;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Forwards the given xs. </summary>
         ///
-        /// <param name="xs">   A variable-length parameters list containing xs. </param>
+        /// <param name="verbose">  (Optional) True to verbose. </param>
+        /// <param name="xs">       A variable-length parameters list containing xs. </param>
         ///
         /// <returns>   A NdArray[]. </returns>
         ///
@@ -74,29 +72,25 @@ namespace KelpNet.Functions.Noise
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [NotNull]
-        public override NdArray[] Forward([CanBeNull] params NdArray[] xs)
+        public override NdArray[] Forward(bool verbose = true, [CanBeNull] params NdArray[] xs)
         {
             List<NdArray> resultArray = new List<NdArray>();
             NdArray[] resResult = xs;
 
             if (_resBlock != null)
-            {
-                resResult = _resBlock.Forward(xs);
-            }
+                resResult = _resBlock.Forward(verbose, xs);
 
             resultArray.AddRange(resResult);
 
             if (!IsSkip())
             {
                 Real scale = 1 / (1 - _pl);
-                NdArray[] result = _function.Forward(xs);
+                NdArray[] result = _function.Forward(verbose, xs);
 
                 foreach (var t in result)
                 {
                     for (int j = 0; j < t.Data.Length; j++)
-                    {
                         t.Data[j] *= scale;
-                    }
                 }
 
                 resultArray.AddRange(result);
@@ -106,9 +100,7 @@ namespace KelpNet.Functions.Noise
                 NdArray[] result = new NdArray[resResult.Length];
 
                 for (int i = 0; i < result.Length; i++)
-                {
                     result[i] = new NdArray(resResult[i].Shape, resResult[i].BatchCount, resResult[i].ParentFunc);
-                }
 
                 resultArray.AddRange(result);
             }
@@ -124,17 +116,15 @@ namespace KelpNet.Functions.Noise
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Backward(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override void Backward(params NdArray[] ys)
+        public override void Backward(bool verbose = true, params NdArray[] ys)
         {
-            _resBlock?.Backward(ys);
-
+            _resBlock?.Backward(verbose, ys);
             bool isSkip = _skipList[_skipList.Count - 1];
             _skipList.RemoveAt(_skipList.Count - 1);
 
             if (!isSkip)
             {
                 NdArray[] copyys = new NdArray[ys.Length];
-
                 Real scale = 1 / (1 - _pl);
 
                 for (int i = 0; i < ys.Length; i++)
@@ -142,12 +132,10 @@ namespace KelpNet.Functions.Noise
                     copyys[i] = ys[i].Clone();
 
                     for (int j = 0; j < ys[i].Data.Length; j++)
-                    {
                         copyys[i].Data[j] *= scale;
-                    }
                 }
 
-                _function.Backward(copyys);
+                _function.Backward(verbose, copyys);
             }
         }
 
@@ -161,9 +149,9 @@ namespace KelpNet.Functions.Noise
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Predict(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override NdArray[] Predict(params NdArray[] xs)
+        public override NdArray[] Predict(bool verbose = true, params NdArray[] xs)
         {
-            return _function.Predict(xs);
+            return _function.Predict(verbose, xs);
         }
     }
 }

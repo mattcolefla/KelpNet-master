@@ -14,7 +14,7 @@ namespace KelpNetTester.Tests
     using System.Diagnostics.CodeAnalysis;
     using ReflectSoftware.Insight;
 
-    //RNNLM with Simple RNN
+        // recurrent neural network based language models(RNNLM) with Simple RNN
     //From 'practical deep learning by Chainer'（ISBN 978-4-274-21934-4）
     [SuppressMessage("ReSharper", "LocalizableElement")]
     class Test9
@@ -37,11 +37,11 @@ namespace KelpNetTester.Tests
             int nVocab = vocabulary.Length;
 
             RILogManager.Default?.SendDebug("Network Initializing.");
-            FunctionStack model = new FunctionStack(
+            FunctionStack model = new FunctionStack("Test9",
                 new EmbedID(nVocab, N_UNITS, name: "l1 EmbedID"),
-                new Linear(N_UNITS, N_UNITS, name: "l2 Linear"),
+                new Linear(true, N_UNITS, N_UNITS, name: "l2 Linear"),
                 new Tanh("l2 Tanh"),
-                new Linear(N_UNITS, nVocab, name: "l3 Linear"),
+                new Linear(true, N_UNITS, nVocab, name: "l3 Linear"),
                 new Softmax("l3 Softmax")
             );
 
@@ -69,19 +69,19 @@ namespace KelpNetTester.Tests
                             int tx = i == s.Count - 1 ? vocabulary.EosID : s[i + 1];
 
                             //l1 EmbedID
-                            NdArray l1 = model.Functions[0].Forward(s[i])[0];
+                            NdArray l1 = model.Functions[0].Forward(true, s[i])[0];
 
                             //l2 Linear
-                            NdArray l2 = model.Functions[1].Forward(h)[0];
+                            NdArray l2 = model.Functions[1].Forward(true, h)[0];
 
                             //Add
                             NdArray xK = l1 + l2;
 
                             //l2 Tanh
-                            h = model.Functions[2].Forward(xK)[0];
+                            h = model.Functions[2].Forward(true, xK)[0];
 
                             //l3 Linear
-                            NdArray h2 = model.Functions[3].Forward(h)[0];
+                            NdArray h2 = model.Functions[3].Forward(true, h)[0];
 
                             Real loss = softmaxCrossEntropy.Evaluate(h2, tx);
                             tmp.Push(h2);
@@ -92,7 +92,7 @@ namespace KelpNetTester.Tests
 
                         for (int i = 0; i < s.Count; i++)
                         {
-                            model.Backward(tmp.Pop());
+                            model.Backward(true, tmp.Pop());
                         }
 
                         model.Update();
@@ -161,20 +161,20 @@ namespace KelpNetTester.Tests
             for (int i = 1; i < s.Count; i++)
             {
                 //l1 Linear
-                NdArray xK = model.Functions[0].Forward(s[i])[0];
+                NdArray xK = model.Functions[0].Forward(true, s[i])[0];
 
                 //l2 Linear
-                NdArray l2 = model.Functions[1].Forward(h)[0];
+                NdArray l2 = model.Functions[1].Forward(true, h)[0];
                 for (int j = 0; j < xK.Data.Length; j++)
                 {
                     xK.Data[j] += l2.Data[j];
                 }
 
                 //l2 Tanh
-                h = model.Functions[2].Forward(xK)[0];
+                h = model.Functions[2].Forward(true, xK)[0];
 
                 //l3 Softmax(l3 Linear)
-                NdArray yv = model.Functions[4].Forward(model.Functions[3].Forward(h))[0];
+                NdArray yv = model.Functions[4].Forward(true, model.Functions[3].Forward(true, h))[0];
                 Real pi = yv.Data[s[i - 1]];
                 sum -= Math.Log(pi, 2);
             }

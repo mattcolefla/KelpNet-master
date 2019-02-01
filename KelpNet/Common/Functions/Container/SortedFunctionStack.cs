@@ -125,9 +125,9 @@ namespace KelpNet.Common.Functions.Container
         ///  <seealso cref="M:KelpNet.Common.Functions.Function.Forward(params NdArray[])" />
 
         [CanBeNull]
-        public override NdArray[] Forward([CanBeNull] params NdArray[] xs)
+        public override NdArray[] Forward(bool verbose = true,[CanBeNull] params NdArray[] xs)
         {
-            return Functions.Aggregate(xs, (current, t) => t.Forward(current));
+            return Functions.Aggregate(xs, (current, t) => t.Forward(verbose, current));
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,9 +136,9 @@ namespace KelpNet.Common.Functions.Container
         ///  <param name="ys">   A variable-length parameters list containing ys. </param>
         ///  <seealso cref="M:KelpNet.Common.Functions.Function.Backward(params NdArray[])" />
 
-        public override void Backward([NotNull] params NdArray[] ys)
+        public override void Backward(bool verbose = true, [NotNull] params NdArray[] ys)
         {
-            NdArray.Backward(ys[0]);
+            NdArray.Backward(verbose, ys[0]);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,9 +177,9 @@ namespace KelpNet.Common.Functions.Container
         ///  <seealso cref="M:KelpNet.Common.Functions.Function.Predict(params NdArray[])" />
 
         [CanBeNull]
-        public override NdArray[] Predict([CanBeNull] params NdArray[] xs)
+        public override NdArray[] Predict(bool verbose = true, [CanBeNull] params NdArray[] xs)
         {
-            return Functions.Aggregate(xs, (current, t) => t.Predict(current));
+            return Functions.Aggregate(xs, (current, t) => t.Predict(verbose, current));
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////

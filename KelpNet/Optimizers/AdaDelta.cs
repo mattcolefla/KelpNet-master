@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using KelpNet.Common;
 using KelpNet.Common.Optimizers;
+using KelpNet.Common.Tools;
+using ReflectSoftware.Insight;
 
 namespace KelpNet.Optimizers
 {
@@ -27,10 +30,11 @@ namespace KelpNet.Optimizers
         /// <param name="epsilon">  (Optional) The epsilon. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public AdaDelta(double rho = 0.95, double epsilon = 1e-6)
+        public AdaDelta(string Name = "AdaDelta", double rho = 0.95, double epsilon = 1e-6)
         {
             Rho = rho;
             Epsilon = epsilon;
+            NAME = Name;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,8 +92,11 @@ namespace KelpNet.Optimizers
         /// <seealso cref="M:KelpNet.Common.Optimizers.OptimizerParameter.UpdateFunctionParameters()"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override void UpdateFunctionParameters()
+        public override void UpdateFunctionParameters(bool verbose)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             for (int i = 0; i < FunctionParameter.Data.Length; i++)
             {
                 Real grad = FunctionParameter.Grad[i];
@@ -103,6 +110,10 @@ namespace KelpNet.Optimizers
 
                 FunctionParameter.Data[i] -= dx;
             }
+
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("AdaDelta Function Parameter Updating took " + Helpers.FormatTimeSpan(sw.Elapsed));
         }
     }
 }

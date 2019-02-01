@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using KelpNet.Common.Functions;
+using KelpNet.Common.Tools;
 using KelpNet.Functions.Mathmetrics.BasicMath;
 using ReflectSoftware.Insight;
 
@@ -21,7 +22,7 @@ namespace KelpNet.Common
         /// <summary>   The data. </summary>
         public Real[] Data;
 
-        /// <summary>   The graduated. </summary>
+        /// <summary>   The gradient. </summary>
         [NonSerialized]
         public Real[] Grad;
 
@@ -53,6 +54,10 @@ namespace KelpNet.Common
         /// <summary>   If created by itself, save the function here. </summary>
         [NonSerialized]
         public Function ParentFunc;
+
+        [NonSerialized]
+        public NetworkLayer ParentLayer;
+
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
@@ -97,6 +102,7 @@ namespace KelpNet.Common
             BatchCount = 1;
             TrainCount = 0;
             ParentFunc = parentFunc;
+            ParentLayer = null;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,6 +139,7 @@ namespace KelpNet.Common
             Grad = new Real[Length * batchCount];
             TrainCount = 0;
             ParentFunc = parentFunc;
+            ParentLayer = null;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,8 +159,19 @@ namespace KelpNet.Common
             Grad = new Real[Length * batchCount];
             TrainCount = 0;
             ParentFunc = parentFunc;
+            ParentLayer = null;
         }
-
+        public NdArray([NotNull] int[] shape, int batchCount, [CanBeNull] NetworkLayer parentFunc = null)
+        {
+            Shape = shape.ToArray();
+            Length = ShapeToArrayLength(Shape);
+            BatchCount = batchCount;
+            Data = new Real[Length * batchCount];
+            Grad = new Real[Length * batchCount];
+            TrainCount = 0;
+            ParentFunc = null;
+            ParentLayer = parentFunc;
+        }
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Register array array as batch. </summary>
         ///
@@ -200,20 +218,24 @@ namespace KelpNet.Common
         {
             return new NdArray(shape, batchCount, parentFunc) { Data = data };
         }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <summary>   Zeros like. </summary>
-        ///
-        /// <param name="baseArray">    Array of bases. </param>
-        ///
-        /// <returns>   A NdArray. </returns>
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
-
         [NotNull]
-        public static NdArray ZerosLike([NotNull] NdArray baseArray)
+        public static NdArray Convert([CanBeNull] Real[] data, [NotNull] int[] shape, int batchCount, [CanBeNull] NetworkLayer parentFunc = null)
         {
-            return new NdArray(baseArray.Shape.ToArray(), baseArray.BatchCount);
+            return new NdArray(shape, batchCount, parentFunc) { Data = data };
         }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///// <summary>   Zeros like. </summary>
+        /////
+        ///// <param name="baseArray">    Array of bases. </param>
+        /////
+        ///// <returns>   A NdArray. </returns>
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        //[NotNull]
+        //public static NdArray ZerosLike([NotNull] NdArray baseArray)
+        //{
+        //    return new NdArray(baseArray.Shape.ToArray(), baseArray.BatchCount);
+        //}
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
@@ -241,13 +263,20 @@ namespace KelpNet.Common
         /// <param name="shape">    A variable-length parameters list containing shape. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public void Reshape([NotNull] params int[] shape)
+        public void Reshape(bool verbose = true, [NotNull] params int[] shape)
         {
             int val = 0;
             int dimension = Length;
 
-            RILogManager.Default?.SendDebug("Reshaping Array");
-            RILogManager.Default?.ViewerSendWatch("Status", "Reshaping Array");
+            if (verbose)
+            {
+                RILogManager.Default?.SendDebug("Reshaping Array");
+                RILogManager.Default?.ViewerSendWatch("Status", "Reshaping Array");
+            }
+
+            Stopwatch sw = new Stopwatch();
+
+            sw.Start();
 
             //Calculate / / -1 specification
             if (shape.Contains(-1))
@@ -266,6 +295,8 @@ namespace KelpNet.Common
                         }
                         else
                         {
+                            sw.Stop();
+                            RILogManager.Default?.SendWarning("Element specification is incorrect");
                             throw new Exception(string.Intern("Element specification is incorrect"));
                         }
                     }
@@ -273,6 +304,8 @@ namespace KelpNet.Common
                     {
                         if (minusIndex != -1)
                         {
+                            sw.Stop();
+                            RILogManager.Default?.SendWarning("More than one -1 is specified");
                             throw new Exception(string.Intern("More than one -1 is specified"));
                         }
 
@@ -284,10 +317,21 @@ namespace KelpNet.Common
             }
 #if DEBUG
             else if (Length != ShapeToArrayLength(shape))
-                throw new Exception(string.Intern("The size of the specified Shape is not equal to the current Data.Length"));
+            {
+                sw.Stop();
+                throw new Exception(
+                    string.Intern("The size of the specified Shape is not equal to the current Data.Length"));
+            }
 #endif
 
             Shape = shape.ToArray();
+
+            sw.Stop();
+            if (verbose)
+            {
+                RILogManager.Default?.SendDebug("NdArray Reshaping took " + Helpers.FormatTimeSpan(sw.Elapsed));
+                RILogManager.Default?.ViewerSendWatch("Status", "");
+            }
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -297,18 +341,24 @@ namespace KelpNet.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [NotNull]
-        public NdArray[] DivideArrays()
+        public NdArray[] DivideArrays(bool verbose = true)
         {
-            RILogManager.Default?.SendDebug("Dividing Array");
-            RILogManager.Default?.ViewerSendWatch("Status", "Dividing Array");
-
+            if (verbose)
+                RILogManager.Default?.SendDebug("Dividing Array");
+            if (verbose)
+                RILogManager.Default?.ViewerSendWatch("Status", "Dividing Array");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             NdArray[] result = new NdArray[BatchCount];
 
             for (int i = 0; i < result.Length; i++)
-            {
                 result[i] = GetSingleArray(i);
-            }
 
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("NdArray Dividing Array took " + Helpers.FormatTimeSpan(sw.Elapsed));
+            if (verbose)
+                RILogManager.Default?.ViewerSendWatch("Status", "");
             return result;
         }
 
@@ -343,37 +393,36 @@ namespace KelpNet.Common
         }
 
         /// <summary>   Backwards the given y coordinate. </summary>
-        public void Backward()
+        public void Backward(bool verbose = true)
         {
             if (ParentFunc != null)
             {
                 for (int i = 0; i < Grad.Length; i++)
-                {
                     Grad[i] = 1;
-                }
 
-                Backward(this);
+                Backward(verbose, this);
             }
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Backwards the given y coordinate. </summary>
         ///
-        /// <param name="y">    A NdArray to process. </param>
+        /// <param name="verbose">  (Optional) True to verbose. </param>
+        /// <param name="y">        A NdArray to process. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public static void Backward([NotNull] NdArray y)
+        public static void Backward(bool verbose, [NotNull] NdArray y)
         {
             if (y.ParentFunc != null)
             {
                 List<NdArray[]> prevInputs = y.ParentFunc.PrevInputs;
                 NdArray[] xs = prevInputs?[prevInputs.Count - 1];
 
-                y.ParentFunc.Backward(y);
+                y.ParentFunc.Backward(verbose, y);
 
                 foreach (var t in xs.Where(t => t.UseCount == 0))
                 {
-                    NdArray.Backward(t);
+                    NdArray.Backward(verbose, t);
                 }
             }
         }
@@ -390,23 +439,25 @@ namespace KelpNet.Common
         /// <returns>   True if it succeeds, false if it fails. </returns>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public bool Reduce()
+        public bool Reduce(bool verbose = true)
         {
-            //RILogManager.Default?.SendDebug("Correcting Slope");
-            RILogManager.Default?.ViewerSendWatch("Status", "Correcting Slope");
-
             if (TrainCount <= 0)
-            {
                 return false;
-            }
 
+            if (verbose)
+                RILogManager.Default?.ViewerSendWatch("Status", "Reducing Array (Correcting Slope)");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             for (int i = 0; i < Grad.Length; i++)
-            {
                 Grad[i] /= TrainCount;
+
+            sw.Stop();
+            if (verbose)
+            {
+                RILogManager.Default?.SendDebug("NdArray Reducing/Slope Correction took " + Helpers.FormatTimeSpan(sw.Elapsed));
+                RILogManager.Default?.ViewerSendWatch("Status", "");
             }
-
             return true;
-
         }
 
         /// <summary>   Initialize slope. </summary>
@@ -487,18 +538,14 @@ namespace KelpNet.Common
                 intMaxLength = Math.Max(intMaxLength, divStr[0].Length);
 
                 if (divStr.Length > 1)
-                {
                     isExponential |= divStr[1].Contains("E");
-                }
 
                 if (realMaxLength != 8 && divStr.Length == 2)
                 {
                     realMaxLength = Math.Max(realMaxLength, divStr[1].Length);
 
                     if (realMaxLength > 8)
-                    {
                         realMaxLength = 8;
-                    }
                 }
             }
 
@@ -509,23 +556,17 @@ namespace KelpNet.Common
             commonDivisorList[0] = Shape[Shape.Length - 1];
 
             for (int i = 1; i < Shape.Length; i++)
-            {
                 commonDivisorList[i] = commonDivisorList[i - 1] * Shape[Shape.Length - i - 1];
-            }
 
             if (BatchCount > 1)
-            {
                 sb.Append(string.Intern("{"));
-            }
 
             for (int batch = 0; batch < BatchCount; batch++)
             {
                 int indexOffset = batch * Length;
                 // First parenthesis
                 for (int i = 0; i < Shape.Length; i++)
-                {
                     sb.Append(string.Intern("["));
-                }
 
                 int closer = 0;
                 for (int i = 0; i < Length; i++)
@@ -535,28 +576,22 @@ namespace KelpNet.Common
 
                     // Align indentation with maximum number of characters
                     for (int j = 0; j < intMaxLength - divStr[0].Length; j++)
-                    {
                         sb.Append(" ");
-                    }
+
                     sb.Append(divStr[0]);
                     if (realMaxLength != 0)
-                    {
                         sb.Append(".");
-                    }
+
                     if (divStr.Length == 2)
                     {
                         sb.Append(divStr[1].Length > 8 && !isExponential ? divStr[1].Substring(0, 8) : divStr[1]);
                         for (int j = 0; j < realMaxLength - divStr[1].Length; j++)
-                        {
                             sb.Append(" ");
-                        }
                     }
                     else
                     {
                         for (int j = 0; j < realMaxLength; j++)
-                        {
                             sb.Append(" ");
-                        }
                     }
 
                     // If it is perfect by investigating divisors, it outputs parentheses
@@ -574,45 +609,33 @@ namespace KelpNet.Common
                         {
                             // Add a newline by closing parenthesis
                             for (int j = 0; j < closer; j++)
-                            {
                                 sb.Append("\n");
-                            }
+
                             closer = 0;
 
                             if (BatchCount > 1) sb.Append(" ");
 
                             // indent before parenthesis
                             foreach (var commonDivisor in commonDivisorList.Where(commonDivisor => (i + 1) % commonDivisor != 0))
-                            {
                                 sb.Append(" ");
-                            }
                         }
 
                         foreach (var commonDivisor in commonDivisorList.Where(commonDivisor => (i + 1) % commonDivisor == 0))
-                        {
                             sb.Append(string.Intern("["));
-                        }
                     }
                 }
 
                 for (int i = 0; i < Shape.Length; i++)
-                {
                     sb.Append(string.Intern("]"));
-                }
 
                 if (batch < BatchCount - 1)
-                {
                     sb.Append("},\n{");
-                }
             }
 
             if (BatchCount > 1)
-            {
                 sb.Append("}");
-            }
 
             RILogManager.Default?.SendDebug(sb.ToString());
-
             return sb.ToString();
         }
 
@@ -628,7 +651,7 @@ namespace KelpNet.Common
         [CanBeNull]
         public static NdArray operator +([CanBeNull] NdArray a, [CanBeNull] NdArray b)
         {
-            return new Add().Forward(a, b)[0];
+            return new Add().Forward(false, a, b)[0];
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -643,7 +666,7 @@ namespace KelpNet.Common
         [CanBeNull]
         public static NdArray operator +([CanBeNull] NdArray a, Real b)
         {
-            return new AddConst().Forward(a, b)[0];
+            return new AddConst().Forward(false, a, b)[0];
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -658,7 +681,7 @@ namespace KelpNet.Common
         [CanBeNull]
         public static NdArray operator +(Real a, [CanBeNull] NdArray b)
         {
-            return new AddConst().Forward(b, a)[0];
+            return new AddConst().Forward(false,b, a)[0];
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -673,7 +696,7 @@ namespace KelpNet.Common
         [CanBeNull]
         public static NdArray operator *([CanBeNull] NdArray a, [CanBeNull] NdArray b)
         {
-            return new Mul().Forward(a, b)[0];
+            return new Mul().Forward(false,a, b)[0];
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -688,7 +711,7 @@ namespace KelpNet.Common
         [CanBeNull]
         public static NdArray operator *([CanBeNull] NdArray a, Real b)
         {
-            return new MulConst().Forward(a, b)[0];
+            return new MulConst().Forward(false,a, b)[0];
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -703,7 +726,7 @@ namespace KelpNet.Common
         [CanBeNull]
         public static NdArray operator *(Real a, [CanBeNull] NdArray b)
         {
-            return new MulConst().Forward(b, a)[0];
+            return new MulConst().Forward(false,b, a)[0];
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -718,7 +741,7 @@ namespace KelpNet.Common
         [CanBeNull]
         public static NdArray operator -([CanBeNull] NdArray a, [CanBeNull] NdArray b)
         {
-            return new Sub().Forward(a, b)[0];
+            return new Sub().Forward(false,a, b)[0];
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -733,7 +756,7 @@ namespace KelpNet.Common
         [CanBeNull]
         public static NdArray operator -([CanBeNull] NdArray a, Real b)
         {
-            return new SubConst().Forward(a, b)[0];
+            return new SubConst().Forward(false,a, b)[0];
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -748,7 +771,7 @@ namespace KelpNet.Common
         [CanBeNull]
         public static NdArray operator -(Real a, [CanBeNull] NdArray b)
         {
-            return new ConstSub().Forward(a, b)[0];
+            return new ConstSub().Forward(false,a, b)[0];
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -763,7 +786,7 @@ namespace KelpNet.Common
         [CanBeNull]
         public static NdArray operator /([CanBeNull] NdArray a, [CanBeNull] NdArray b)
         {
-            return new Div().Forward(a, b)[0];
+            return new Div().Forward(false,a, b)[0];
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -778,7 +801,7 @@ namespace KelpNet.Common
         [CanBeNull]
         public static NdArray operator /([CanBeNull] NdArray a, Real b)
         {
-            return new DivConst().Forward(a, b)[0];
+            return new DivConst().Forward(false,a, b)[0];
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -793,7 +816,7 @@ namespace KelpNet.Common
         [CanBeNull]
         public static NdArray operator /(Real a, [CanBeNull] NdArray b)
         {
-            return new ConstDiv().Forward(a, b)[0];
+            return new ConstDiv().Forward(false,a, b)[0];
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -850,6 +873,7 @@ namespace KelpNet.Common
             return new NdArray
             {
                 ParentFunc = ParentFunc,
+                ParentLayer = ParentLayer,
                 Data = Data.ToArray(),
                 Grad = Grad.ToArray(),
                 Shape = Shape.ToArray(),
@@ -874,9 +898,8 @@ namespace KelpNet.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [CanBeNull]
-        public static NdArray Sum([CanBeNull] NdArray a, bool keepDims = false, params int[] axis)
+        public static NdArray Sum([CanBeNull] NdArray a, bool keepDims = false, bool verbose = true, params int[] axis)
         {
-
 #if DEBUG
             if (axis.Length != axis.Distinct().ToArray().Length)
             {
@@ -888,6 +911,9 @@ namespace KelpNet.Common
                 throw new Exception(string.Intern("The specified element is out of range"));
             }
 #endif
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             if (axis.Length == 0)
             {
                 axis = Enumerable.Range(0, a.Shape.Length).ToArray();
@@ -904,22 +930,26 @@ namespace KelpNet.Common
 
             if (!keepDims)
             {
+                sw.Stop();
+                if (verbose)
+                    RILogManager.Default?.SendDebug("NdArray Sum took " + Helpers.FormatTimeSpan(sw.Elapsed));
                 return result;
             }
 
+            List<int> resultKeepDimShape = new List<int>();
+            int count = a.Shape.Length - result.Shape.Length;
+
+            for (int i = 0; i < count; i++)
             {
-                List<int> resultKeepDimShape = new List<int>();
-                int count = a.Shape.Length - result.Shape.Length;
-
-                for (int i = 0; i < count; i++)
-                {
-                    resultKeepDimShape.Add(1);
-                }
-
-                resultKeepDimShape.AddRange(result.Shape);
-                result.Shape = resultKeepDimShape.ToArray();
+                resultKeepDimShape.Add(1);
             }
 
+            resultKeepDimShape.AddRange(result.Shape);
+            result.Shape = resultKeepDimShape.ToArray();
+
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("NdArray Sum took ", Helpers.FormatTimeSpan(sw.Elapsed));
             return result;
         }
 
@@ -933,10 +963,14 @@ namespace KelpNet.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [NotNull]
-        private static NdArray Sum([NotNull] NdArray a, int axis)
+        private static NdArray Sum([NotNull] NdArray a, int axis, bool verbose = true)
         {
-            RILogManager.Default?.SendDebug("Summing Array");
-            RILogManager.Default?.ViewerSendWatch("Status", "Summing Array");
+            if (verbose)
+                RILogManager.Default?.SendDebug("Summing Array");
+            if (verbose)
+                RILogManager.Default?.ViewerSendWatch("Status", "Summing Array");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
             int[] resultShape = new int[a.Shape.Length - 1];
 
@@ -948,7 +982,7 @@ namespace KelpNet.Common
                 }
             }
 
-            NdArray result = new NdArray(resultShape, a.BatchCount);
+            NdArray result = new NdArray(resultShape, a.BatchCount, (Function)null);
 
             for (int i = 0; i < a.Length; i++)
             {
@@ -963,6 +997,11 @@ namespace KelpNet.Common
                 }
             }
 
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("NdArray Sum took " + Helpers.FormatTimeSpan(sw.Elapsed));
+            if (verbose)
+                RILogManager.Default?.ViewerSendWatch("Status", "");
             return result;
         }
 
@@ -993,10 +1032,15 @@ namespace KelpNet.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [NotNull]
-        public static NdArray[] Split([NotNull] NdArray array, [NotNull] int[] indices, int axis = 1)
+        public static NdArray[] Split([NotNull] NdArray array, [NotNull] int[] indices, int axis = 1,
+            bool verbose = true)
         {
-            RILogManager.Default?.SendDebug("Splitting Array");
-            RILogManager.Default?.ViewerSendWatch("Status", "Splitting Array");
+            if (verbose)
+                RILogManager.Default?.SendDebug("Splitting Array");
+            if (verbose)
+                RILogManager.Default?.ViewerSendWatch("Status", "Splitting Array");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
             int[] shapeOffets = new int[indices.Length + 1];        // an array with the leading 0 of the entered indices added
             int[] resultAxisShapes = new int[indices.Length + 1];   // Shape of specified axis after division
@@ -1009,12 +1053,11 @@ namespace KelpNet.Common
             resultAxisShapes[indices.Length] = array.Shape[axis] - indices[indices.Length - 1];
 
             NdArray[] resultArrays = new NdArray[indices.Length + 1];
-
             for (int i = 0; i < resultArrays.Length; i++)
             {
                 int[] resultShape = array.Shape.ToArray();
                 resultShape[axis] = resultAxisShapes[i];
-                resultArrays[i] = new NdArray(resultShape, array.BatchCount);
+                resultArrays[i] = new NdArray(resultShape, array.BatchCount, (Function)null);
             }
 
             for (int batchCount = 0; batchCount < array.BatchCount; batchCount++)
@@ -1032,7 +1075,12 @@ namespace KelpNet.Common
                     }
                 }
             }
-
+            
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("NdArray Split took " + Helpers.FormatTimeSpan(sw.Elapsed));
+            if (verbose)
+                RILogManager.Default?.ViewerSendWatch("Status", "");
             return resultArrays;
         }
 
@@ -1049,11 +1097,8 @@ namespace KelpNet.Common
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [NotNull]
-        public static NdArray Concatenate([NotNull] NdArray a, [NotNull] NdArray b, int axis)
+        public static NdArray Concatenate([NotNull] NdArray a, [NotNull] NdArray b, int axis, bool verbose = true)
         {
-            RILogManager.Default?.SendDebug("Concatenating Array");
-            RILogManager.Default?.ViewerSendWatch("Status", "Concatenating Array");
-
             int[] shapeList = a.Shape.ToArray();
             shapeList[axis] += b.Shape[axis];
 
@@ -1069,7 +1114,13 @@ namespace KelpNet.Common
             }
 #endif
 
-            NdArray result = new NdArray(shapeList.ToArray(), a.BatchCount);
+            if (verbose)
+                RILogManager.Default?.SendDebug("Concatenating Array");
+            if (verbose)
+                RILogManager.Default?.ViewerSendWatch("Status", "Concatenating Array");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            NdArray result = new NdArray(shapeList.ToArray(), a.BatchCount, (Function)null);
 
             for (int batchCount = 0; batchCount < a.BatchCount; batchCount++)
             {
@@ -1096,6 +1147,11 @@ namespace KelpNet.Common
                 }
             }
 
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("NdArray Concatenate took " + Helpers.FormatTimeSpan(sw.Elapsed));
+            if (verbose)
+                RILogManager.Default?.ViewerSendWatch("Status", "");
             return result;
         }
 
@@ -1113,7 +1169,6 @@ namespace KelpNet.Common
             // Correct batch
             int batchCount = index / Length;
             index -= Length * batchCount;
-
             int[] dimensionsIndex = new int[Shape.Length];
 
             for (int i = Shape.Length - 1; i >= 0; i--)

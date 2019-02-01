@@ -32,12 +32,10 @@ namespace KelpNet.Functions.Activations
         {
         }
 
-
         internal override Real ForwardActivate(Real x, [CanBeNull] Real[] args)
         {
             return x;
         }
-
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Activate virtual function used in / / .Net. </summary>
@@ -69,6 +67,5 @@ namespace KelpNet.Functions.Activations
         {
             return gy * (1 - y * y);
         }
-
     }
 }

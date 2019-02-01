@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using KelpNet.Common;
+using KelpNet.Common.Functions;
 using KelpNet.Common.Functions.Type;
 
 namespace KelpNet.Functions.Connections
@@ -67,6 +68,8 @@ namespace KelpNet.Functions.Connections
         /// <summary>   Number of outputs. </summary>
         public readonly int OutputCount;
 
+        public bool Verbose;
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
         /// Initializes a new instance of the KelpNet.Functions.Connections.LSTM class.
@@ -83,17 +86,18 @@ namespace KelpNet.Functions.Connections
         /// <param name="gpuEnable">        (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public LSTM(int inSize, int outSize, [CanBeNull] Real[,] initialUpwardW = null, [CanBeNull] Real[] initialUpwardb = null, [CanBeNull] Real[,] initialLateralW = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
+        public LSTM(bool verbose, int inSize, int outSize, [CanBeNull] Real[,] initialUpwardW = null, [CanBeNull] Real[] initialUpwardb = null, [CanBeNull] Real[,] initialLateralW = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
         {
+            Verbose = verbose;
             InputCount = inSize;
             OutputCount = outSize;
 
             List<NdArray> functionParameters = new List<NdArray>();
 
-            upward0 = new Linear(inSize, outSize, noBias: false, initialW: initialUpwardW, initialb: initialUpwardb, name: "upward0", gpuEnable: gpuEnable);
-            upward1 = new Linear(inSize, outSize, noBias: false, initialW: initialUpwardW, initialb: initialUpwardb, name: "upward1", gpuEnable: gpuEnable);
-            upward2 = new Linear(inSize, outSize, noBias: false, initialW: initialUpwardW, initialb: initialUpwardb, name: "upward2", gpuEnable: gpuEnable);
-            upward3 = new Linear(inSize, outSize, noBias: false, initialW: initialUpwardW, initialb: initialUpwardb, name: "upward3", gpuEnable: gpuEnable);
+            upward0 = new Linear(verbose, inSize, outSize, noBias: false, initialW: initialUpwardW, initialb: initialUpwardb, name: "upward0", gpuEnable: gpuEnable);
+            upward1 = new Linear(verbose, inSize, outSize, noBias: false, initialW: initialUpwardW, initialb: initialUpwardb, name: "upward1", gpuEnable: gpuEnable);
+            upward2 = new Linear(verbose, inSize, outSize, noBias: false, initialW: initialUpwardW, initialb: initialUpwardb, name: "upward2", gpuEnable: gpuEnable);
+            upward3 = new Linear(verbose, inSize, outSize, noBias: false, initialW: initialUpwardW, initialb: initialUpwardb, name: "upward3", gpuEnable: gpuEnable);
 
             functionParameters.AddRange(upward0.Parameters);
             functionParameters.AddRange(upward1.Parameters);
@@ -101,10 +105,10 @@ namespace KelpNet.Functions.Connections
             functionParameters.AddRange(upward3.Parameters);
 
             // lateral does not have Bias
-            lateral0 = new Linear(outSize, outSize, noBias: true, initialW: initialLateralW, name: "lateral0", gpuEnable: gpuEnable);
-            lateral1 = new Linear(outSize, outSize, noBias: true, initialW: initialLateralW, name: "lateral1", gpuEnable: gpuEnable);
-            lateral2 = new Linear(outSize, outSize, noBias: true, initialW: initialLateralW, name: "lateral2", gpuEnable: gpuEnable);
-            lateral3 = new Linear(outSize, outSize, noBias: true, initialW: initialLateralW, name: "lateral3", gpuEnable: gpuEnable);
+            lateral0 = new Linear(verbose, outSize, outSize, noBias: true, initialW: initialLateralW, name: "lateral0", gpuEnable: gpuEnable);
+            lateral1 = new Linear(verbose, outSize, outSize, noBias: true, initialW: initialLateralW, name: "lateral1", gpuEnable: gpuEnable);
+            lateral2 = new Linear(verbose, outSize, outSize, noBias: true, initialW: initialLateralW, name: "lateral2", gpuEnable: gpuEnable);
+            lateral3 = new Linear(verbose, outSize, outSize, noBias: true, initialW: initialLateralW, name: "lateral3", gpuEnable: gpuEnable);
 
             functionParameters.AddRange(lateral0.Parameters);
             functionParameters.AddRange(lateral1.Parameters);
@@ -129,10 +133,10 @@ namespace KelpNet.Functions.Connections
         public NdArray ForwardCpu([NotNull] NdArray x)
         {
             Real[][] upwards = new Real[4][];
-            upwards[0] = upward0.Forward(x)[0].Data;
-            upwards[1] = upward1.Forward(x)[0].Data;
-            upwards[2] = upward2.Forward(x)[0].Data;
-            upwards[3] = upward3.Forward(x)[0].Data;
+            upwards[0] = upward0.Forward(Verbose, x)[0].Data;
+            upwards[1] = upward1.Forward(Verbose, x)[0].Data;
+            upwards[2] = upward2.Forward(Verbose, x)[0].Data;
+            upwards[3] = upward3.Forward(Verbose, x)[0].Data;
 
             int outputDataSize = x.BatchCount * OutputCount;
 
@@ -147,10 +151,10 @@ namespace KelpNet.Functions.Connections
             }
             else
             {
-                Real[] laterals0 = lateral0.Forward(hParam)[0].Data;
-                Real[] laterals1 = lateral1.Forward(hParam)[0].Data;
-                Real[] laterals2 = lateral2.Forward(hParam)[0].Data;
-                Real[] laterals3 = lateral3.Forward(hParam)[0].Data;
+                Real[] laterals0 = lateral0.Forward(Verbose, hParam)[0].Data;
+                Real[] laterals1 = lateral1.Forward(Verbose, hParam)[0].Data;
+                Real[] laterals2 = lateral2.Forward(Verbose, hParam)[0].Data;
+                Real[] laterals3 = lateral3.Forward(Verbose, hParam)[0].Data;
                 hParam.UseCount -= 4; // Correct number of times RFI
 
                 for (int i = 0; i < outputDataSize; i++)
@@ -217,18 +221,18 @@ namespace KelpNet.Functions.Connections
             if (gcPrev == null)
             {
                 // Initialize if there is no value
-                gxPrev0 = new NdArray(new[] { OutputCount }, y.BatchCount);
-                gxPrev1 = new NdArray(new[] { OutputCount }, y.BatchCount);
-                gxPrev2 = new NdArray(new[] { OutputCount }, y.BatchCount);
-                gxPrev3 = new NdArray(new[] { OutputCount }, y.BatchCount);
+                gxPrev0 = new NdArray(new[] { OutputCount }, y.BatchCount, (Function)null);
+                gxPrev1 = new NdArray(new[] { OutputCount }, y.BatchCount, (Function)null);
+                gxPrev2 = new NdArray(new[] { OutputCount }, y.BatchCount, (Function)null);
+                gxPrev3 = new NdArray(new[] { OutputCount }, y.BatchCount, (Function)null);
                 gcPrev = new Real[x.BatchCount * OutputCount];
             }
             else
             {
-                lateral0.Backward(gxPrev0);
-                lateral1.Backward(gxPrev1);
-                lateral2.Backward(gxPrev2);
-                lateral3.Backward(gxPrev3);
+                lateral0.Backward(Verbose, gxPrev0);
+                lateral1.Backward(Verbose, gxPrev1);
+                lateral2.Backward(Verbose, gxPrev2);
+                lateral3.Backward(Verbose, gxPrev3);
             }
 
             Real[] lcParam = cParam[cParam.Count - 1];
@@ -287,10 +291,10 @@ namespace KelpNet.Functions.Connections
                 }
             }
 
-            upward0.Backward(gxPrev0);
-            upward1.Backward(gxPrev1);
-            upward2.Backward(gxPrev2);
-            upward3.Backward(gxPrev3);
+            upward0.Backward(Verbose, gxPrev0);
+            upward1.Backward(Verbose, gxPrev1);
+            upward2.Backward(Verbose, gxPrev2);
+            upward3.Backward(Verbose, gxPrev3);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////

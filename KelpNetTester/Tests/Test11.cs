@@ -32,69 +32,68 @@ namespace KelpNetTester.Tests
             RILogManager.Default?.SendDebug("MNIST Data Loading...");
             MnistData mnistData = new MnistData(28);
 
-
             RILogManager.Default?.SendDebug("Training Start...");
 
             // Write the network configuration in FunctionStack
-            FunctionStack Layer1 = new FunctionStack(
-                new Linear(28 * 28, 256, name: "l1 Linear"),
-                new BatchNormalization(256, name: "l1 Norm"),
+            FunctionStack Layer1 = new FunctionStack("Test11 Layer 1",
+                new Linear(true, 28 * 28, 256, name: "l1 Linear"),
+                new BatchNormalization(true, 256, name: "l1 Norm"),
                 new ReLU(name: "l1 ReLU")
             );
 
-            FunctionStack Layer2 = new FunctionStack(
-                new Linear(256, 256, name: "l2 Linear"),
-                new BatchNormalization(256, name: "l2 Norm"),
+            FunctionStack Layer2 = new FunctionStack("Test11 Layer 2",
+                new Linear(true, 256, 256, name: "l2 Linear"),
+                new BatchNormalization(true, 256, name: "l2 Norm"),
                 new ReLU(name: "l2 ReLU")
             );
 
-            FunctionStack Layer3 = new FunctionStack(
-                new Linear(256, 256, name: "l3 Linear"),
-                new BatchNormalization(256, name: "l3 Norm"),
+            FunctionStack Layer3 = new FunctionStack("Test11 Layer 3",
+                new Linear(true, 256, 256, name: "l3 Linear"),
+                new BatchNormalization(true, 256, name: "l3 Norm"),
                 new ReLU(name: "l3 ReLU")
             );
 
-            FunctionStack Layer4 = new FunctionStack(
-                new Linear(256, 10, name: "l4 Linear")
+            FunctionStack Layer4 = new FunctionStack("Test11 Layer 4",
+                new Linear(true, 256, 10, name: "l4 Linear")
             );
 
             // Function stack itself is also stacked as Function
             FunctionStack nn = new FunctionStack
-            (
+            ("Test11",
                 Layer1,
                 Layer2,
                 Layer3,
                 Layer4
             );
 
-            FunctionStack DNI1 = new FunctionStack(
-                new Linear(256, 1024, name: "DNI1 Linear1"),
-                new BatchNormalization(1024, name: "DNI1 Nrom1"),
+            FunctionStack DNI1 = new FunctionStack("Test11 DNI1",
+                new Linear(true, 256, 1024, name: "DNI1 Linear1"),
+                new BatchNormalization(true, 1024, name: "DNI1 Norm1"),
                 new ReLU(name: "DNI1 ReLU1"),
-                new Linear(1024, 1024, name: "DNI1 Linear2"),
-                new BatchNormalization(1024, name: "DNI1 Nrom2"),
+                new Linear(true, 1024, 1024, name: "DNI1 Linear2"),
+                new BatchNormalization(true, 1024, name: "DNI1 Norm2"),
                 new ReLU(name: "DNI1 ReLU2"),
-                new Linear(1024, 256, initialW: new Real[1024, 256], name: "DNI1 Linear3")
+                new Linear(true, 1024, 256, initialW: new Real[1024, 256], name: "DNI1 Linear3")
             );
 
-            FunctionStack DNI2 = new FunctionStack(
-                new Linear(256, 1024, name: "DNI2 Linear1"),
-                new BatchNormalization(1024, name: "DNI2 Nrom1"),
+            FunctionStack DNI2 = new FunctionStack("Test11 DNI2",
+                new Linear(true, 256, 1024, name: "DNI2 Linear1"),
+                new BatchNormalization(true, 1024, name: "DNI2 Norm1"),
                 new ReLU(name: "DNI2 ReLU1"),
-                new Linear(1024, 1024, name: "DNI2 Linear2"),
-                new BatchNormalization(1024, name: "DNI2 Nrom2"),
+                new Linear(true, 1024, 1024, name: "DNI2 Linear2"),
+                new BatchNormalization(true, 1024, name: "DNI2 Norm2"),
                 new ReLU(name: "DNI2 ReLU2"),
-                new Linear(1024, 256, initialW: new Real[1024, 256], name: "DNI2 Linear3")
+                new Linear(true, 1024, 256, initialW: new Real[1024, 256], name: "DNI2 Linear3")
             );
 
-            FunctionStack DNI3 = new FunctionStack(
-                new Linear(256, 1024, name: "DNI3 Linear1"),
-                new BatchNormalization(1024, name: "DNI3 Nrom1"),
+            FunctionStack DNI3 = new FunctionStack("Test11 DNI3",
+                new Linear(true, 256, 1024, name: "DNI3 Linear1"),
+                new BatchNormalization(true, 1024, name: "DNI3 Norm1"),
                 new ReLU(name: "DNI3 ReLU1"),
-                new Linear(1024, 1024, name: "DNI3 Linear2"),
-                new BatchNormalization(1024, name: "DNI3 Nrom2"),
+                new Linear(true, 1024, 1024, name: "DNI3 Linear2"),
+                new BatchNormalization(true, 1024, name: "DNI3 Norm2"),
                 new ReLU(name: "DNI3 ReLU2"),
-                new Linear(1024, 256, initialW: new Real[1024, 256], name: "DNI3 Linear3")
+                new Linear(true, 1024, 256, initialW: new Real[1024, 256], name: "DNI3 Linear3")
             );
 
             //optimizer
@@ -102,7 +101,6 @@ namespace KelpNetTester.Tests
             Layer2.SetOptimizer(new Adam());
             Layer3.SetOptimizer(new Adam());
             Layer4.SetOptimizer(new Adam());
-
             DNI1.SetOptimizer(new Adam());
             DNI2.SetOptimizer(new Adam());
             DNI3.SetOptimizer(new Adam());
@@ -129,30 +127,30 @@ namespace KelpNetTester.Tests
                     TestDataSet datasetX = mnistData.GetRandomXSet(BATCH_DATA_COUNT, 28, 28);
 
                     // Run first tier
-                    NdArray[] layer1ForwardResult = Layer1.Forward(datasetX.Data);
+                    NdArray[] layer1ForwardResult = Layer1.Forward(true, datasetX.Data);
 
                     // Obtain the slope of the first layer
-                    NdArray[] DNI1Result = DNI1.Forward(layer1ForwardResult);
+                    NdArray[] DNI1Result = DNI1.Forward(true, layer1ForwardResult);
 
                     // Apply the slope of the first layer
                     layer1ForwardResult[0].Grad = DNI1Result[0].Data.ToArray();
 
                     // Update first layer
-                    Layer1.Backward(layer1ForwardResult);
+                    Layer1.Backward(true, layer1ForwardResult);
                     layer1ForwardResult[0].ParentFunc = null; // Backward was executed and cut off calculation graph
                     Layer1.Update();
 
                     // Run Layer 2
-                    NdArray[] layer2ForwardResult = Layer2.Forward(layer1ForwardResult);
+                    NdArray[] layer2ForwardResult = Layer2.Forward(true, layer1ForwardResult);
 
                     // Get the inclination of the second layer
-                    NdArray[] DNI2Result = DNI2.Forward(layer2ForwardResult);
+                    NdArray[] DNI2Result = DNI2.Forward(true, layer2ForwardResult);
 
                     // Apply the slope of the second layer
                     layer2ForwardResult[0].Grad = DNI2Result[0].Data.ToArray();
 
                     // Update layer 2
-                    Layer2.Backward(layer2ForwardResult);
+                    Layer2.Backward(true, layer2ForwardResult);
                     layer2ForwardResult[0].ParentFunc = null;
 
                     // Learn DNI for first tier
@@ -160,23 +158,23 @@ namespace KelpNetTester.Tests
 
                     Layer2.Update();
 
-                    DNI1.Backward(DNI1Result);
+                    DNI1.Backward(true, DNI1Result);
                     DNI1.Update();
 
                     DNI1totalLoss += DNI1loss;
                     DNI1totalLossCount++;
 
                     // run layer 3
-                    NdArray[] layer3ForwardResult = Layer3.Forward(layer2ForwardResult);
+                    NdArray[] layer3ForwardResult = Layer3.Forward(true, layer2ForwardResult);
 
                     // Get the inclination of the third layer
-                    NdArray[] DNI3Result = DNI3.Forward(layer3ForwardResult);
+                    NdArray[] DNI3Result = DNI3.Forward(true, layer3ForwardResult);
 
                     // Apply the slope of the third layer
                     layer3ForwardResult[0].Grad = DNI3Result[0].Data.ToArray();
 
                     // Update layer 3
-                    Layer3.Backward(layer3ForwardResult);
+                    Layer3.Backward(true, layer3ForwardResult);
                     layer3ForwardResult[0].ParentFunc = null;
 
                     // Run DNI learning for layer 2
@@ -184,20 +182,20 @@ namespace KelpNetTester.Tests
 
                     Layer3.Update();
 
-                    DNI2.Backward(DNI2Result);
+                    DNI2.Backward(true, DNI2Result);
                     DNI2.Update();
 
                     DNI2totalLoss += DNI2loss;
                     DNI2totalLossCount++;
 
                     // run layer 4
-                    NdArray[] layer4ForwardResult = Layer4.Forward(layer3ForwardResult);
+                    NdArray[] layer4ForwardResult = Layer4.Forward(true, layer3ForwardResult);
 
                     // Obtain the slope of the fourth layer
                     Real sumLoss = new SoftmaxCrossEntropy().Evaluate(layer4ForwardResult, datasetX.Label);
 
                     // Update fourth layer
-                    Layer4.Backward(layer4ForwardResult);
+                    Layer4.Backward(true, layer4ForwardResult);
                     layer4ForwardResult[0].ParentFunc = null;
 
                     totalLoss += sumLoss;
@@ -208,28 +206,28 @@ namespace KelpNetTester.Tests
 
                     Layer4.Update();
 
-                    DNI3.Backward(DNI3Result);
+                    DNI3.Backward(true, DNI3Result);
                     DNI3.Update();
 
                     DNI3totalLoss += DNI3loss;
                     DNI3totalLossCount++;
 
-                    RILogManager.Default?.SendDebug("\nbatch count " + i + "/" + TRAIN_DATA_COUNT);
+                    RILogManager.Default?.SendDebug("batch count " + i + "/" + TRAIN_DATA_COUNT);
                     RILogManager.Default?.SendDebug("total loss " + totalLoss / totalLossCount);
                     RILogManager.Default?.SendDebug("local loss " + sumLoss);
 
-                    RILogManager.Default?.SendDebug("\nDNI1 total loss " + DNI1totalLoss / DNI1totalLossCount);
+                    RILogManager.Default?.SendDebug("DNI1 total loss " + DNI1totalLoss / DNI1totalLossCount);
                     RILogManager.Default?.SendDebug("DNI2 total loss " + DNI2totalLoss / DNI2totalLossCount);
                     RILogManager.Default?.SendDebug("DNI3 total loss " + DNI3totalLoss / DNI3totalLossCount);
 
-                    RILogManager.Default?.SendDebug("\nDNI1 local loss " + DNI1loss);
+                    RILogManager.Default?.SendDebug("DNI1 local loss " + DNI1loss);
                     RILogManager.Default?.SendDebug("DNI2 local loss " + DNI2loss);
                     RILogManager.Default?.SendDebug("DNI3 local loss " + DNI3loss);
 
                     // Test the accuracy if you move the batch 20 times
                     if (i % 20 == 0)
                     {
-                        RILogManager.Default?.SendDebug("\nTesting...");
+                        RILogManager.Default?.SendDebug("Testing...");
 
                         // Get data randomly from test data
                         TestDataSet datasetY = mnistData.GetRandomYSet(TEST_DATA_COUNT, 28);

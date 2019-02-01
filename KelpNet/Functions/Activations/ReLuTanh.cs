@@ -38,7 +38,6 @@ namespace KelpNet.Functions.Activations
 
         public ReLuTanh(double slope = 0.2, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false)
             : base(FUNCTION_NAME, new[] { new KeyValuePair<string, string>(PARAM_NAME, slope.ToString()) }, name, inputNames, outputNames, gpuEnable)
-
         {
             _slope = slope;
         }
@@ -60,7 +59,6 @@ namespace KelpNet.Functions.Activations
 
         internal override Real ForwardActivate(Real x)
         {
-            //return x < 0 ? (Real)(x * _slope) * Math.Tanh(x) : x * Math.Tanh(x);
             return x < 0 ? (Real)(x * _slope) * MathNet.Numerics.SpecialFunctions.Logistic(x) : x * MathNet.Numerics.SpecialFunctions.Logistic(x);
         }
 

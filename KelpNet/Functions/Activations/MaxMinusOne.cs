@@ -30,14 +30,12 @@ namespace KelpNet.Functions.Activations
         public MaxMinusOne([CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, null, name, inputNames, outputNames, gpuEnable)
         {
         }
-
-
+        
         internal override Real ForwardActivate(Real x, [CanBeNull] Real[] args)
         {
             return x;
         }
-
-
+        
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Activate virtual function used in / / .Net. </summary>
         ///
@@ -52,13 +50,9 @@ namespace KelpNet.Functions.Activations
         {
             Real y;
             if (x > -1)
-            {
                 y = x;
-            }
             else
-            {
                 y = -1;
-            }
             return y;
         }
 
@@ -77,6 +71,5 @@ namespace KelpNet.Functions.Activations
         {
             return gy * (1 - y * y);
         }
-
     }
 }

@@ -30,17 +30,17 @@ namespace KelpNetTester.Tests
             RILogManager.Default?.SendDebug("MNIST Data Loading...");
             MnistData mnistData = new MnistData(28);
 
-            FunctionStack nn = new FunctionStack(
-                new Convolution2D(1, 32, 5, pad: 2, name: "l1 Conv2D", gpuEnable: true),
+            FunctionStack nn = new FunctionStack("Test6",
+                new Convolution2D(true, 1, 32, 5, pad: 2, name: "l1 Conv2D", gpuEnable: true),
                 new ReLU(name: "l1 ReLU"),
                 new MaxPooling(2, 2, name: "l1 MaxPooling", gpuEnable: true),
-                new Convolution2D(32, 64, 5, pad: 2, name: "l2 Conv2D", gpuEnable: true),
+                new Convolution2D(true, 32, 64, 5, pad: 2, name: "l2 Conv2D", gpuEnable: true),
                 new ReLU(name: "l2 ReLU"),
                 new MaxPooling(2, 2, name: "l2 MaxPooling", gpuEnable: true),
-                new Linear(7 * 7 * 64, 1024, name: "l3 Linear", gpuEnable: true),
+                new Linear(true, 7 * 7 * 64, 1024, name: "l3 Linear", gpuEnable: true),
                 new ReLU(name: "l3 ReLU"),
                 new Dropout(name: "l3 DropOut"),
-                new Linear(1024, 10, name: "l4 Linear", gpuEnable: true)
+                new Linear(true, 1024, 10, name: "l4 Linear", gpuEnable: true)
             );
 
             nn.SetOptimizer(new Adam());

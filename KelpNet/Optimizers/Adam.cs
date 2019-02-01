@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using KelpNet.Common;
 using KelpNet.Common.Optimizers;
+using KelpNet.Common.Tools;
+using ReflectSoftware.Insight;
 
 namespace KelpNet.Optimizers
 {
@@ -33,12 +36,13 @@ namespace KelpNet.Optimizers
         /// <param name="epsilon">  (Optional) The epsilon. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Adam(double alpha = 0.001, double beta1 = 0.9, double beta2 = 0.999, double epsilon = 1e-8)
+        public Adam(string Name = "Adam", double alpha = 0.001, double beta1 = 0.9, double beta2 = 0.999, double epsilon = 1e-8)
         {
             Alpha = alpha;
             Beta1 = beta1;
             Beta2 = beta2;
             Epsilon = epsilon;
+            NAME = Name;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,8 +102,11 @@ namespace KelpNet.Optimizers
         /// <seealso cref="M:KelpNet.Common.Optimizers.OptimizerParameter.UpdateFunctionParameters()"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override void UpdateFunctionParameters()
+        public override void UpdateFunctionParameters(bool verbose)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             Real fix1 = _optimizer.Beta1;
             Real fix2 = _optimizer.Beta2;
 
@@ -113,6 +120,8 @@ namespace KelpNet.Optimizers
             fix2 = 1 - fix2;
 
             Real learningRate = _optimizer.Alpha * Math.Sqrt(fix2) / fix1;
+            if (verbose)
+                RILogManager.Default?.ViewerSendWatch("Learning Rate", learningRate);
 
             for (int i = 0; i < FunctionParameter.Data.Length; i++)
             {
@@ -123,6 +132,9 @@ namespace KelpNet.Optimizers
 
                 FunctionParameter.Data[i] -= learningRate * m[i] / (Math.Sqrt(v[i]) + _optimizer.Epsilon);
             }
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("Adam Function Parameter Updating took " + Helpers.FormatTimeSpan(sw.Elapsed));
         }
     }
 

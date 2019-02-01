@@ -4,6 +4,7 @@ using Cloo;
 using KelpNet.Common;
 using KelpNet.Common.Functions;
 using KelpNet.Common.Tools;
+using ReflectSoftware.Insight;
 
 namespace KelpNet.Functions.Connections
 {
@@ -20,30 +21,28 @@ namespace KelpNet.Functions.Connections
     {
         /// <summary>   Name of the function. </summary>
         const string FUNCTION_NAME = "Linear";
-
         /// <summary>   Name of the parameter. </summary>
         private const string PARAM_NAME = "/*ForwardActivate*/";
         /// <summary>   . </summary>
         private const string PARAM_VALUE = "gpuYSum = ForwardActivate(gpuYSum);";
-
         /// <summary>   The weight. </summary>
         public NdArray Weight;
         /// <summary>   The bias. </summary>
         public NdArray Bias;
-
         /// <summary>   True to no bias. </summary>
         public readonly bool NoBias;
-
         /// <summary>   Number of inputs. </summary>
         public readonly int InputCount;
         /// <summary>   Number of outputs. </summary>
         public readonly int OutputCount;
+        public bool Verbose;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
         /// Initializes a new instance of the KelpNet.Functions.Connections.Linear class.
         /// </summary>
         ///
+        /// <param name="verbose">      True to verbose. </param>
         /// <param name="inputCount">   Number of inputs. </param>
         /// <param name="outputCount">  Number of outputs. </param>
         /// <param name="noBias">       (Optional) True to no bias. </param>
@@ -56,38 +55,40 @@ namespace KelpNet.Functions.Connections
         /// <param name="gpuEnable">    (Optional) True if GPU enable. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public Linear(int inputCount, int outputCount, bool noBias = false, [CanBeNull] Array initialW = null, [CanBeNull] Array initialb = null, [CanBeNull] CompressibleActivation activation = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(FUNCTION_NAME, activation, new[] { new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE) }, name, inputNames, outputNames, gpuEnable)
+        public Linear(bool verbose, int inputCount, int outputCount, bool noBias = false, [CanBeNull] Array initialW = null, [CanBeNull] Array initialb = null, [CanBeNull] CompressibleActivation activation = null, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) 
+            : base(verbose, FUNCTION_NAME, activation, new[] { new KeyValuePair<string, string>(PARAM_NAME, PARAM_VALUE) }, name, inputNames, outputNames, gpuEnable)
         {
+            Verbose = verbose;
             OutputCount = outputCount;
             InputCount = inputCount;
-
             Weight = new NdArray(outputCount, inputCount) {Name = Name + " Weight"};
-
             NoBias = noBias;
-
             Parameters = new NdArray[noBias ? 1 : 2];
 
             if (initialW == null)
-            {
                 Initializer.InitWeight(Weight);
-            }
             else
-            {
                 Weight.Data = Real.GetArray(initialW);
-            }
 
             Parameters[0] = Weight;
+            if (Verbose)
+            {
+                RILogManager.Default?.ViewerSendWatch(Name + " Weight", Weight.Length <= 30 ? Weight : Weight.Shape.Length);
+            }
 
             if (!noBias)
             {
                 Bias = new NdArray(outputCount) {Name = Name + " Bias"};
 
                 if (initialb != null)
-                {
                     Bias.Data = Real.GetArray(initialb);
-                }
 
                 Parameters[1] = Bias;
+
+                if (Verbose)
+                {
+                    RILogManager.Default?.ViewerSendWatch(Name + " Bias", Bias.Length <= 30 ? Bias : Bias.Shape.Length);
+                }
             }
         }
 
@@ -105,9 +106,7 @@ namespace KelpNet.Functions.Connections
             Real[] y = new Real[OutputCount * batchCount];
 
             for (int i = 0; i < batchCount; i++)
-            {
                 Array.Copy(Bias.Data, 0, y, i * OutputCount, Bias.Data.Length);
-            }
 
             return y;
         }
@@ -132,18 +131,14 @@ namespace KelpNet.Functions.Connections
                 for (int i = 0; i < OutputCount; i++)
                 {
                     for (int j = 0; j < InputCount; j++)
-                    {
                         y[batchCount * OutputCount + i] += x.Data[batchCount * InputCount + j] * Weight.Data[i * InputCount + j];
-                    }
                 }
             }
 
             if (Activator != null)
             {
                 for (int i = 0; i < y.Length; i++)
-                {
                     y[i] = Activator.ForwardActivate(y[i]);
-                }
             }
 
             return NdArray.Convert(y, new[] { OutputCount }, x.BatchCount, this);
@@ -226,6 +221,10 @@ namespace KelpNet.Functions.Connections
                 for (int i = 0; i < OutputCount; i++)
                 {
                     Bias.Grad[i] += gy[batchCounter * OutputCount + i];
+                    //if (Verbose)
+                    //{
+                    //    RILogManager.Default?.SendDebug("Bias Gradient Calculated");
+                    //}
                 }
             }
         }
@@ -242,7 +241,8 @@ namespace KelpNet.Functions.Connections
         protected override void NeedPreviousBackwardCpu([NotNull] NdArray y, [CanBeNull] NdArray x)
         {
             Real[] activatedgy = Activator != null ? GetActivatedgy(y) : y.Grad;
-            if (!NoBias) CalcBiasGrad(activatedgy, y.BatchCount);
+            if (!NoBias) 
+                CalcBiasGrad(activatedgy, y.BatchCount);
 
             for (int batchCount = 0; batchCount < y.BatchCount; batchCount++)
             {
@@ -314,9 +314,7 @@ namespace KelpNet.Functions.Connections
             }
 
             for (int i = 0; i < x.Grad.Length; i++)
-            {
                 x.Grad[i] += gx[i];
-            }
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,9 +324,9 @@ namespace KelpNet.Functions.Connections
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [NotNull]
-        public Convolution2D AsConvolution2D()
+        public Convolution2D AsConvolution2D(bool verbose)
         {
-            return new Convolution2D(this);
+            return new Convolution2D(verbose, this);
         }
     }
 }

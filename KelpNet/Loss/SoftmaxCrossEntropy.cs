@@ -47,9 +47,7 @@ namespace KelpNet.Loss
                     for (int i = 0; i < teachSignal[k].Length; i++)
                     {
                         if (maxIndex < teachSignal[k].Data[i + b * teachSignal[k].Length])
-                        {
                             maxIndex = teachSignal[k].Data[i + b * teachSignal[k].Length];
-                        }
                     }
 
                     Real[] logY = new Real[input[k].Length];
@@ -59,30 +57,21 @@ namespace KelpNet.Loss
                     for (int i = 1; i < input[k].Length; i++)
                     {
                         if (m < input[k].Data[i + b * input[k].Length])
-                        {
                             m = input[k].Data[i + b * input[k].Length];
-                        }
                     }
 
                     for (int i = 0; i < input[k].Length; i++)
-                    {
                         y += Math.Exp(input[k].Data[i + b * input[k].Length] - m);
-                    }
 
                     m += Math.Log(y);
 
                     for (int i = 0; i < input[k].Length; i++)
-                    {
                         logY[i] = input[k].Data[i + b * input[k].Length] - m;
-                    }
 
                     localloss += -logY[(int)maxIndex];
 
-
                     for (int i = 0; i < logY.Length; i++)
-                    {
                         gx[i + b * input[k].Length] = Math.Exp(logY[i]);
-                    }
 
                     gx[(int)maxIndex + b * input[k].Length] -= 1;
                 }
@@ -92,7 +81,6 @@ namespace KelpNet.Loss
             }
 
             resultLoss /= input.Length;
-
             return resultLoss;
         }
     }

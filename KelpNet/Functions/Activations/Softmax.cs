@@ -56,9 +56,7 @@ namespace KelpNet.Functions.Activations
                 for (int i = 1; i < x.Length; i++)
                 {
                     if (maxval < x.Data[indexOffset + i])
-                    {
                         maxval = x.Data[indexOffset + i];
-                    }
                 }
 
                 Real sumval = 0;
@@ -70,9 +68,7 @@ namespace KelpNet.Functions.Activations
                 }
 
                 for (int i = 0; i < x.Length; i++)
-                {
                     y[indexOffset + i] /= sumval;
-                }
 
                 indexOffset += x.Length;
             }
@@ -104,17 +100,13 @@ namespace KelpNet.Functions.Activations
                 }
 
                 for (int i = 0; i < y.Length; i++)
-                {
                     gx[indexOffset + i] -= y.Data[indexOffset + i] * sumdx;
-                }
 
                 indexOffset += y.Length;
             }
 
             for (int i = 0; i < x.Grad.Length; i++)
-            {
                 x.Grad[i] += gx[i];
-            }
         }
     }
 }

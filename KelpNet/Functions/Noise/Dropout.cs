@@ -54,7 +54,6 @@ namespace KelpNet.Functions.Noise
         public Dropout(double dropoutRatio = 0.5, [CanBeNull] string name = FUNCTION_NAME, [CanBeNull] string[] inputNames = null, [CanBeNull] string[] outputNames = null, bool gpuEnable = false) : base(name, inputNames, outputNames)
         {
             this.dropoutRatio = dropoutRatio;
-
             SetGpuEnable(gpuEnable);
         }
 
@@ -100,7 +99,6 @@ namespace KelpNet.Functions.Noise
             {
                 string kernelSource = Weaver.GetKernelSource(FUNCTION_NAME);
                 ComputeProgram program = Weaver.CreateProgram(kernelSource);
-
                 ForwardKernel = program.CreateKernel("DropoutForward");
                 BackwardKernel = program.CreateKernel("DropoutBackward");
             }
@@ -121,12 +119,9 @@ namespace KelpNet.Functions.Noise
             Real scale = 1 / (1 - dropoutRatio);
 
             for (int i = 0; i < mask.Length; i++)
-            {
                 mask[i] = Mother.Dice.NextDouble() >= dropoutRatio ? scale : 0;
-            }
 
             maskStack.Add(mask);
-
             return mask;
         }
 
@@ -145,9 +140,7 @@ namespace KelpNet.Functions.Noise
             Real[] mask = MakeMask(x.Length);
 
             for (int i = 0; i < x.Data.Length; i++)
-            {
                 result[i] = x.Data[i] * mask[i % mask.Length];
-            }
 
             return NdArray.Convert(result, x.Shape, x.BatchCount, this);
         }
@@ -203,15 +196,11 @@ namespace KelpNet.Functions.Noise
             for (int b = 0; b < y.BatchCount; b++)
             {
                 for (int i = 0; i < mask.Length; i++)
-                {
                     result[b * y.Length + i] *= mask[i];
-                }
             }
 
             for (int i = 0; i < x.Grad.Length; i++)
-            {
                 x.Grad[i] += result[i];
-            }
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,9 +231,7 @@ namespace KelpNet.Functions.Noise
             }
 
             for (int i = 0; i < x.Grad.Length; i++)
-            {
                 x.Grad[i] += result[i];
-            }
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////

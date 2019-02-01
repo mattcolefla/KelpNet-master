@@ -22,16 +22,16 @@ namespace KelpNetTester.Tests
             // Write the configuration of the network you want to read into FunctionStack and adjust the parameters of each function
             // Make sure to match name to the variable name of Chainer here
 
-            FunctionStack nn = new FunctionStack(
-                new Convolution2D(1, 2, 3, name: "conv1", gpuEnable: true),// Do not forget the GPU flag if necessary
+            FunctionStack nn = new FunctionStack("Test16",
+                new Convolution2D(true, 1, 2, 3, name: "conv1", gpuEnable: true),// Do not forget the GPU flag if necessary
                 new ReLU(),
                 new MaxPooling(2, 2),
-                new Convolution2D(2, 2, 2, name: "conv2", gpuEnable: true),
+                new Convolution2D(true, 2, 2, 2, name: "conv2", gpuEnable: true),
                 new ReLU(),
                 new MaxPooling(2, 2),
-                new Linear(8, 2, name: "fl3"),
+                new Linear(true, 8, 2, name: "fl3"),
                 new ReLU(),
-                new Linear(2, 2, name: "fl4")
+                new Linear(true, 2, 2, name: "fl4")
             );
 
             /* Chainerでの宣言

@@ -9,6 +9,13 @@ namespace KelpNet.Common.Optimizers
     [Serializable]
     public abstract class Optimizer
     {
+        private string Name = "Optimizer";
+        public string NAME
+        {
+            get { return Name; }
+            set { Name = value; }
+        }
+
         /// <summary>   Number of updates. </summary>
         public long UpdateCount = 1;
         /// <summary>   Options for controlling the optimizer. </summary>
@@ -23,16 +30,16 @@ namespace KelpNet.Common.Optimizers
         internal abstract void AddFunctionParameters(NdArray[] functionParameters);
 
         /// <summary>   Updates this object. </summary>
-        public void Update()
+        public void Update(bool verbose = true)
         {
             bool isUpdated = false;
 
             foreach (var t in OptimizerParameters)
             {
                 // Run discount of slope and check if there was update
-                if (t.FunctionParameter.Reduce())
+                if (t.FunctionParameter.Reduce(verbose))
                 {
-                    t.UpdateFunctionParameters();
+                    t.UpdateFunctionParameters(verbose);
                     t.FunctionParameter?.ClearGrad();
                     isUpdated = true;
                 }
@@ -77,6 +84,6 @@ namespace KelpNet.Common.Optimizers
         }
 
         /// <summary>   Updates the function parameters. </summary>
-        public abstract void UpdateFunctionParameters();
+        public abstract void UpdateFunctionParameters(bool verbose);
     }
 }

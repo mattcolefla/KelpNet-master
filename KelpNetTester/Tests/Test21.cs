@@ -1,44 +1,50 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Drawing;
 using KelpNet.Common;
 using KelpNet.Common.Functions.Container;
 using KelpNet.Common.Tools;
 using KelpNet.Functions.Activations;
 using KelpNet.Functions.Connections;
+using KelpNet.Functions.Noise;
 using KelpNet.Functions.Normalization;
+using KelpNet.Functions.Poolings;
 using KelpNet.Loss;
 using KelpNet.Optimizers;
 using KelpNetTester.TestData;
+using ReflectSoftware.Insight;
 
 namespace KelpNetTester.Tests
 {
-    using ReflectSoftware.Insight;
-
-    //Learning of MNIST (handwritten character) by 15-layer MLP using batch normalization
-    //reference： http://takatakamanbou.hatenablog.com/entry/2015/12/20/233232
-    class Test7
+    class Test21
     {
-        //Number of mini batches
-        const int BATCH_DATA_COUNT = 128;
-
-        //Number of exercises per generation
-        const int TRAIN_DATA_COUNT = 1000;//50000;
-
-        //
+        const int BATCH_DATA_COUNT = 20;
+        const int TRAIN_DATA_COUNT = 3000; // = 60000 / 20
         const int TEST_DATA_COUNT = 200;
+        public static bool Passed = false;
 
-        //Number of middle layers
-        const int N = 30; //It operates at 1000 similar to the reference link but it is slow at the CPU
-
-        public static void Run()
+        // MNIST accuracy tester
+        public static void Run(double accuracyThreshold = .9979D)
         {
-            RILogManager.Default?.SendDebug("MNIST Data Loading...");
             MnistData mnistData = new MnistData(28);
+            Real maxAccuracy = 0;
+            //Number of middle layers
+            const int N = 30; //It operates at 1000 similar to the reference link but it is slow at the CPU
 
-            RILogManager.Default?.SendDebug("Training Start...");
+            ReflectInsight ri = new ReflectInsight("Test21");
+            ri.Enabled = true;
+            RILogManager.Add("Test21", "Test21");
+            RILogManager.SetDefault("Test21");
 
-            //Writing the network configuration in FunctionStack
+            //FunctionStack nn = new FunctionStack("Test21",
+            //    new Linear(28 * 28, 1024, name: "l1 Linear"),
+            //    new Sigmoid(name: "l1 Sigmoid"),
+            //    new Linear(1024, 10, name: "l2 Linear")
+            //);
+            //nn.SetOptimizer(new MomentumSGD());
+
             FunctionStack nn = new FunctionStack("Test7",
-                new Linear(true, 28 * 28, N, name: "l1 Linear"), // L1
+    new Linear(true, 28 * 28, N, name: "l1 Linear"), // L1
                 new BatchNormalization(true, N, name: "l1 BatchNorm"),
                 new ReLU(name: "l1 ReLU"),
                 new Linear(true, N, N, name: "l2 Linear"), // L2
@@ -83,47 +89,51 @@ namespace KelpNetTester.Tests
                 new Linear(true, N, 10, name: "l15 Linear") // L15
             );
 
-            nn.SetOptimizer(new AdaGrad());
+            // 0.0005 - 97.5, 0.001, 0.00146
+            double alpha = 0.001;
+            double beta1 = 0.9D;
+            double beta2 = 0.999D;
+            double epsilon = 1e-8;
 
+            nn.SetOptimizer(new Adam("Adam21", alpha, beta1, beta2, epsilon));
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
             for (int epoch = 0; epoch < 3; epoch++)
             {
                 Real totalLoss = 0;
-                long totalLossCounter = 0;
+                long totalLossCount = 0;
 
-                //Run the batch
                 for (int i = 1; i < TRAIN_DATA_COUNT + 1; i++)
                 {
-                    RILogManager.Default?.SendDebug("epoch " + (epoch + 1) + " of 3, Batch " + i + " of " + TRAIN_DATA_COUNT);
-
-                    //Get data randomly from training data
                     TestDataSet datasetX = mnistData.GetRandomXSet(BATCH_DATA_COUNT, 28, 28);
-
-                    //Learn
                     Real sumLoss = Trainer.Train(nn, datasetX.Data, datasetX.Label, new SoftmaxCrossEntropy());
-                    totalLoss += sumLoss;
-                    totalLossCounter++;
+                    totalLoss = sumLoss;
+                    totalLossCount++;
 
                     if (i % 20 == 0)
                     {
-                        RILogManager.Default?.SendDebug("batch count " + i + "/" + TRAIN_DATA_COUNT);
-                        RILogManager.Default?.SendDebug("total loss " + totalLoss / totalLossCounter);
-                        RILogManager.Default?.SendDebug("local loss " + sumLoss);
-                        
-                        RILogManager.Default?.SendDebug("Testing random data...");
-
-                        //Get data randomly from test data
                         TestDataSet datasetY = mnistData.GetRandomYSet(TEST_DATA_COUNT, 28);
+                        Real accuracy = Trainer.Accuracy(nn, datasetY.Data, datasetY.Label, false);
+                        if (accuracy > maxAccuracy)
+                            maxAccuracy = accuracy;
+                        Passed = (accuracy >= accuracyThreshold);
 
-                        //Run the test
-                        Real accuracy = Trainer.Accuracy(nn, datasetY.Data, datasetY.Label);
-                        RILogManager.Default?.SendDebug("Test Accuracy: " + accuracy);
+                        sw.Stop();
+                        ri.ViewerSendWatch("Iteration", "epoch " + (epoch + 1) + " of 3, batch " + i + " of " + TRAIN_DATA_COUNT);
+                        ri.ViewerSendWatch("Max Accuracy", maxAccuracy * 100 + "%");
+                        ri.ViewerSendWatch("Current Accuracy", accuracy * 100 + "%");
+                        ri.ViewerSendWatch("Total Loss ", totalLoss / totalLossCount);
+                        ri.ViewerSendWatch("Elapsed Time", Helpers.FormatTimeSpan(sw.Elapsed));
+                        ri.ViewerSendWatch("Accuracy Threshold", Passed ? "Passed" : "Not Passed");
+                        sw.Start();
                     }
                 }
-            }
 
-            ModelIO.Save(nn, "Test7.nn");
-            RILogManager.Default?.SendDebug(nn.Describe());
+                sw.Stop();
+                ri.SendInformation("Total Processing Time: " + Helpers.FormatTimeSpan(sw.Elapsed));
+            }
         }
     }
 }

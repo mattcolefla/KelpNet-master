@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using KelpNet.Common;
 using KelpNet.Common.Optimizers;
+using KelpNet.Common.Tools;
+using ReflectSoftware.Insight;
 
 namespace KelpNet.Optimizers
 {
@@ -27,10 +30,11 @@ namespace KelpNet.Optimizers
         /// <param name="epsilon">      (Optional) The epsilon. </param>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public AdaGrad(double learningRate = 0.01, double epsilon = 1e-8)
+        public AdaGrad(string Name = "AdaGrad", double learningRate = 0.01, double epsilon = 1e-8)
         {
             LearningRate = learningRate;
             Epsilon = epsilon;
+            NAME = Name;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,8 +89,11 @@ namespace KelpNet.Optimizers
         /// <seealso cref="M:KelpNet.Common.Optimizers.OptimizerParameter.UpdateFunctionParameters()"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override void UpdateFunctionParameters()
+        public override void UpdateFunctionParameters(bool verbose)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             for (int i = 0; i < FunctionParameter.Data.Length; i++)
             {
                 Real grad = FunctionParameter.Grad[i];
@@ -95,6 +102,9 @@ namespace KelpNet.Optimizers
 
                 FunctionParameter.Data[i] -= optimizer.LearningRate * grad / (Math.Sqrt(h[i]) + optimizer.Epsilon);
             }
+            sw.Stop();
+            if (verbose)
+                RILogManager.Default?.SendDebug("AdaGrad Function Parameter Updating took " + Helpers.FormatTimeSpan(sw.Elapsed));
         }
     }
 

@@ -62,7 +62,7 @@ namespace KelpNet.Common.Functions.Container
 
             for (int i = 0; i < result.Length; i++)
             {
-                result[i] = SplitedFunctions[i].Forward(x)[0];
+                result[i] = SplitedFunctions[i].Forward(false, x)[0];
             }
 
             return result;
@@ -90,13 +90,13 @@ namespace KelpNet.Common.Functions.Container
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [NotNull]
-        public override NdArray[] Predict([CanBeNull] params NdArray[] xs)
+        public override NdArray[] Predict(bool verbose = true, [CanBeNull] params NdArray[] xs)
         {
             NdArray[] result = new NdArray[_splitNum];
 
             for (int i = 0; i < result.Length; i++)
             {
-                result[i] = SplitedFunctions[i].Predict(xs[0])[0];
+                result[i] = SplitedFunctions[i].Predict(verbose, xs[0])[0];
             }
 
             return result;

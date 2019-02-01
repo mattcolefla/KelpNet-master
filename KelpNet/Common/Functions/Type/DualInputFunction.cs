@@ -44,14 +44,12 @@ namespace KelpNet.Common.Functions.Type
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [NotNull]
-        public override NdArray[] Forward([NotNull] params NdArray[] xs)
+        public override NdArray[] Forward(bool verbose = true, [NotNull] params NdArray[] xs)
         {
             PrevInputs.Add(xs);
 
             xs[0].UseCount++;
             xs[1].UseCount++;
-            RILogManager.Default?.ViewerSendWatch("xs[0] use count", xs[0].UseCount.ToString("N0"));
-            RILogManager.Default?.ViewerSendWatch("xs[1] use count", xs[1].UseCount.ToString("N0"));
 
             return new[] { DualInputForward(xs[0], xs[1]) };
         }
@@ -66,7 +64,7 @@ namespace KelpNet.Common.Functions.Type
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Backward(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override void Backward(params NdArray[] ys)
+        public override void Backward(bool verbose = true, params NdArray[] ys)
         {
             NdArray[] xs = PrevInputs[PrevInputs.Count - 1];
             PrevInputs.RemoveAt(PrevInputs.Count - 1);
@@ -78,8 +76,6 @@ namespace KelpNet.Common.Functions.Type
 
             xs[0].UseCount--;
             xs[1].UseCount--;
-            RILogManager.Default?.ViewerSendWatch("xs[0] use count", xs[0].UseCount.ToString("N0"));
-            RILogManager.Default?.ViewerSendWatch("xs[1] use count", xs[1].UseCount.ToString("N0"));
 
             DualOutputBackward(ys[0], xs[0], xs[1]);
         }
@@ -95,7 +91,7 @@ namespace KelpNet.Common.Functions.Type
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [NotNull]
-        public override NdArray[] Predict(params NdArray[] xs)
+        public override NdArray[] Predict(bool verbose = true, params NdArray[] xs)
         {
             return new[] { DualInputForward(xs[0], xs[1]) };
         }

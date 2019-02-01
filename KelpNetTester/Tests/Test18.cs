@@ -27,22 +27,22 @@ namespace KelpNetTester.Tests
             RILogManager.Default?.SendDebug("CIFAR Data Loading...");
             CifarData cifarData = new CifarData();
 
-            FunctionStack nn = new FunctionStack(
-                new Convolution2D(3, 32, 3, name: "l1 Conv2D", gpuEnable: true),
+            FunctionStack nn = new FunctionStack("Test18",
+                new Convolution2D(true, 3, 32, 3, name: "l1 Conv2D", gpuEnable: true),
                 new ReLU(name: "l1 ReLU"),
-                new MaxPooling(2, name: "l1 MaxPooling", gpuEnable: true),
+                new MaxPooling(2, name: "l1 MaxPooling", gpuEnable: false),
                 new Dropout(0.25, name: "l1 DropOut"),
-                new Convolution2D(32, 64, 3, name: "l2 Conv2D", gpuEnable: true),
+                new Convolution2D(true, 32, 64, 3, name: "l2 Conv2D", gpuEnable: false),
                 new ReLU(name: "l2 ReLU"),
-                new MaxPooling(2, 2, name: "l2 MaxPooling", gpuEnable: true),
+                new MaxPooling(2, 2, name: "l2 MaxPooling", gpuEnable: false),
                 new Dropout(0.25, name: "l2 DropOut"),
-                new Linear(13 * 13 * 64, 512, name: "l3 Linear", gpuEnable: true),
+                new Linear(true, 13 * 13 * 64, 512, name: "l3 Linear", gpuEnable: false),
                 new ReLU(name: "l3 ReLU"),
                 new Dropout(name: "l3 DropOut"),
-                new Linear(512, 10, name: "l4 Linear", gpuEnable: true)
+                new Linear(true, 512, 10, name: "l4 Linear", gpuEnable: false)
             );
 
-            nn.SetOptimizer(new Adam());
+            nn.SetOptimizer(new AdaDelta());
 
             RILogManager.Default?.SendDebug("Training Start...");
             for (int epoch = 1; epoch < 3; epoch++)
@@ -68,7 +68,7 @@ namespace KelpNetTester.Tests
                     RILogManager.Default?.SendDebug("local loss " + sumLoss);
 
                     sw.Stop();
-                    RILogManager.Default?.SendDebug("time" + sw.Elapsed.TotalMilliseconds);
+                    RILogManager.Default?.SendDebug("time " + sw.Elapsed.TotalMilliseconds);
 
                     if (i % 20 == 0)
                     {

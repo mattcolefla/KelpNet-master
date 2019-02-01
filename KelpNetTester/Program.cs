@@ -5,9 +5,6 @@ using KelpNetTester.Tests;
 
 namespace KelpNetTester
 {
-    using System.Diagnostics;
-    using System.IO;
-    using System.Threading;
     using HdrHistogram;
     using ReflectSoftware.Insight;
 
@@ -18,8 +15,17 @@ namespace KelpNetTester
         static void Main(string[] args)
         {
             //Comment out here if you want to run all on .Net Framework
-            Weaver.Initialize(ComputeDeviceTypes.Gpu);
-            //Weaver.Initialize(ComputeDeviceTypes.Cpu, 1); //Subscript required if there are multiple devices
+            //Weaver.Initialize(ComputeDeviceTypes.Gpu);
+            //Weaver.Initialize(ComputeDeviceTypes.Cpu, 0); //Subscript required if there are multiple devices
+
+            var recorder = HistogramFactory
+                .With64BitBucketSize()
+                ?.WithValuesFrom(1)
+                ?.WithValuesUpTo(2345678912345)
+                ?.WithPrecisionOf(3)
+                ?.WithThreadSafeWrites()
+                ?.WithThreadSafeReads()
+                ?.Create();
 
             //Learning XOR with MLP
             //recorder.Record(() => Test1.Run());
@@ -70,7 +76,7 @@ namespace KelpNetTester
             //Test16.Run();
 
             //Test that reads RESNET of Caffe model and classifies images
-            //Test17.Run(Test17.ResnetModel.ResNet50);  //Please select any Resnet model
+            //Test17.Run(Test17.ResnetModel.ResNet152);  //Please select any Resnet model
 
             //Learn CIFAR-10 with 5-layer CNN
             //Test18.Run();
@@ -82,10 +88,13 @@ namespace KelpNetTester
             //Test19.Run();
 
             // 1000 layer neural network
-            Test20.Run();
+            //Test20.Run();
+
+            // MNIST (Handwritten Characters) by MLP Accuracy Tester 99.79 is goal
+            Test21.Run();
 
             //benchmark
-            //SingleBenchmark.Run();
+            //SingleBenchmark.Run(true);
 
             RILogManager.Default?.SendDebug("Test Done...");
             Console.WriteLine("Test Complete, press any key to end");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using KelpNet.Common;
+using KelpNet.Common.Functions;
 using KelpNet.Common.Functions.Container;
 using KelpNet.Functions.Connections;
 using KelpNet.Loss;
@@ -28,10 +29,10 @@ namespace KelpNetTester.Tests
             DataMaker dataMaker = new DataMaker(STEPS_PER_CYCLE, NUMBER_OF_CYCLES);
             NdArray trainData = dataMaker.Make();
 
-            FunctionStack model = new FunctionStack(
-                new Linear(1, 5, name: "Linear l1"),
-                new LSTM(5, 5, name: "LSTM l2"),
-                new Linear(5, 1, name: "Linear l3")
+            FunctionStack model = new FunctionStack("Test8",
+                new Linear(true, 1, 5, name: "Linear l1"),
+                new LSTM(true, 5, 5, name: "LSTM l2"),
+                new Linear(true, 5, 1, name: "Linear l3")
             );
 
             model.SetOptimizer(new Adam());
@@ -65,8 +66,8 @@ namespace KelpNetTester.Tests
 
             // Total error in the whole
             Real totalLoss = 0;
-            NdArray x = new NdArray(new[] { 1 }, MINI_BATCH_SIZE);
-            NdArray t = new NdArray(new[] { 1 }, MINI_BATCH_SIZE);
+            NdArray x = new NdArray(new[] { 1 }, MINI_BATCH_SIZE, (Function)null);
+            NdArray t = new NdArray(new[] { 1 }, MINI_BATCH_SIZE, (Function)null);
 
             Stack<NdArray[]> backNdArrays = new Stack<NdArray[]>();
 
@@ -78,14 +79,14 @@ namespace KelpNetTester.Tests
                     t.Data[j] = sequences[j].Data[i + 1];
                 }
 
-                NdArray[] result = model.Forward(x);
+                NdArray[] result = model.Forward(true, x);
                 totalLoss += new MeanSquaredError().Evaluate(result, t);
                 backNdArrays.Push(result);
             }
 
             for (int i = 0; backNdArrays.Count > 0; i++)
             {
-                model.Backward(backNdArrays.Pop());
+                model.Backward(true, backNdArrays.Pop());
             }
 
             return totalLoss / (LENGTH_OF_SEQUENCE - 1);
@@ -108,7 +109,7 @@ namespace KelpNetTester.Tests
             List<Real> input_seq = new List<Real>();
             input_seq.AddRange(pre_input_seq);
 
-            List<Real> output_seq = new List<Real> {input_seq[input_seq.Count - 1]};
+            List<Real> output_seq = new List<Real> { input_seq[input_seq.Count - 1] };
 
             for (int i = 0; i < pre_length; i++)
             {
@@ -138,12 +139,11 @@ namespace KelpNetTester.Tests
             Ensure.Argument(model).NotNull();
             Ensure.Argument(input_seq).NotNull(); foreach (var t in input_seq)
             {
-                result = model.Predict(t)[0];
+                result = model.Predict(true, t)[0];
             }
 
             return result.Data[0];
         }
-
         sealed class DataMaker
         {
             private readonly int stepsPerCycle;

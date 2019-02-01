@@ -139,7 +139,7 @@ namespace KelpNet.Common.Functions.Container
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [CanBeNull]
-        public override NdArray[] Forward([CanBeNull] params NdArray[] xs)
+        public override NdArray[] Forward(bool verbose = true, [CanBeNull] params NdArray[] xs)
         {
             NdArray[] result = xs;
 
@@ -159,7 +159,7 @@ namespace KelpNet.Common.Functions.Container
                 // collect the input data
 
                 // Implement the function
-                result = t.Forward(inputBlockNames.Select(t1 => outPuts[t1]).ToArray());
+                result = t.Forward(verbose, inputBlockNames.Select(t1 => outPuts[t1]).ToArray());
 
                 // Register the output data in the dictionary
                 for (int j = 0; j < result.Length; j++)
@@ -179,9 +179,9 @@ namespace KelpNet.Common.Functions.Container
         /// <seealso cref="M:KelpNet.Common.Functions.Function.Backward(params NdArray[])"/>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public override void Backward([NotNull] params NdArray[] ys)
+        public override void Backward(bool verbose = true, [NotNull] params NdArray[] ys)
         {
-            NdArray.Backward(ys[0]);
+            NdArray.Backward(verbose, ys[0]);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,7 +225,7 @@ namespace KelpNet.Common.Functions.Container
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [CanBeNull]
-        public override NdArray[] Predict([CanBeNull] params NdArray[] xs)
+        public override NdArray[] Predict(bool verbose = true, [CanBeNull] params NdArray[] xs)
         {
             NdArray[] result = xs;
 
@@ -245,7 +245,7 @@ namespace KelpNet.Common.Functions.Container
                 // collect the input data
 
                 // Implement the function
-                result = t.Predict(inputBlockNames.Select(t1 => outPuts[t1]).ToArray());
+                result = t.Predict(verbose, inputBlockNames.Select(t1 => outPuts[t1]).ToArray());
 
                 // Register the output data in the dictionary
                 for (int j = 0; j < result.Length; j++)
